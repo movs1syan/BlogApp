@@ -2,6 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
+import { getDate } from "@/helpers/getDate";
 import type { PostType } from "@/shared/types";
 
 const Post = ({ post }: { post: PostType }) => {
@@ -32,7 +33,7 @@ const Post = ({ post }: { post: PostType }) => {
         />
         <div className="flex flex-col">
           <p>{post.author_name} {post.author_surname}</p>
-          <p className="text-gray-600">{post.createdAt}</p>
+          <p className="text-gray-600">{getDate(post.createdAt)}</p>
         </div>
       </div>
     </article>

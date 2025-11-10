@@ -7,3 +7,8 @@
   --color-primary-300: #63e5ff;
   --color-primary-400: #3cdfff;
 }
+
+@keyframes slideInTop {
+  0% { opacity: 0; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(15%); }
+}

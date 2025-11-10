@@ -13,7 +13,7 @@ const Navbar = () => {
       <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
         <Link href="/" className={`${pathname ? "text-blue-700" : ""}`}>Home</Link>
         <div className="flex gap-4">
-          <Button type="text">Sign in</Button>
+          <Button>Sign in</Button>
           <Button type="primary">Register</Button>
         </div>
       </div>

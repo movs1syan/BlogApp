@@ -17,9 +17,9 @@ const colorSchemes = {
       active: "active:border-blue-700 active:text-blue-700",
     },
     text: {
-      base: "border-none bg-blue-100 text-blue-700",
-      hover: "hover:bg-blue-200",
-      active: "active:bg-blue-300",
+      base: "border-none text-blue-700",
+      hover: "hover:bg-blue-100",
+      active: "active:bg-blue-200",
     },
     link: {
       base: "border-none text-blue-400",
