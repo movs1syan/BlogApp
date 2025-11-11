@@ -5,33 +5,27 @@ import { Activity } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import axios from 'axios';
+import { apiFetch } from "@/lib/apiFetch";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
+import ModalInput from "@/components/ModalInput";
 import { getDate } from "@/helpers/getDate";
 import type { PostType } from "@/shared/types";
-import ModalInput from "@/components/ModalInput";
 
-const IndividualPagePost = ({ post }: { post: PostType }) => {
+const SinglePost = ({ post }: { post: PostType }) => {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  const [editPost, setEditPost] = useState<Omit<PostType, "id"> | null>({
-    title: post.title,
-    subtitle: post.subtitle,
-    description: post.description,
-    category: post.category,
-    post_pic: post.post_pic,
-    author_name: post.author_name,
-    author_surname: post.author_surname,
-    author_pic: post.author_pic,
-    createdAt: post.createdAt,
+  const [currentPost, setCurrentPost] = useState<Omit<PostType, "id">>(post);
+  const [editPost, setEditPost] = useState<Omit<PostType, "id">>(() => {
+    const { id, ...rest } = post;
+    return rest;
   });
 
   const onDelete = async () => {
-    await axios.delete(`https://6910d3327686c0e9c20bce81.mockapi.io/blog/posts/${post.id}`);
+    await apiFetch("DELETE", `/posts/${post.id}`);
 
-    router.push("/");
+    router.push(`/`);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,30 +35,32 @@ const IndividualPagePost = ({ post }: { post: PostType }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await axios.put(`https://6910d3327686c0e9c20bce81.mockapi.io/blog/posts/${post.id}`, {...editPost});
+    const updatedPost = await apiFetch("PUT", `/posts/${post.id}`, undefined, {...editPost});
+    const { id, ...rest } = updatedPost as PostType;
+    setCurrentPost(rest);
   };
 
   return (
     <>
       <article className="py-6 flex flex-col justify-between gap-7 md:max-w-200">
         <div className="flex flex-col justify-center gap-4">
-          <Image src={post.post_pic} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
+          <Image src={currentPost.post_pic} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
 
-          <span className="text-semibold text-blue-700 text-lg">{post.category}</span>
+          <span className="text-semibold text-blue-700 text-lg">{currentPost.category}</span>
 
           <div className="flex flex-col gap-3">
-            <h2 className="text-3xl font-bold">{post.title}</h2>
-            <p className="text-gray-600 text-xl">{post.subtitle}</p>
-            <p>{post.description}</p>
+            <h2 className="text-3xl font-bold">{currentPost.title}</h2>
+            <p className="text-gray-600 text-xl">{currentPost.subtitle}</p>
+            <p>{currentPost.description}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <Image src={post.author_pic} alt={post.author_name} width={40} height={40} className="size-10 rounded-full object-cover"/>
+          <Image src={currentPost.author_pic} alt={currentPost.author_name} width={40} height={40} className="size-10 rounded-full object-cover"/>
 
           <div className="flex flex-col">
-            <p>{post.author_name} {post.author_surname}</p>
-            <p className="text-gray-600">{getDate(post.createdAt)}</p>
+            <p>{currentPost.author_name} {currentPost.author_surname}</p>
+            <p className="text-gray-600">{getDate(currentPost.createdAt)}</p>
           </div>
         </div>
 
@@ -99,7 +95,7 @@ const IndividualPagePost = ({ post }: { post: PostType }) => {
             <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} value={editPost?.subtitle} />
             <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} value={editPost?.description} />
             <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} value={editPost?.category} />
-            <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"post_pic"} value={editPost?.post_pic} />
+            <ModalInput handleChange={handleChange} fieldName={"PostCard image URL"} inputName={"post_pic"} value={editPost?.post_pic} />
             <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"author_name"} value={editPost?.author_name} />
             <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"author_surname"} value={editPost?.author_surname} />
             <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"author_pic"} value={editPost?.author_pic} />
@@ -115,4 +111,4 @@ const IndividualPagePost = ({ post }: { post: PostType }) => {
   );
 };
 
-export default IndividualPagePost;
+export default SinglePost;

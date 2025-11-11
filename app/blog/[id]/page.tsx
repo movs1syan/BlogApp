@@ -1,11 +1,11 @@
 import React from "react";
-import axios from "axios";
-import IndividualPagePost from "@/components/IndividualPagePost";
+import { apiFetch } from "@/lib/apiFetch";
+import SinglePost from "@/components/SinglePost";
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
 	const resolvedParams = await params;
-	const { data: post } = await axios.get(`https://6910d3327686c0e9c20bce81.mockapi.io/blog/posts/${resolvedParams.id}`);
-	
+	const post = await apiFetch("GET", `posts/${resolvedParams.id}`);
+
 	if (!post) {
 		return (
 			<div className="max-w-3xl mx-auto py-10 text-center">
@@ -14,5 +14,5 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
 		);
 	}
 	
-	return <IndividualPagePost post={post} />;
+	return <SinglePost post={post} />;
 }

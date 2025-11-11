@@ -1,8 +1,12 @@
-import axios from "axios";
-import FilteredPosts from "@/components/FilteredPosts";
+import React from "react";
+import { apiFetch } from "@/lib/apiFetch";
+import PostsContainer from "@/components/PostsContainer";
 
-export default async function Home() {
-  const { data: posts } = await axios.get("https://6910d3327686c0e9c20bce81.mockapi.io/blog/posts");
+export default async function Home({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
+  const resolvedParams = await searchParams;
+  const page = Number(resolvedParams?.page || 1);
+
+  const posts = await apiFetch("GET", "/posts", { page, limit: 9 });
 
   return (
     <main>
@@ -15,7 +19,7 @@ export default async function Home() {
 
       {/* Blog Posts */}
       <section className="pb-10">
-        <FilteredPosts posts={posts} />
+        <PostsContainer posts={posts} page={page} />
       </section>
     </main>
   );

@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import { Activity } from "react";
-import axios from "axios";
-import Post from "@/components/Post";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/apiFetch";
+import PostCard from "@/components/PostCard";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import ModalInput from "@/components/ModalInput";
 import { SearchIcon } from "lucide-react";
 import type { PostType } from "@/shared/types";
 
-const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
+const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) => {
+  const router = useRouter();
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
-  const [newPost, setNewPost] = useState<PostType | null>({
+  const [newPost, setNewPost] = useState<PostType>({
     id: String(posts.length + 1),
     title: "",
     subtitle: "",
@@ -29,7 +31,7 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    localStorage.setItem("posts", JSON.stringify(posts));
+    setFilteredPosts(posts);
   }, [posts]);
 
   const handleSearchChange = () => {
@@ -37,7 +39,7 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
 
     timeoutRef.current = setTimeout(() => {
       if (inputRef.current) {
-        const query = inputRef.current.value.trim().toLowerCase();
+        const query = inputRef.current.value.toLowerCase();
 
         const filtered = posts.filter(
           (post) =>
@@ -57,7 +59,13 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await axios.post("https://6910d3327686c0e9c20bce81.mockapi.io/blog/posts", {...newPost});
+    await apiFetch("POST", "/posts", undefined, { ...newPost });
+
+    setIsOpen(false);
+  };
+
+  const goToPage = async (newPage: number) => {
+    router.push(`/?page=${newPage}`);
   };
 
   return (
@@ -83,8 +91,22 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
       {/* Filtered posts */}
       <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15"}>
         {filteredPosts.map((post: PostType) => (
-          <Post key={post.id} post={post} />
+          <PostCard key={post.id} post={post} />
         ))}
+      </div>
+
+      <div className="flex justify-center items-center gap-2 mt-6">
+        {page > 1 && (
+          <Button type={"link"} icon={"ArrowLeft"} onClick={() => goToPage(page - 1)}>
+            Prev
+          </Button>
+        )}
+        <span>Page {page}</span>
+        {posts.length === 9 && (
+          <Button type={"link"} icon={"ArrowRight"} iconPosition={"end"} onClick={() => goToPage(page + 1)}>
+            Next
+          </Button>
+        )}
       </div>
 
       <Activity mode={isOpen ? "visible" : "hidden"}>
@@ -94,14 +116,14 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
             <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} />
             <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} />
             <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} />
-            <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"post_pic"} />
+            <ModalInput handleChange={handleChange} fieldName={"PostCard image URL"} inputName={"post_pic"} />
             <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"author_name"} />
             <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"author_surname"} />
             <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"author_pic"} />
 
             <div className="flex gap-5 justify-end mt-3">
               <Button onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button htmlType="submit" type="primary" onClick={() => setIsOpen(false)}>Create</Button>
+              <Button htmlType="submit" type="primary">Create</Button>
             </div>
           </form>
         </Modal>
@@ -110,4 +132,4 @@ const FilteredPosts = ({ posts }: { posts: PostType[] }) => {
   );
 };
 
-export default FilteredPosts;
+export default PostsContainer;
