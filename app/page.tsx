@@ -1,12 +1,13 @@
 import React from "react";
 import { apiFetch } from "@/lib/apiFetch";
-import PostsContainer from "@/components/PostsContainer";
+import ClientPosts from "@/components/ClientPosts";
 
-export default async function Home({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
+export default async function Home ({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
   const resolvedParams = await searchParams;
   const page = Number(resolvedParams?.page || 1);
 
-  const posts = await apiFetch("GET", "/posts", { page, limit: 9 });
+  const posts = await apiFetch("GET", "/posts", { page, limit: 9, sortBy: "createdAt", order: "desc" });
+  const totalPosts = await apiFetch("GET", "/posts");
 
   return (
     <main>
@@ -19,7 +20,7 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
 
       {/* Blog Posts */}
       <section className="pb-10">
-        <PostsContainer posts={posts} page={page} />
+        <ClientPosts posts={posts} page={page} totalPostsQuantity={totalPosts.length} />
       </section>
     </main>
   );

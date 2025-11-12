@@ -10,3 +10,10 @@ export interface PostType {
 	author_pic: string;
 	post_pic: string;
 }
+
+export interface NotificationType {
+	id: string;
+	type: "success" | "error" | "info" | "warning";
+	message: string;
+	description: string;
+}

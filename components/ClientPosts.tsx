@@ -4,16 +4,17 @@ import React, {useState, useRef, useEffect} from 'react';
 import { Activity } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
+import { useNotification } from "@/hooks/useNotification";
 import PostCard from "@/components/PostCard";
+import Form from "@/components/Form";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
-import ModalInput from "@/components/ModalInput";
 import { SearchIcon } from "lucide-react";
 import type { PostType } from "@/shared/types";
 
-const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) => {
-  const router = useRouter();
+const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], page: number, totalPostsQuantity: number }) => {
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newPost, setNewPost] = useState<PostType>({
     id: String(posts.length + 1),
     title: "",
@@ -26,13 +27,16 @@ const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) =>
     author_pic: "",
     createdAt: String(new Date()),
   });
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
+  const { notify } = useNotification();
 
   useEffect(() => {
+    if (posts.length === 0) router.push(`/?page=${page - 1}`);
+
     setFilteredPosts(posts);
-  }, [posts]);
+  }, [posts, page, router]);
 
   const handleSearchChange = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -45,7 +49,7 @@ const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) =>
           (post) =>
             post.title.toLowerCase().includes(query) ||
             post.subtitle.toLowerCase().includes(query) ||
-            post.description.toLowerCase().includes(query)
+            post.category.toLowerCase().includes(query)
         );
         setFilteredPosts(filtered);
       }
@@ -53,30 +57,34 @@ const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) =>
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPost((prev) => ({...prev!, [e.target.name]: e.target.value }))
+    setNewPost((prev) => ({...prev!, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     await apiFetch("POST", "/posts", undefined, { ...newPost });
-
     setIsOpen(false);
+
+    notify({
+      type: "success",
+      message: `Success!`,
+      description: `Created post "${newPost.title}"`
+    });
+
+    router.refresh();
   };
 
-  const goToPage = async (newPage: number) => {
-    router.push(`/?page=${newPage}`);
-  };
+  const goToPage = async (newPage: number) => router.push(`/?page=${newPage}`);
 
   return (
     <main>
       {/* SearchBar */}
       <div className={"relative mx-auto w-100 max-w-100"}>
         <input
-          type={"text"}
           ref={inputRef}
           onChange={handleSearchChange}
-          className={"border-2 border-gray-200 rounded-lg pl-11 pr-4 py-2 focus:outline-none focus:border-blue-700 w-full"}
+          className={"border-2 border-gray-200 rounded-lg pl-11 pr-4 py-2 focus:outline-blue-700 w-full"}
           placeholder={"Search for posts. . ."}
         />
         <SearchIcon size={20} className={"absolute top-1/2 left-4 -translate-y-1/2 text-gray-400"} />
@@ -96,40 +104,20 @@ const PostsContainer = ({ posts, page }: { posts: PostType[], page: number }) =>
       </div>
 
       <div className="flex justify-center items-center gap-2 mt-6">
-        {page > 1 && (
-          <Button type={"link"} icon={"ArrowLeft"} onClick={() => goToPage(page - 1)}>
-            Prev
-          </Button>
-        )}
+        <Activity mode={page > 1 ? "visible" : "hidden"}>
+          <Button type={"link"} icon={"ArrowLeft"} onClick={() => goToPage(page - 1)}>Prev</Button>
+        </Activity>
         <span>Page {page}</span>
-        {posts.length === 9 && (
-          <Button type={"link"} icon={"ArrowRight"} iconPosition={"end"} onClick={() => goToPage(page + 1)}>
-            Next
-          </Button>
-        )}
+        <Activity mode={page * 9 < totalPostsQuantity ? "visible" : "hidden"}>
+          <Button type={"link"} icon={"ArrowRight"} iconPosition={"end"} onClick={() => goToPage(page + 1)}>Next</Button>
+        </Activity>
       </div>
 
-      <Activity mode={isOpen ? "visible" : "hidden"}>
-        <Modal title={"Create new post"} isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <form onSubmit={handleSubmit} className={"flex flex-col gap-3"}>
-            <ModalInput handleChange={handleChange} fieldName={"Title"} inputName={"title"} />
-            <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} />
-            <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} />
-            <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} />
-            <ModalInput handleChange={handleChange} fieldName={"PostCard image URL"} inputName={"post_pic"} />
-            <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"author_name"} />
-            <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"author_surname"} />
-            <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"author_pic"} />
-
-            <div className="flex gap-5 justify-end mt-3">
-              <Button onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button htmlType="submit" type="primary">Create</Button>
-            </div>
-          </form>
-        </Modal>
-      </Activity>
+      <Modal title={"Create new post"} isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Form handleSubmit={handleSubmit} handleChange={handleChange} setIsModalOpen={setIsOpen} event={"Create"} />
+      </Modal>
     </main>
   );
 };
 
-export default PostsContainer;
+export default ClientPosts;

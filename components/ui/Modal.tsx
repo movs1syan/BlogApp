@@ -11,7 +11,7 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({isOpen, onClose, title, children}) => {
-  return createPortal (
+  return isOpen && createPortal (
     <div className="fixed inset-0 z-10">
 
       {/* Overlay */}

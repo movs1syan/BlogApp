@@ -9,7 +9,9 @@ const PostCard = ({ post }: { post: PostType }) => {
   return (
     <article className="rounded-xl p-6 shadow-xl hover:shadow-2xl flex flex-col justify-between gap-7 transition-shadow duration-200 md:max-w-90">
       <div className="flex flex-col justify-center gap-4">
-        <Image src={post.post_pic} alt="Featured Image" width={400} height={400} className="md:h-50 w-full" />
+        {post.post_pic && (
+          <Image src={post.post_pic} alt="Featured Image" width={400} height={400} className="md:h-50 w-full" />
+        )}
         <span className="text-semibold text-blue-700">{post.category}</span>
 
         <Link href={`/blog/${post.id}`}>
@@ -22,7 +24,9 @@ const PostCard = ({ post }: { post: PostType }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        <Image src={post.author_pic} alt={post.author_name} width={40} height={40} className="size-10 rounded-full object-cover" />
+        {post.author_pic && (
+          <Image src={post.author_pic} alt={post.author_name} width={40} height={40} className="size-10 rounded-full object-cover" />
+        )}
 
         <div className="flex flex-col">
           <p>{post.author_name} {post.author_surname}</p>
