@@ -73,7 +73,7 @@ const colorSchemes = {
   },
 };
 
-const sizes = {
+const buttonSizeMap: Record<"sm" | "md" | "lg", string> = {
   sm: "px-2 py-1 text-sm",
   md: "px-3 py-2 text-base",
   lg: "px-4 py-3 text-lg",
@@ -85,6 +85,12 @@ const iconSizeMap: Record<"sm" | "md" | "lg", number> = {
   lg: 30,
 };
 
+const loadingSizeMap: Record<"sm" | "md" | "lg", string> = {
+  sm: "w-2 h-2 border-2",
+  md: "w-4 h-4 border-3",
+  lg: "w-6 h-6 border-4",
+};
+
 type LucideIconName = keyof typeof LucideIcons;
 
 interface ButtonProps {
@@ -94,6 +100,7 @@ interface ButtonProps {
   color?: keyof typeof colorSchemes;
   icon?: LucideIconName;
   iconPosition?: "start" | "end";
+  loading?: boolean;
   children?: React.ReactNode;
   onClick?: () => void;
 }
@@ -105,6 +112,7 @@ const Button: React.FC<ButtonProps> = ({
   color = "blue",
   icon,
   iconPosition = "start",
+  loading,
   children,
   onClick = () => {},
 }) => {
@@ -118,9 +126,12 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={`flex items-center gap-2 rounded-md font-medium cursor-pointer transition-colors duration-300 ease-in-out text-black
         ${type === "primary" ? "text-white" : "border text-black"}
-        ${sizes[size]}
+        ${buttonSizeMap[size]}
         ${colorSet.base} ${colorSet.hover} ${colorSet.active} ${dashedClass}`}
     >
+      {loading && (
+        <span className={`animate-spin rounded-full border-solid border-t-transparent ${loadingSizeMap[size]}`}></span>
+      )}
       {IconComponent && (
         <IconComponent className={`${iconPosition === "end" ? "order-1" : ""}`} size={iconSizeMap[size]} />
       )}

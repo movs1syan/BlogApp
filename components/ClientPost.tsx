@@ -18,6 +18,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
     const { id, ...rest } = post;
     return rest;
   });
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onDelete = async () => {
@@ -34,10 +35,12 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setLoading(true);
     const updatedPost: PostType = await apiFetch("PUT", `/posts/${post.id}`, undefined, {...editPost});
     const { id, ...rest } = updatedPost;
     setCurrentPost(rest);
 
+    setLoading(false)
     setIsEditOpen(false);
 
     router.refresh();
@@ -94,7 +97,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
       </Modal>
 
       <Modal title={"Edit post"} isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
-        <Form handleSubmit={handleSubmit} handleChange={handleChange} post={editPost} setIsModalOpen={setIsEditOpen} event={"Edit"} />
+        <Form handleSubmit={handleSubmit} handleChange={handleChange} post={editPost} setIsModalOpen={setIsEditOpen} event={"Edit"} loading={loading} />
       </Modal>
     </>
   );

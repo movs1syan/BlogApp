@@ -1,8 +1,10 @@
+import React, { Suspense } from "react";
+import Loading from "@/app/loading";
+import NotificationProvider from "@/providers/NotificationProvider";
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NotificationProvider from "@/providers/NotificationProvider";
-import Navbar from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +34,9 @@ export default function RootLayout({
         <NotificationProvider>
           <Navbar />
           <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
-            {children}
+            <Suspense fallback={<Loading />}>
+              {children}
+            </Suspense>
           </div>
         </NotificationProvider>
       </body>

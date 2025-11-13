@@ -15,6 +15,7 @@ import type { PostType } from "@/shared/types";
 const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], page: number, totalPostsQuantity: number }) => {
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [newPost, setNewPost] = useState<PostType>({
     id: String(posts.length + 1),
     title: "",
@@ -63,7 +64,9 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setLoading(true);
     await apiFetch("POST", "/posts", undefined, { ...newPost });
+    setLoading(false);
     setIsOpen(false);
 
     notify({
@@ -114,7 +117,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       </div>
 
       <Modal title={"Create new post"} isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Form handleSubmit={handleSubmit} handleChange={handleChange} setIsModalOpen={setIsOpen} event={"Create"} />
+        <Form handleSubmit={handleSubmit} handleChange={handleChange} setIsModalOpen={setIsOpen} event={"Create"} loading={loading} />
       </Modal>
     </main>
   );

@@ -9,9 +9,10 @@ interface Props {
   post?: Omit<PostType, "id">;
   setIsModalOpen: (isOpen: boolean) => void;
   event: "Edit" | "Create";
+  loading?: boolean;
 }
 
-const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event }: Props) => {
+const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading }: Props) => {
   return (
     <form onSubmit={handleSubmit} className={"flex flex-col gap-3"}>
       <ModalInput handleChange={handleChange} fieldName={"Title"} inputName={"title"} value={post?.title} />
@@ -25,7 +26,7 @@ const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event }: Props
 
       <div className="flex gap-5 justify-end mt-3">
         <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
-        <Button htmlType="submit" type="primary">{event}</Button>
+        <Button htmlType="submit" type="primary" loading={loading}>{event}</Button>
       </div>
     </form>
   );
