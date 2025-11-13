@@ -67,6 +67,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     setLoading(true);
     await apiFetch("POST", "/posts", undefined, { ...newPost });
     setLoading(false);
+
     setIsOpen(false);
 
     notify({

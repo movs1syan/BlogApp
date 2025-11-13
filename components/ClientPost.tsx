@@ -22,7 +22,9 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const router = useRouter();
 
   const onDelete = async () => {
+    setLoading(true);
     await apiFetch("DELETE", `/posts/${post.id}`);
+    setLoading(false);
 
     router.back();
     setTimeout(() => router.refresh(), 10);
@@ -40,7 +42,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
     const { id, ...rest } = updatedPost;
     setCurrentPost(rest);
 
-    setLoading(false)
+    setLoading(false);
     setIsEditOpen(false);
 
     router.refresh();
@@ -91,7 +93,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
           <p>Are you sure you want to delete post &quot;{post.title}&quot; ?</p>
           <div className="flex gap-5 justify-end">
             <Button onClick={() => setIsDeleteOpen(false)}>Cancel</Button>
-            <Button type="primary" color="red" icon="Trash2" iconPosition="end" onClick={() => onDelete()}>Delete</Button>
+            <Button type="primary" color="red" loading={loading} onClick={() => onDelete()}>Delete</Button>
           </div>
         </div>
       </Modal>
