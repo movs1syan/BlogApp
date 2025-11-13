@@ -2,9 +2,9 @@ import React from "react";
 import { apiFetch } from "@/lib/apiFetch";
 import ClientPost from "@/components/ClientPost";
 
-export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
-	const resolvedParams = await params;
-	const post = await apiFetch("GET", `posts/${resolvedParams.id}`);
+export default async function BlogPostPage(props: PageProps<'/blog/[id]'>) {
+	const { id } = await props.params;
+	const post = await apiFetch("GET", `posts/${id}`);
 
 	if (!post) {
 		return (

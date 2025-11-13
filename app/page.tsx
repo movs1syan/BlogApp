@@ -2,8 +2,8 @@ import React from "react";
 import { apiFetch } from "@/lib/apiFetch";
 import ClientPosts from "@/components/ClientPosts";
 
-export default async function Home ({ searchParams }: { searchParams?: Promise<{ page?: string }> }) {
-  const resolvedParams = await searchParams;
+export default async function Home (props: PageProps<'/'>) {
+  const resolvedParams = await props.searchParams;
   const page = Number(resolvedParams?.page || 1);
 
   const posts = await apiFetch("GET", "/posts", { page, limit: 9, sortBy: "createdAt", order: "desc" });
