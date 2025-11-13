@@ -1,12 +1,13 @@
 import React from "react";
 import { apiFetch } from "@/lib/apiFetch";
-import ClientPosts from "@/components/ClientPosts";
+import ClientPosts from "@/components/pages/ClientPosts";
 
 export default async function Home (props: PageProps<'/'>) {
   const resolvedParams = await props.searchParams;
   const page = Number(resolvedParams?.page || 1);
+  const search =  Array.isArray(resolvedParams?.search) ? resolvedParams.search[0] : resolvedParams?.search || "";
 
-  const posts = await apiFetch("GET", "/posts", { page, limit: 9, sortBy: "createdAt", order: "desc" });
+  const posts = await apiFetch("GET", "/posts", { page, limit: 9, search, sortBy: "createdAt", order: "desc" });
   const totalPosts = await apiFetch("GET", "/posts");
 
   return (

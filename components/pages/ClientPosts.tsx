@@ -34,7 +34,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const { notify } = useNotification();
 
   useEffect(() => {
-    if (posts.length === 0) router.push(`/?page=${page - 1}`);
+    if (posts.length === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
 
     setFilteredPosts(posts);
   }, [posts, page, router]);
@@ -46,13 +46,15 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       if (inputRef.current) {
         const query = inputRef.current.value.toLowerCase();
 
-        const filtered = posts.filter(
-          (post) =>
-            post.title.toLowerCase().includes(query) ||
-            post.subtitle.toLowerCase().includes(query) ||
-            post.category.toLowerCase().includes(query)
-        );
-        setFilteredPosts(filtered);
+        const params = new URLSearchParams(window.location.search);
+        if (query) {
+          params.set("search", query);
+          params.set("page", "1");
+        } else {
+          params.delete("search");
+        }
+
+        router.replace(`/?${params.toString()}`, { scroll: false });
       }
     }, 1000);
   };
@@ -79,7 +81,12 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     router.refresh();
   };
 
-  const goToPage = async (newPage: number) => router.push(`/?page=${newPage}`);
+  const goToPage = async (newPage: number) => {
+    router.push(`/?page=${newPage}`);
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }
 
   return (
     <main>
@@ -101,11 +108,17 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       <h1 className="text-2xl font-bold mb-4">Latest News</h1>
 
       {/* Filtered posts */}
-      <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15"}>
-        {filteredPosts.map((post: PostType) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
+      {filteredPosts.length > 0 ? (
+        <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15"}>
+          {filteredPosts.map((post: PostType) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 text-center mt-6">
+          No posts found for your search.
+        </p>
+      )}
 
       <div className="flex justify-center items-center gap-2 mt-6">
         <Activity mode={page > 1 ? "visible" : "hidden"}>

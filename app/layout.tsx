@@ -1,7 +1,6 @@
-import React, { Suspense } from "react";
-import Loading from "@/app/loading";
+import React from "react";
 import NotificationProvider from "@/providers/NotificationProvider";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layouts/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,15 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NotificationProvider>
           <Navbar />
           <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
-            <Suspense fallback={<Loading />}>
-              {children}
-            </Suspense>
+            {children}
           </div>
         </NotificationProvider>
       </body>

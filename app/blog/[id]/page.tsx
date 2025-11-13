@@ -1,6 +1,6 @@
 import React from "react";
 import { apiFetch } from "@/lib/apiFetch";
-import ClientPost from "@/components/ClientPost";
+import ClientPost from "@/components/pages/ClientPost";
 
 export default async function BlogPostPage(props: PageProps<'/blog/[id]'>) {
 	const { id } = await props.params;

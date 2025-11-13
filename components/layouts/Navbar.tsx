@@ -11,7 +11,7 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 shadow-md w-full z-10 bg-white">
       <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
-        <Link href="/" className={`${pathname ? "text-blue-700" : ""}`}>Home</Link>
+        <Link href="/public" className={`${pathname ? "text-blue-700" : ""}`}>Home</Link>
         <div className="flex gap-4">
           <Button>Sign in</Button>
           <Button type="primary">Register</Button>
