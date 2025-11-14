@@ -13,11 +13,8 @@ import Form from "@/components/Form";
 const ClientPost = ({ post }: { post: PostType }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  const [currentPost, setCurrentPost] = useState<Omit<PostType, "id">>(post);
-  const [editPost, setEditPost] = useState<Omit<PostType, "id">>(() => {
-    const { id, ...rest } = post;
-    return rest;
-  });
+  const [currentPost, setCurrentPost] = useState<PostType>(post);
+  const [editPost, setEditPost] = useState<PostType>(post);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

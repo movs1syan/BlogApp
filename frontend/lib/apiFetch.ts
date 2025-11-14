@@ -1,6 +1,6 @@
 import type { PostType } from "@/shared/types";
 
-const baseURL = "https://6910d3327686c0e9c20bce81.mockapi.io/blog";
+const baseURL = "http://localhost:8000/api";
 
 export const apiFetch = async (
   method: "GET" | "POST" | "PUT" | "DELETE",

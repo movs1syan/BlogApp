@@ -17,7 +17,6 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [newPost, setNewPost] = useState<PostType>({
-    id: String(posts.length + 1),
     title: "",
     subtitle: "",
     description: "",
@@ -26,7 +25,6 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     author_name: "",
     author_surname: "",
     author_pic: "",
-    createdAt: String(new Date()),
   });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,7 +65,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     e.preventDefault();
 
     setLoading(true);
-    await apiFetch("POST", "/posts", undefined, { ...newPost });
+    await apiFetch("POST", "posts", undefined, newPost);
     setLoading(false);
 
     setIsOpen(false);
@@ -111,7 +109,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       {filteredPosts.length > 0 ? (
         <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15"}>
           {filteredPosts.map((post: PostType) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.title} post={post} />
           ))}
         </div>
       ) : (

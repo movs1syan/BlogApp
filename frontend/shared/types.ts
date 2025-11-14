@@ -1,6 +1,4 @@
 export interface PostType {
-	id: string;
-	createdAt: string;
 	title: string;
 	subtitle: string;
 	category: string;
