@@ -1,4 +1,5 @@
 export interface PostType {
+	id: number;
 	title: string;
 	subtitle: string;
 	category: string;
@@ -7,6 +8,7 @@ export interface PostType {
 	author_surname: string;
 	author_pic: string;
 	post_pic: string;
+	createdAt: string;
 }
 
 export interface NotificationType {

@@ -16,7 +16,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [newPost, setNewPost] = useState<PostType>({
+  const [newPost, setNewPost] = useState<Omit<PostType, "id" | "createdAt">>({
     title: "",
     subtitle: "",
     description: "",
@@ -32,10 +32,10 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const { notify } = useNotification();
 
   useEffect(() => {
-    if (posts.length === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
+    if (totalPostsQuantity === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
 
     setFilteredPosts(posts);
-  }, [posts, page, router]);
+  }, [posts, totalPostsQuantity, page, router]);
 
   const handleSearchChange = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -109,7 +109,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       {filteredPosts.length > 0 ? (
         <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15"}>
           {filteredPosts.map((post: PostType) => (
-            <PostCard key={post.title} post={post} />
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
       ) : (

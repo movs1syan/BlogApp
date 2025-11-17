@@ -7,8 +7,7 @@ export default async function Home (props: PageProps<'/'>) {
   const page = Number(resolvedParams?.page || 1);
   const search =  Array.isArray(resolvedParams?.search) ? resolvedParams.search[0] : resolvedParams?.search || "";
 
-  const posts = await apiFetch("GET", "posts", { page, limit: 9, search, sortBy: "createdAt", order: "desc" });
-  const totalPosts = await apiFetch("GET", "posts");
+  const { posts, totalPostsQuantity } = await apiFetch("GET", "posts", { page, limit: 9, search, sortBy: "createdAt", order: "DESC" });
 
   return (
     <main>
@@ -21,7 +20,7 @@ export default async function Home (props: PageProps<'/'>) {
 
       {/* Blog Posts */}
       <section className="pb-10">
-        <ClientPosts posts={posts} page={page} totalPostsQuantity={totalPosts.length} />
+        <ClientPosts posts={posts} page={page} totalPostsQuantity={totalPostsQuantity} />
       </section>
     </main>
   );

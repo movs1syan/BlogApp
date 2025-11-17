@@ -5,8 +5,8 @@ const baseURL = "http://localhost:8000/api";
 export const apiFetch = async (
   method: "GET" | "POST" | "PUT" | "DELETE",
   endpoint: string,
-  params?: Record<string, number | string>,
-  data?: Omit<PostType, "id">
+  params?: Record<string, number | string | string[]>,
+  data?: Omit<PostType, "id" | "createdAt">
 ) => {
   const url = new URL(`${baseURL}/${endpoint}`);
 
@@ -33,8 +33,6 @@ export const apiFetch = async (
   });
 
   if (!res.ok) {
-    if (res.status === 404) return [];
-
     throw new Error(`API error: ${res.status} ${res.statusText}`);
   }
 
