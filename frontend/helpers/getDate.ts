@@ -1,8 +1,9 @@
 export const getDate = (dateStr: string) => {
   return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
+    hour: 'numeric',
+    minute: 'numeric',
     month: "short",
     day: "numeric",
-    timeZone: "UTC",
+    timeZone: "Asia/Yerevan",
   }).format(new Date(dateStr));
 };

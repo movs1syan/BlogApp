@@ -4,10 +4,10 @@ export interface PostType {
 	subtitle: string;
 	category: string;
 	description: string;
-	author_name: string;
-	author_surname: string;
-	author_pic: string;
-	post_pic: string;
+	authorName: string;
+	authorSurname: string;
+	authorImage: string;
+	postImage: string;
 	createdAt: string;
 }
 

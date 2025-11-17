@@ -7,7 +7,7 @@ export default async function Home (props: PageProps<'/'>) {
   const page = Number(resolvedParams?.page || 1);
   const search =  Array.isArray(resolvedParams?.search) ? resolvedParams.search[0] : resolvedParams?.search || "";
 
-  const { posts, totalPostsQuantity } = await apiFetch("GET", "posts", { page, limit: 9, search, sortBy: "createdAt", order: "DESC" });
+  const { posts, totalPostsQuantity } = await apiFetch("GET", "posts", { page, limit: 9, search, sortBy: "createdAt", orderBy: "DESC" });
 
   return (
     <main>

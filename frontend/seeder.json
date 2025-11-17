@@ -1,7 +1,5 @@
 [
   {
-    "id": "1",
-    "createdAt": "2025-11-09T10:15:32.421Z",
     "title": "Exploring the Beauty of Armenia",
     "subtitle": "A journey through hidden gems",
     "category": "Travel",
@@ -12,8 +10,6 @@
     "post_pic": "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1"
   },
   {
-    "id": "2",
-    "createdAt": "2025-11-08T09:30:11.982Z",
     "title": "The Future of Front-End Development",
     "subtitle": "React, Next.js, and beyond",
     "category": "Technology",
@@ -24,8 +20,6 @@
     "post_pic": "https://images.unsplash.com/photo-1555066931-4365d14bab8c"
   },
   {
-    "id": "3",
-    "createdAt": "2025-11-07T13:00:49.728Z",
     "title": "Healthy Living in a Busy World",
     "subtitle": "Simple steps to stay balanced",
     "category": "Lifestyle",
@@ -36,8 +30,6 @@
     "post_pic": "https://images.unsplash.com/photo-1506126613408-eca07ce68773"
   },
   {
-    "id": "4",
-    "createdAt": "2025-11-06T15:20:58.217Z",
     "title": "Mastering JavaScript in 2025",
     "subtitle": "What every developer should know",
     "category": "Programming",
@@ -48,8 +40,6 @@
     "post_pic": "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
   },
   {
-    "id": "5",
-    "createdAt": "2025-11-05T11:45:14.563Z",
     "title": "Discovering Armenian Cuisine",
     "subtitle": "Tradition meets flavor",
     "category": "Food",
@@ -60,8 +50,6 @@
     "post_pic": "https://images.unsplash.com/photo-1504674900247-0877df9cc836"
   },
   {
-    "id": "6",
-    "createdAt": "2025-11-04T17:10:22.957Z",
     "title": "Photography Tips for Beginners",
     "subtitle": "How to capture the perfect shot",
     "category": "Photography",
@@ -72,8 +60,6 @@
     "post_pic": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
   },
   {
-    "id": "7",
-    "createdAt": "2025-11-03T08:55:36.431Z",
     "title": "The Rise of Remote Work",
     "subtitle": "How companies are adapting",
     "category": "Business",
@@ -84,8 +70,6 @@
     "post_pic": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
   },
   {
-    "id": "8",
-    "createdAt": "2025-11-02T12:25:44.859Z",
     "title": "Mindfulness in Everyday Life",
     "subtitle": "Finding peace in small moments",
     "category": "Wellness",
@@ -96,8 +80,6 @@
     "post_pic": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c"
   },
   {
-    "id": "9",
-    "createdAt": "2025-11-01T10:40:53.192Z",
     "title": "Building Scalable APIs",
     "subtitle": "A guide for back-end developers",
     "category": "Programming",
@@ -108,8 +90,6 @@
     "post_pic": "https://images.unsplash.com/photo-1515879218367-8466d910aaa4"
   },
   {
-    "id": "10",
-    "createdAt": "2025-10-31T09:15:28.485Z",
     "title": "Sustainable Living Practices",
     "subtitle": "Small choices with big impact",
     "category": "Environment",
@@ -120,8 +100,6 @@
     "post_pic": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
   },
   {
-    "id": "11",
-    "createdAt": "2025-10-30T18:05:12.123Z",
     "title": "The Psychology of Creativity",
     "subtitle": "Understanding how ideas form",
     "category": "Science",
@@ -132,8 +110,6 @@
     "post_pic": "https://images.unsplash.com/photo-1481277542470-605612bd2d61"
   },
   {
-    "id": "12",
-    "createdAt": "2025-10-29T14:22:43.657Z",
     "title": "Building Your Personal Brand Online",
     "subtitle": "Why digital presence matters",
     "category": "Marketing",
@@ -144,8 +120,6 @@
     "post_pic": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2"
   },
   {
-    "id": "13",
-    "createdAt": "2025-10-28T09:17:31.932Z",
     "title": "The Evolution of Artificial Intelligence",
     "subtitle": "From logic to learning",
     "category": "Technology",
@@ -156,8 +130,6 @@
     "post_pic": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d"
   },
   {
-    "id": "14",
-    "createdAt": "2025-10-27T11:55:29.614Z",
     "title": "The Art of Minimalism",
     "subtitle": "Less clutter, more clarity",
     "category": "Lifestyle",
@@ -168,8 +140,6 @@
     "post_pic": "https://images.unsplash.com/photo-1505691938895-1758d7feb511"
   },
   {
-    "id": "15",
-    "createdAt": "2025-10-26T08:44:20.341Z",
     "title": "The Power of Community",
     "subtitle": "Why connection matters more than ever",
     "category": "Society",
@@ -180,8 +150,6 @@
     "post_pic": "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d"
   },
   {
-    "id": "16",
-    "createdAt": "2025-10-25T12:19:45.982Z",
     "title": "Digital Art and the NFT Revolution",
     "subtitle": "Redefining ownership in the modern age",
     "category": "Art",
@@ -192,8 +160,6 @@
     "post_pic": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
   },
   {
-    "id": "17",
-    "createdAt": "2025-10-24T09:59:10.127Z",
     "title": "Urban Gardening for Beginners",
     "subtitle": "Green life in small spaces",
     "category": "Environment",
@@ -204,8 +170,6 @@
     "post_pic": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6"
   },
   {
-    "id": "18",
-    "createdAt": "2025-10-23T16:30:41.563Z",
     "title": "Learning to Code: A Beginner’s Journey",
     "subtitle": "From zero to developer",
     "category": "Education",

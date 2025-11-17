@@ -13,3 +13,11 @@ export const sequelize = new Sequelize(
     logging: false
   }
 );
+
+export async function connectDB() {
+  await sequelize.authenticate();
+  console.log("Database connection successful!");
+
+  await sequelize.sync({ alter: true });
+  console.log("Tables created successfully!");
+}

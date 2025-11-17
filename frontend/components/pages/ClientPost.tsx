@@ -48,8 +48,8 @@ const ClientPost = ({ post }: { post: PostType }) => {
     <>
       <article className="py-6 flex flex-col justify-between gap-7 md:max-w-200">
         <div className="flex flex-col justify-center gap-4">
-          {post.post_pic && (
-            <Image src={currentPost.post_pic} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
+          {post.postImage && (
+            <Image src={currentPost.postImage} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
           )}
 
           <span className="text-semibold text-blue-700 text-lg">{currentPost.category}</span>
@@ -62,12 +62,12 @@ const ClientPost = ({ post }: { post: PostType }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {post.author_pic && (
-            <Image src={currentPost.author_pic} alt={currentPost.author_name} width={40} height={40} className="size-10 rounded-full object-cover"/>
+          {post.authorImage && (
+            <Image src={currentPost.authorImage} alt={currentPost.authorName} width={40} height={40} className="size-10 rounded-full object-cover"/>
           )}
 
           <div className="flex flex-col">
-            <p>{currentPost.author_name} {currentPost.author_surname}</p>
+            <p>{currentPost.authorName} {currentPost.authorSurname}</p>
             <p className="text-gray-600">{getDate(currentPost.createdAt)}</p>
           </div>
         </div>

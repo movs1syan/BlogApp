@@ -19,10 +19,10 @@ const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading
       <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} value={post?.subtitle} />
       <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} value={post?.description} />
       <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} value={post?.category} />
-      <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"post_pic"} value={post?.post_pic} />
-      <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"author_name"} value={post?.author_name} />
-      <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"author_surname"} value={post?.author_surname} />
-      <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"author_pic"} value={post?.author_pic} />
+      <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"postImage"} value={post?.postImage} />
+      <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"authorName"} value={post?.authorName} />
+      <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"authorSurname"} value={post?.authorSurname} />
+      <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"authorImage"} value={post?.authorImage} />
 
       <div className="flex gap-5 justify-end mt-3">
         <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>

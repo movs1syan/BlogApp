@@ -21,10 +21,10 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     subtitle: "",
     description: "",
     category: "",
-    post_pic: "",
-    author_name: "",
-    author_surname: "",
-    author_pic: "",
+    postImage: "",
+    authorName: "",
+    authorSurname: "",
+    authorImage: "",
   });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -32,10 +32,10 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const { notify } = useNotification();
 
   useEffect(() => {
-    if (totalPostsQuantity === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
+    if (posts.length === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
 
     setFilteredPosts(posts);
-  }, [posts, totalPostsQuantity, page, router]);
+  }, [posts, page, router]);
 
   const handleSearchChange = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -114,7 +114,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
         </div>
       ) : (
         <p className="text-gray-500 text-center mt-6">
-          No posts found for your search.
+          No posts found.
         </p>
       )}
 

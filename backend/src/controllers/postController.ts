@@ -1,61 +1,48 @@
 import type { Request, Response } from "express";
-import { Op } from "sequelize";
-import { Post } from "../models/Post.ts";
+import {
+  createPostService,
+  getAllPostsService,
+  getSinglePostService,
+  updatePostService,
+  deletePostService
+} from "../services/postService.ts";
 
 export const getPosts = async (req: Request, res: Response) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 9;
-  const search = String(req.query.search || "");
-  const sortBy = String(req.query.sortBy || "createdAt");
-  const order = String(req.query.order || "DESC");
-
-  const offset = (page - 1) * limit;
-
-  const searchFilter  = search ? {
-    [Op.or]: [
-      { title: { [Op.iLike]: `%${search}%` } },
-      { subtitle: { [Op.iLike]: `%${search}%` } },
-    ]
-  } : {};
-
-  try {
-    const posts = await Post.findAll({
-      where: searchFilter,
-      limit,
-      offset,
-      order: [[sortBy, order]],
-    });
-
-    const totalPostsQuantity = await Post.count({ where: searchFilter  });
-
-    return res.json({ posts, totalPostsQuantity });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch posts" });
-  }
-};
-
-export const getSinglePost = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const post = await Post.findByPk(id);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+    if (id) {
+      const post = await getSinglePostService(id);
+      if (!post) {
+        return res.status(404).json({ message: `Post with the ID of ${id} was not found` });
+      }
+
+      return res.status(200).json(post);
     }
 
-    return res.status(200).json(post);
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 9;
+    const search = String(req.query.search || "");
+    const sortBy = String(req.query.sortBy || "createdAt");
+    const orderBy = String(req.query.orderBy || "DESC");
+
+    const posts = await getAllPostsService({ page, limit, search, sortBy, orderBy });
+
+    return res.json(posts);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch post" });
+    res.status(500).json({ error: `Failed to fetch posts: ${err}` });
   }
 };
 
 export const createPost = async (req: Request, res: Response) => {
+  const data = req.body;
+
   try {
-    const post = await Post.create(req.body);
+    const post = await createPostService(data);
 
     return res.status(201).json(post);
   } catch (err) {
-    res.status(500).json({ error: "Failed to create post" });
+    res.status(500).json({ error: `Failed to create post: ${err}` });
   }
 };
 
@@ -64,16 +51,11 @@ export const updatePost = async (req: Request, res: Response) => {
   const data = req.body;
 
   try {
-    const post = await Post.findByPk(id);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
+    const updatedPost = await updatePostService(id, data);
 
-    await post.update(data);
-
-    return res.status(200).json(post);
+    return res.status(200).json(updatedPost);
   } catch (err) {
-    res.status(500).json({ error: "Failed to update post" });
+    res.status(500).json({ error: `Failed to update post: ${err}` });
   }
 };
 
@@ -81,16 +63,10 @@ export const deletePost = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const post = await Post.findByPk(id);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    await post.destroy();
+    await deletePostService(id);
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: `Server error: ${err}` });
   }
 };

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { getPosts, getSinglePost, createPost, updatePost, deletePost } from "../controllers/postController.ts";
+import { getPosts, createPost, updatePost, deletePost } from "../controllers/postController.ts";
 
 const router = Router();
 
 router.get("/posts", getPosts);
-router.get("/posts/:id", getSinglePost);
+router.get("/posts/:id", getPosts);
 
 router.post("/posts", createPost);
 
