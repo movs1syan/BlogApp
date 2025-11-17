@@ -94,7 +94,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
           ref={inputRef}
           onChange={handleSearchChange}
           className={"border-2 border-gray-200 rounded-lg pl-11 pr-4 py-2 focus:outline-blue-700 w-full"}
-          placeholder={"Search for posts. . ."}
+          placeholder={"Search for posts . . ."}
         />
         <SearchIcon size={20} className={"absolute top-1/2 left-4 -translate-y-1/2 text-gray-400"} />
       </div>

@@ -53,7 +53,9 @@ export const updatePost = async (req: Request, res: Response) => {
   try {
     const updatedPost = await updatePostService(id, data);
 
-    return res.status(200).json(updatedPost);
+    if (updatedPost) {
+      return res.status(200).json(updatedPost);
+    }
   } catch (err) {
     res.status(500).json({ error: `Failed to update post: ${err}` });
   }
@@ -67,6 +69,6 @@ export const deletePost = async (req: Request, res: Response) => {
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: `Server error: ${err}` });
+    res.status(500).json({ error: `Failed to delete post: ${err}` });
   }
 };
