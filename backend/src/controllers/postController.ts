@@ -27,10 +27,13 @@ export const getPosts = async (req: Request, res: Response) => {
     const orderBy = String(req.query.orderBy || "DESC");
 
     const posts = await getAllPostsService({ page, limit, search, sortBy, orderBy });
+    if (!posts) {
+      return res.status(404).json({ message: `No posts found` });
+    }
 
     return res.json(posts);
   } catch (err) {
-    res.status(500).json({ error: `Failed to fetch posts: ${err}` });
+    res.status(500).json({ message: `Failed to fetch posts: ${err}` });
   }
 };
 
@@ -42,7 +45,7 @@ export const createPost = async (req: Request, res: Response) => {
 
     return res.status(201).json(post);
   } catch (err) {
-    res.status(500).json({ error: `Failed to create post: ${err}` });
+    res.status(500).json({ message: `Failed to create post: ${err}` });
   }
 };
 
@@ -57,7 +60,7 @@ export const updatePost = async (req: Request, res: Response) => {
       return res.status(200).json(updatedPost);
     }
   } catch (err) {
-    res.status(500).json({ error: `Failed to update post: ${err}` });
+    res.status(500).json({ message: `Failed to update post: ${err}` });
   }
 };
 
@@ -69,6 +72,6 @@ export const deletePost = async (req: Request, res: Response) => {
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: `Failed to delete post: ${err}` });
+    res.status(500).json({ message: `Failed to delete post: ${err}` });
   }
 };

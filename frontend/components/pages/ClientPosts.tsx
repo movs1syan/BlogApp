@@ -65,14 +65,14 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     e.preventDefault();
 
     setLoading(true);
-    await apiFetch("POST", "posts", undefined, newPost);
+    await apiFetch("POST", "posts/create", undefined, newPost);
     setLoading(false);
 
     setIsOpen(false);
 
     notify({
       type: "success",
-      message: `Success!`,
+      message: "Success!",
       description: `Created post "${newPost.title}"`
     });
 

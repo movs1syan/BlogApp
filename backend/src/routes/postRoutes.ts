@@ -1,17 +1,17 @@
 import { Router } from "express";
 import { getPosts, createPost, updatePost, deletePost } from "../controllers/postController.ts";
-import { validatePost } from "../middlewares/postValidate.ts";
+import { validate } from "../middlewares/validator.ts";
 import { createPostSchema, updatePostSchema } from "../validators/postValidator.ts";
 
 const router = Router();
 
-router.get("/posts", getPosts);
-router.get("/posts/:id", getPosts);
+router.get("/get", getPosts);
+router.get("/get/:id", getPosts);
 
-router.post("/posts", validatePost(createPostSchema), createPost);
+router.post("/create", validate(createPostSchema), createPost);
 
-router.put("/posts/:id", validatePost(updatePostSchema), updatePost);
+router.put("/update/:id", validate(updatePostSchema), updatePost);
 
-router.delete("/posts/:id", deletePost)
+router.delete("/delete/:id", deletePost);
 
 export default router;

@@ -1,4 +1,4 @@
-import type { PostType } from "@/shared/types";
+import type {PostType, UserType} from "@/shared/types";
 
 const baseURL = "http://localhost:8000/api";
 
@@ -6,7 +6,7 @@ export const apiFetch = async (
   method: "GET" | "POST" | "PUT" | "DELETE",
   endpoint: string,
   params?: Record<string, number | string | string[]>,
-  data?: Omit<PostType, "id" | "createdAt">
+  data?: Omit<PostType, "id" | "createdAt"> | Omit<UserType, "id" | "name" | "surname">
 ) => {
   const url = new URL(`${baseURL}/${endpoint}`);
 
@@ -33,7 +33,8 @@ export const apiFetch = async (
   });
 
   if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`);
+    const errorData = await res.json();
+    throw new Error(errorData.message);
   }
 
   return res.json();

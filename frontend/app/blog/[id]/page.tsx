@@ -4,7 +4,7 @@ import ClientPost from "@/components/pages/ClientPost";
 
 export default async function BlogPostPage(props: PageProps<'/blog/[id]'>) {
 	const { id } = await props.params;
-	const post = await apiFetch("GET", `posts/${id}`);
+	const post = await apiFetch("GET", `posts/get/${id}`);
 
 	if (!post) {
 		return (

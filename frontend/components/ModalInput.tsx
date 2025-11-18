@@ -12,10 +12,11 @@ const ModalInput = ({ handleChange, fieldName, inputName, value }: Props) => {
     <label>
       {fieldName}
       <input
+        type={inputName === "postImage" || inputName === "authorImage" ? "url" : "text"}
         name={inputName}
         value={value}
         onChange={handleChange}
-        required={inputName !== "post_pic" && inputName !== "author_pic"}
+        required={inputName !== "postImage" && inputName !== "authorImage"}
         className={"border-2 border-gray-200 rounded-lg py-1.5 px-4 focus:outline-none focus:border-blue-700 w-full"} />
     </label>
   );

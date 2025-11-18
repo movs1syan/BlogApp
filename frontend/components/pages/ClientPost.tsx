@@ -20,7 +20,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
 
   const onDelete = async () => {
     setLoading(true);
-    await apiFetch("DELETE", `posts/${post.id}`);
+    await apiFetch("DELETE", `posts/delete/${post.id}`);
     setLoading(false);
 
     router.back();
@@ -35,7 +35,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
     e.preventDefault();
 
     setLoading(true);
-    const updatedPost: PostType = await apiFetch("PUT", `posts/${post.id}`, undefined, editPost);
+    const updatedPost: PostType = await apiFetch("PUT", `posts/update/${post.id}`, undefined, editPost);
     setCurrentPost(updatedPost);
 
     setLoading(false);

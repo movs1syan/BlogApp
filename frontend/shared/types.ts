@@ -11,6 +11,14 @@ export interface PostType {
 	createdAt: string;
 }
 
+export interface UserType {
+	id: number;
+	name: string;
+	surname: string;
+	email: string;
+	password: string;
+}
+
 export interface NotificationType {
 	id: string;
 	type: "success" | "error" | "info" | "warning";
