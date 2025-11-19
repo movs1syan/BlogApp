@@ -13,6 +13,7 @@ const Register = () => {
     surname: "",
     email: "",
     password: "",
+    avatar: ""
   });
   const router = useRouter();
   const { notify } = useNotification();
@@ -25,7 +26,8 @@ const Register = () => {
     e.preventDefault();
     
     try {
-      await apiFetch("POST", "users/register", undefined, newUser);
+      const data = await apiFetch("POST", "users/register", undefined, newUser);
+      localStorage.setItem("token", data.token);
 
       router.push("/");
     } catch (error) {
@@ -45,6 +47,7 @@ const Register = () => {
         <input name={"surname"} onChange={handleChange} className={"border"} />
         <input name={"email"} type={"email"} onChange={handleChange} className={"border"} />
         <input name={"password"} type={"password"} onChange={handleChange} className={"border"} />
+        <input name={"avatar"} type={"url"} onChange={handleChange} className={"border"} />
 
         <button type="submit">Register</button>
       </form>

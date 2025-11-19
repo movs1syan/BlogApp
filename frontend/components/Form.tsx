@@ -6,7 +6,7 @@ import type {PostType} from "@/shared/types";
 interface Props {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  post?: Omit<PostType, "id">;
+  post?: Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">;
   setIsModalOpen: (isOpen: boolean) => void;
   event: "Edit" | "Create";
   loading?: boolean;
@@ -19,11 +19,7 @@ const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading
       <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} value={post?.subtitle} />
       <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} value={post?.description} />
       <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} value={post?.category} />
-      <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"postImage"} value={post?.postImage} />
-      <ModalInput handleChange={handleChange} fieldName={"Author name"} inputName={"authorName"} value={post?.authorName} />
-      <ModalInput handleChange={handleChange} fieldName={"Author surname"} inputName={"authorSurname"} value={post?.authorSurname} />
-      <ModalInput handleChange={handleChange} fieldName={"Author image URL"} inputName={"authorImage"} value={post?.authorImage} />
-
+      <ModalInput handleChange={handleChange} fieldName={"Post image URL"} inputName={"image"} value={post?.image} />
       <div className="flex gap-5 justify-end mt-3">
         <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
         <Button htmlType="submit" type="primary" loading={loading}>{event}</Button>

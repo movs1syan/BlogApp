@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/User.ts";
+import { User } from "../models/index.ts";
 import generateToken from "../utils/generateToken.ts";
 import {createUserService, getUserService} from "../services/userService.ts";
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { name, surname, email, password } = req.body;
+  const { name, surname, email, password, avatar } = req.body;
 
   try {
     if (!name || !surname || !email || !password) {
@@ -17,7 +17,7 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = await createUserService(name, surname, email, password);
+    const newUser = await createUserService(name, surname, email, password, avatar);
 
     if (!newUser) {
       return res.status(400).json({ message: "Invalid user data" });
@@ -28,6 +28,7 @@ export const registerUser = async (req: Request, res: Response) => {
       name: newUser.name,
       surname: newUser.surname,
       email: newUser.email,
+      avatar: newUser.avatar,
       token: generateToken(newUser.id)
     });
   } catch (error) {
@@ -40,12 +41,12 @@ export const authUser = async (req: Request, res: Response) => {
 
   try {
     if (!email || !password) {
-      res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     const user = await getUserService(email);
     if (!user) {
-      res.status(400).json({ message: "User does not exist" });
+      return res.status(400).json({ message: "User does not exist" });
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -65,10 +66,14 @@ export const authUser = async (req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(400).json({ message: "User does not logged in" });
+  }
+
   const user = await User.findByPk(req.user.id);
 
   if (!user) {
-    res.status(400).json({ message: "User does not exist" });
+    return res.status(400).json({ message: "User does not exist" });
   }
 
   return res.status(200).json({

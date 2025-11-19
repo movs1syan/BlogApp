@@ -1,5 +1,4 @@
-import { DataTypes, Model } from "sequelize"
-import type { Optional } from 'sequelize';
+import { DataTypes, Model, type Optional } from "sequelize"
 import { sequelize } from "../db.ts";
 
 interface UserAttributes {
@@ -7,6 +6,7 @@ interface UserAttributes {
   name: string;
   surname: string;
   email: string;
+  avatar: string;
   password: string;
 }
 
@@ -18,5 +18,6 @@ export const User = sequelize.define<UserInstance>("User", {
   name: { type: DataTypes.STRING, allowNull: false },
   surname: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
+  avatar: { type: DataTypes.STRING },
   password: { type: DataTypes.STRING, allowNull: false },
 });

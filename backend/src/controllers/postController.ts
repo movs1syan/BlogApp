@@ -41,7 +41,9 @@ export const createPost = async (req: Request, res: Response) => {
   const data = req.body;
 
   try {
-    const post = await createPostService(data);
+    if (!req.user) return res.status(401).json({ message: "Not authorized" });
+
+    const post = await createPostService({...data, userId: req.user.id });
 
     return res.status(201).json(post);
   } catch (err) {

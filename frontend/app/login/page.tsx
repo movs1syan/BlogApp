@@ -3,11 +3,10 @@
 import React, {useState} from 'react';
 import { useRouter } from "next/navigation";
 import {apiFetch} from "@/lib/apiFetch";
-import type {UserType} from "@/shared/types";
 import {useNotification} from "@/hooks/useNotification";
 
 const Login = () => {
-  const [user, setUser] = useState<Omit<UserType, "id" | "name" | "surname">>({
+  const [user, setUser] = useState<{ email: string, password: string }>({
     email: "",
     password: "",
   });
@@ -22,14 +21,15 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      await apiFetch("POST", "users/login", undefined, user);
+      const data = await apiFetch("POST", "users/login", undefined, user);
+      localStorage.setItem("token", data.token);
 
       router.push("/");
-    } catch {
+    } catch (error) {
       notify({
         type: "error",
         message: "Error!",
-        description: `Invalid credentials`,
+        description: `${error}`,
       });
     }
   };

@@ -3,7 +3,7 @@
 import React, {createContext, useState} from 'react';
 import {createPortal} from "react-dom";
 import { v4 as uuid } from "uuid";
-import type { NotificationType} from "@/shared/types";
+import type { NotificationType } from "@/shared/types";
 
 interface NotificationContextType {
   notify: (notification: Omit<NotificationType, "id">) => void;
@@ -20,7 +20,7 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
 
     setTimeout(() => {
       setNotifications((prev) => prev.filter((notification) => notification.id !== id));
-    }, 3000);
+    }, 5000);
   };
 
   const remove = (id: string) => {

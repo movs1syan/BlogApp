@@ -1,8 +1,16 @@
 import { Op } from "sequelize";
-import { Post } from "../models/Post.ts";
+import { Post, User } from "../models/index.ts";
 
 export const getSinglePostService = async (id: string) => {
-  return Post.findByPk(id);
+  return Post.findByPk(id, {
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["id", "name", "surname", "email", "avatar"],
+      },
+    ]
+  });
 };
 
 export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy }: { page: number; limit: number; search: string; sortBy: string; orderBy: string }) => {
@@ -16,23 +24,28 @@ export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy 
       ]
     } : {};
 
-  const posts = await Post.findAll({
+  const { count: totalPostsQuantity, rows: posts } = await Post.findAndCountAll({
     where: searchFilter,
     limit,
     offset,
-    order: [[sortBy, orderBy]]
+    order: [[sortBy, orderBy]],
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["id", "name", "surname", "email", "avatar"],
+      },
+    ]
   });
 
-  const totalPostsQuantity = await Post.count({ where: searchFilter });
-
-  return { posts, totalPostsQuantity };
+  return { totalPostsQuantity, posts };
 };
 
-export const createPostService = async (data: Record<string, string | number>) => {
+export const createPostService = async (data) => {
   return Post.create(data);
 };
 
-export const updatePostService = async (id: string, data: Record<string, string | number>) => {
+export const updatePostService = async (id, data) => {
   const post = await Post.findByPk(id);
   if (!post) {
     throw new Error(`Post with the ID of ${id} was not found`);

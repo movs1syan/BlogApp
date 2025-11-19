@@ -4,11 +4,17 @@ export interface PostType {
 	subtitle: string;
 	category: string;
 	description: string;
-	authorName: string;
-	authorSurname: string;
-	authorImage: string;
-	postImage: string;
+	image: string;
 	createdAt: string;
+	updatedAt: string;
+	author: {
+		id: number;
+		name: string;
+		surname: string;
+		email: string;
+		avatar: string;
+	}
+	userId: number;
 }
 
 export interface UserType {
@@ -16,6 +22,7 @@ export interface UserType {
 	name: string;
 	surname: string;
 	email: string;
+	avatar: string;
 	password: string;
 }
 

@@ -16,15 +16,12 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [newPost, setNewPost] = useState<Omit<PostType, "id" | "createdAt">>({
+  const [newPost, setNewPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>({
     title: "",
     subtitle: "",
     description: "",
     category: "",
-    postImage: "",
-    authorName: "",
-    authorSurname: "",
-    authorImage: "",
+    image: "",
   });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -65,7 +62,18 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     e.preventDefault();
 
     setLoading(true);
-    await apiFetch("POST", "posts/create", undefined, newPost);
+    try {
+      await apiFetch("POST", "posts/create", undefined, newPost);
+    } catch (error) {
+      notify({
+        type: "error",
+        message: "Error!",
+        description: `${error}`
+      });
+
+      setLoading(false);
+      return;
+    }
     setLoading(false);
 
     setIsOpen(false);

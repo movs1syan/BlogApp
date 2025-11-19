@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
-import { User } from "../models/User.ts";
+import { User } from "../models/index.ts";
 
 export const getUserService = async (email: string) => {
   return User.findOne({ where: { email } });
 };
 
-export const createUserService = async (name: string, surname: string, email: string, password: string) => {
+export const createUserService = async (name: string, surname: string, email: string, password: string, avatar: string) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -14,5 +14,6 @@ export const createUserService = async (name: string, surname: string, email: st
     surname,
     email,
     password: hashedPassword,
+    avatar
   });
 };

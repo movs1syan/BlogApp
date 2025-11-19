@@ -9,18 +9,37 @@ import Modal from "@/components/ui/Modal";
 import { getDate } from "@/helpers/getDate";
 import type { PostType } from "@/shared/types";
 import Form from "@/components/Form";
+import {useNotification} from "@/hooks/useNotification";
 
 const ClientPost = ({ post }: { post: PostType }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  const [currentPost, setCurrentPost] = useState<PostType>(post);
-  const [editPost, setEditPost] = useState<PostType>(post);
+  const [currentPost, setCurrentPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>(() => {
+    const { id, createdAt, updatedAt, userId, author, ...rest } = post;
+    return rest;
+  });
+  const [editPost, setEditPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>(() => {
+    const { id, createdAt, updatedAt, userId, author, ...rest } = post;
+    return rest;
+  });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { notify } = useNotification();
 
   const onDelete = async () => {
     setLoading(true);
-    await apiFetch("DELETE", `posts/delete/${post.id}`);
+    try {
+      await apiFetch("DELETE", `posts/delete/${post.id}`);
+    } catch (error) {
+      notify({
+        type: "error",
+        message: "Error!",
+        description: `${error}`,
+      });
+
+      setLoading(false);
+      return;
+    }
     setLoading(false);
 
     router.back();
@@ -35,8 +54,19 @@ const ClientPost = ({ post }: { post: PostType }) => {
     e.preventDefault();
 
     setLoading(true);
-    const updatedPost: PostType = await apiFetch("PUT", `posts/update/${post.id}`, undefined, editPost);
-    setCurrentPost(updatedPost);
+    try {
+      const updatedPost: PostType = await apiFetch("PUT", `posts/update/${post.id}`, undefined, editPost);
+      setCurrentPost(updatedPost);
+    } catch (error) {
+      notify({
+        type: "error",
+        message: "Error!",
+        description: `${error}`,
+      });
+
+      setLoading(false);
+      return;
+    }
 
     setLoading(false);
     setIsEditOpen(false);
@@ -48,8 +78,8 @@ const ClientPost = ({ post }: { post: PostType }) => {
     <>
       <article className="py-6 flex flex-col justify-between gap-7 md:max-w-200">
         <div className="flex flex-col justify-center gap-4">
-          {post.postImage && (
-            <Image src={currentPost.postImage} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
+          {currentPost.image && (
+            <Image src={currentPost.image} alt="Featured Image" width={400} height={400} className="md:h-110 w-full" />
           )}
 
           <span className="text-semibold text-blue-700 text-lg">{currentPost.category}</span>
@@ -62,13 +92,13 @@ const ClientPost = ({ post }: { post: PostType }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {post.authorImage && (
-            <Image src={currentPost.authorImage} alt={currentPost.authorName} width={40} height={40} className="size-10 rounded-full object-cover"/>
+          {post.author.avatar && (
+            <Image src={post.author.avatar} alt={post.author.name} width={40} height={40} className="size-10 rounded-full object-cover"/>
           )}
 
           <div className="flex flex-col">
-            <p>{currentPost.authorName} {currentPost.authorSurname}</p>
-            <p className="text-gray-600">{getDate(currentPost.createdAt)}</p>
+            <p>{post.author.name} {post.author.surname}</p>
+            <p className="text-gray-600">{getDate(post.createdAt)}</p>
           </div>
         </div>
 
