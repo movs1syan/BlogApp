@@ -1,4 +1,5 @@
 import React from "react";
+import { StoreProvider } from "@/app/StoreProvider";
 import NotificationProvider from "@/providers/NotificationProvider";
 import Navbar from "@/components/layouts/Navbar";
 import type { Metadata } from "next";
@@ -28,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <NotificationProvider>
-          <Navbar />
-          <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
-            {children}
-          </div>
-        </NotificationProvider>
+        <StoreProvider>
+          <NotificationProvider>
+            <Navbar />
+            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
+              {children}
+            </div>
+          </NotificationProvider>
+        </StoreProvider>
       </body>
     </html>
   );

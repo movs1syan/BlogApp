@@ -1,7 +1,8 @@
 import { Op } from "sequelize";
 import { Post, User } from "../models/index.ts";
+import type { PostCreationType } from "../types";
 
-export const getSinglePostService = async (id: string) => {
+export const getSinglePostService = async (id: number) => {
   return Post.findByPk(id, {
     include: [
       {
@@ -41,23 +42,41 @@ export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy 
   return { totalPostsQuantity, posts };
 };
 
-export const createPostService = async (data) => {
+export const createPostService = async (data: PostCreationType) => {
   return Post.create(data);
 };
 
-export const updatePostService = async (id, data) => {
+export const updatePostService = async (id: number, data: PostCreationType, userId: number) => {
   const post = await Post.findByPk(id);
   if (!post) {
     throw new Error(`Post with the ID of ${id} was not found`);
   }
 
+  const user = await User.findByPk(post.userId);
+  if (!user) {
+    throw new Error(`User with ID of ${id} was not found`);
+  }
+
+  if (post.userId !== userId) {
+    throw new Error(`Only "${user.name} ${user.surname}" can make changes in this post`);
+  }
+
   return post.update(data);
 };
 
-export const deletePostService = async (id: string) => {
+export const deletePostService = async (id: number, userId: number) => {
   const post = await Post.findByPk(id);
   if (!post) {
     throw new Error(`Post with the ID of ${id} was not found`);
+  }
+
+  const user = await User.findByPk(post.userId);
+  if (!user) {
+    throw new Error(`User with ID of ${id} was not found`);
+  }
+
+  if (post.userId !== userId ) {
+    throw new Error(`Only "${user.name} ${user.surname}" can delete this post`)
   }
 
   return post.destroy();

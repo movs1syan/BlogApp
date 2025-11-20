@@ -1,30 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Activity, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { apiFetch } from "@/lib/apiFetch";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import { getDate } from "@/helpers/getDate";
-import type { PostType } from "@/shared/types";
+import type {PostType, UserType} from "@/shared/types";
 import Form from "@/components/Form";
-import {useNotification} from "@/hooks/useNotification";
+import { useNotification } from "@/hooks/useNotification";
+import { useAppSelector } from "@/lib/redux/hooks";
+import type { RootState } from "@/lib/redux/store";
 
 const ClientPost = ({ post }: { post: PostType }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [currentPost, setCurrentPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>(() => {
-    const { id, createdAt, updatedAt, userId, author, ...rest } = post;
-    return rest;
+    const { title, subtitle, description, category, image } = post;
+    return { title, subtitle, description, category, image };
   });
   const [editPost, setEditPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>(() => {
-    const { id, createdAt, updatedAt, userId, author, ...rest } = post;
-    return rest;
+    const { title, subtitle, description, category, image } = post;
+    return { title, subtitle, description, category, image };
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { notify } = useNotification();
+  const user: { data: UserType | null, loading: boolean } = useAppSelector((state: RootState) => state.user);
 
   const onDelete = async () => {
     setLoading(true);
@@ -102,10 +105,12 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
         </div>
 
-        <div className={"flex justify-end gap-5"}>
-          <Button icon={"Edit"} onClick={() => setIsEditOpen(true)}>Edit</Button>
-          <Button color={"red"} icon={"Trash2"} onClick={() => setIsDeleteOpen(true)}>Delete</Button>
-        </div>
+        <Activity mode={user.data !== null && user.data.id === post.userId ? "visible" : "hidden"}>
+          <div className={"flex justify-end gap-5"}>
+            <Button icon={"Edit"} onClick={() => setIsEditOpen(true)}>Edit</Button>
+            <Button color={"red"} icon={"Trash2"} onClick={() => setIsDeleteOpen(true)}>Delete</Button>
+          </div>
+        </Activity>
 
         <div>
           <Button type={"text"} icon={"CornerDownLeft"} onClick={() => router.back()}>

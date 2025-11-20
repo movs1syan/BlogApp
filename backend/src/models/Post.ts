@@ -8,6 +8,7 @@ interface PostAttributes {
   description: string;
   category: string;
   image: string;
+  userId: number;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, "id"> {}

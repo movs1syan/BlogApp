@@ -4,7 +4,7 @@ import React from 'react';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
-import type {UserType} from "@/shared/types";
+import type { UserType } from "@/shared/types";
 import {useNotification} from "@/hooks/useNotification";
 
 const Register = () => {

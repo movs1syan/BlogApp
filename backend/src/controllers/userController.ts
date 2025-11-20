@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/index.ts";
 import generateToken from "../utils/generateToken.ts";
 import {createUserService, getUserService} from "../services/userService.ts";
 
@@ -66,20 +65,7 @@ export const authUser = async (req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
-  if (!req.user) {
-    return res.status(400).json({ message: "User does not logged in" });
-  }
+  const { id, name, surname, email, avatar } = req.user;
 
-  const user = await User.findByPk(req.user.id);
-
-  if (!user) {
-    return res.status(400).json({ message: "User does not exist" });
-  }
-
-  return res.status(200).json({
-    id: user.id,
-    name: user.name,
-    surname: user.surname,
-    email: user.email
-  })
+  return res.status(200).json({id, name, surname, email, avatar});
 };

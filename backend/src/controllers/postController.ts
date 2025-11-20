@@ -6,13 +6,14 @@ import {
   updatePostService,
   deletePostService
 } from "../services/postService.ts";
+import type { PostCreationType } from "../types";
 
 export const getPosts = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
     if (id) {
-      const post = await getSinglePostService(id);
+      const post = await getSinglePostService(parseInt(id));
       if (!post) {
         return res.status(404).json({ message: `Post with the ID of ${id} was not found` });
       }
@@ -38,10 +39,10 @@ export const getPosts = async (req: Request, res: Response) => {
 };
 
 export const createPost = async (req: Request, res: Response) => {
-  const data = req.body;
+  const data: PostCreationType = req.body;
 
   try {
-    if (!req.user) return res.status(401).json({ message: "Not authorized" });
+    if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
 
     const post = await createPostService({...data, userId: req.user.id });
 
@@ -53,10 +54,13 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const updatePost = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
+  const data: PostCreationType = req.body;
+
+  if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
+  const { id: userId } = req.user;
 
   try {
-    const updatedPost = await updatePostService(id, data);
+    const updatedPost = await updatePostService(parseInt(id), data, userId);
 
     if (updatedPost) {
       return res.status(200).json(updatedPost);
@@ -69,8 +73,11 @@ export const updatePost = async (req: Request, res: Response) => {
 export const deletePost = async (req: Request, res: Response) => {
   const { id } = req.params;
 
+  if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
+  const { id: userId } = req.user;
+
   try {
-    await deletePostService(id);
+    await deletePostService(parseInt(id), userId);
 
     return res.json({ message: "Post deleted successfully" });
   } catch (err) {
