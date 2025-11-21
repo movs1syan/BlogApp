@@ -52,13 +52,8 @@ export const updatePostService = async (id: number, data: PostCreationType, user
     throw new Error(`Post with the ID of ${id} was not found`);
   }
 
-  const user = await User.findByPk(post.userId);
-  if (!user) {
-    throw new Error(`User with ID of ${id} was not found`);
-  }
-
   if (post.userId !== userId) {
-    throw new Error(`Only "${user.name} ${user.surname}" can make changes in this post`);
+    throw new Error(`Only owner of this post can make changes in this post`);
   }
 
   return post.update(data);
@@ -70,13 +65,8 @@ export const deletePostService = async (id: number, userId: number) => {
     throw new Error(`Post with the ID of ${id} was not found`);
   }
 
-  const user = await User.findByPk(post.userId);
-  if (!user) {
-    throw new Error(`User with ID of ${id} was not found`);
-  }
-
   if (post.userId !== userId ) {
-    throw new Error(`Only "${user.name} ${user.surname}" can delete this post`)
+    throw new Error(`Only owner of this post can delete this post`)
   }
 
   return post.destroy();

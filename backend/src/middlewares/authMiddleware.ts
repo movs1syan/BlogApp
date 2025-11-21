@@ -6,7 +6,7 @@ interface JwtPayloadWithId extends jwt.JwtPayload {
   id: number;
 }
 
-const protect = async (req: Request, res: Response, next: NextFunction) => {
+const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     let token;
 
@@ -29,4 +29,4 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default protect;
+export default authMiddleware;

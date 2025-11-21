@@ -4,7 +4,7 @@ interface Props {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   fieldName: string;
   inputName: string;
-  value: string | undefined;
+  value?: string | undefined;
 }
 
 const ModalInput = ({ handleChange, fieldName, inputName, value }: Props) => {
@@ -12,12 +12,11 @@ const ModalInput = ({ handleChange, fieldName, inputName, value }: Props) => {
     <label>
       {fieldName}
       <input
-        type={inputName === "image" ? "url" : "text"}
+        type={inputName === "image" ? "url" : inputName === "password" ? "password" : "text"}
         name={inputName}
         value={value}
         onChange={handleChange}
-        required={inputName !== "image"}
-        className={"border-2 border-gray-200 rounded-lg py-1.5 px-4 focus:outline-none focus:border-blue-700 w-full"} />
+        className={"border-2 border-gray-200 rounded-lg py-1.5 px-4 mt-2 focus:outline-none focus:border-blue-700 w-full"} />
     </label>
   );
 };

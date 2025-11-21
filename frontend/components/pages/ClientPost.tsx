@@ -59,11 +59,11 @@ const ClientPost = ({ post }: { post: PostType }) => {
     try {
       const updatedPost: PostType = await apiFetch("PUT", `posts/update/${post.id}`, undefined, editPost);
       setCurrentPost(updatedPost);
-    } catch (error) {
+    } catch (error: any) {
       notify({
-        type: "error",
-        message: "Error!",
-        description: `${error}`,
+        type: "info",
+        message: "Info!",
+        description: `${error.message}`,
       });
 
       setLoading(false);

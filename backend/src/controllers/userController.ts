@@ -17,7 +17,6 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     const newUser = await createUserService(name, surname, email, password, avatar);
-
     if (!newUser) {
       return res.status(400).json({ message: "Invalid user data" });
     }

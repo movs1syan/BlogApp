@@ -42,8 +42,6 @@ export const createPost = async (req: Request, res: Response) => {
   const data: PostCreationType = req.body;
 
   try {
-    if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
-
     const post = await createPostService({...data, userId: req.user.id });
 
     return res.status(201).json(post);
@@ -55,8 +53,6 @@ export const createPost = async (req: Request, res: Response) => {
 export const updatePost = async (req: Request, res: Response) => {
   const { id } = req.params;
   const data: PostCreationType = req.body;
-
-  if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
   const { id: userId } = req.user;
 
   try {
@@ -72,8 +68,6 @@ export const updatePost = async (req: Request, res: Response) => {
 
 export const deletePost = async (req: Request, res: Response) => {
   const { id } = req.params;
-
-  if (!req.user) return res.status(401).json({ message: "Please get authorized to continue" });
   const { id: userId } = req.user;
 
   try {

@@ -14,6 +14,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
+
   return (
     <nav className="sticky top-0 shadow-md w-full z-10 bg-white">
       <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
@@ -30,9 +31,7 @@ const Navbar = () => {
                   <span>{user.email}</span>
                 </div>
               </div>
-              <Link href={"/login"}>
-                <Button icon={"LogOut"} type={"link"} onClick={handleLogout}></Button>
-              </Link>
+              <Button icon={"LogOut"} type={"link"} onClick={handleLogout}></Button>
             </div>
           ) : (
             <>

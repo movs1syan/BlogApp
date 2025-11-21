@@ -11,6 +11,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { SearchIcon } from "lucide-react";
 import type { PostType } from "@/shared/types";
+import {useUser} from "@/hooks/useUser";
 
 const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], page: number, totalPostsQuantity: number }) => {
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
@@ -27,6 +28,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
+  const { user } = useUser();
 
   useEffect(() => {
     if (posts.length === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
@@ -64,18 +66,13 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     setLoading(true);
     try {
       await apiFetch("POST", "posts/create", undefined, newPost);
-    } catch (error) {
-      notify({
-        type: "error",
-        message: "Error!",
-        description: `${error}`
-      });
+    } catch (error: any) {
+      console.log(error.message);
 
       setLoading(false);
       return;
     }
     setLoading(false);
-
     setIsOpen(false);
 
     notify({
@@ -107,11 +104,13 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
         <SearchIcon size={20} className={"absolute top-1/2 left-4 -translate-y-1/2 text-gray-400"} />
       </div>
 
-      <div className={"my-10 flex justify-end"}>
-        <Button icon={"PlusIcon"} onClick={() => setIsOpen(true)}>Create new post</Button>
-      </div>
+      <Activity mode={user ? "visible" : "hidden"}>
+        <div className={"mt-10 flex justify-end"}>
+          <Button icon={"PlusIcon"} onClick={() => setIsOpen(true)}>Create new post</Button>
+        </div>
+      </Activity>
 
-      <h1 className="text-2xl font-bold mb-4">Latest News</h1>
+      <h1 className="text-2xl font-bold mb-6 mt-15">Latest News</h1>
 
       {/* Filtered posts */}
       {filteredPosts.length > 0 ? (
