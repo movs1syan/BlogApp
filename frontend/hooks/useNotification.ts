@@ -8,5 +8,6 @@ export const useNotification = () => {
   if (!context) {
     throw new Error("useNotification must be used within NotificationProvider")
   }
+
   return context;
 };

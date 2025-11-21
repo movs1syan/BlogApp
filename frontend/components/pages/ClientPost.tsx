@@ -10,8 +10,7 @@ import { getDate } from "@/helpers/getDate";
 import type {PostType, UserType} from "@/shared/types";
 import Form from "@/components/Form";
 import { useNotification } from "@/hooks/useNotification";
-import { useAppSelector } from "@/lib/redux/hooks";
-import type { RootState } from "@/lib/redux/store";
+import {useUser} from "@/hooks/useUser";
 
 const ClientPost = ({ post }: { post: PostType }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
@@ -27,7 +26,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { notify } = useNotification();
-  const user: { data: UserType | null, loading: boolean } = useAppSelector((state: RootState) => state.user);
+  const { user } = useUser();
 
   const onDelete = async () => {
     setLoading(true);
@@ -105,7 +104,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
         </div>
 
-        <Activity mode={user.data !== null && user.data.id === post.userId ? "visible" : "hidden"}>
+        <Activity mode={user !== null && user.id === post.userId ? "visible" : "hidden"}>
           <div className={"flex justify-end gap-5"}>
             <Button icon={"Edit"} onClick={() => setIsEditOpen(true)}>Edit</Button>
             <Button color={"red"} icon={"Trash2"} onClick={() => setIsDeleteOpen(true)}>Delete</Button>

@@ -54,6 +54,7 @@ export const authUser = async (req: Request, res: Response) => {
         name: user.name,
         surname: user.surname,
         email: user.email,
+        avatar: user.avatar,
         token: generateToken(user.id)
       })
     } else {

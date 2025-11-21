@@ -4,7 +4,7 @@ import React, {createContext, useState} from 'react';
 import {createPortal} from "react-dom";
 import { v4 as uuid } from "uuid";
 import type { NotificationType } from "@/shared/types";
-import {CheckLine, Info, OctagonAlert, Ban, AlertOctagon} from "lucide-react"
+import { CheckLine, Info, AlertOctagon, Ban } from "lucide-react"
 
 interface NotificationContextType {
   notify: (notification: Omit<NotificationType, "id">) => void;

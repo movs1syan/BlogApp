@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
 import type { UserType } from "@/shared/types";
 import {useNotification} from "@/hooks/useNotification";
+import { useUser } from '@/hooks/useUser';
 
 const Register = () => {
   const [newUser, setNewUser] = useState<Omit<UserType, "id">>({
@@ -17,6 +18,7 @@ const Register = () => {
   });
   const router = useRouter();
   const { notify } = useNotification();
+  const { setUser } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewUser(prev => ({ ...prev!, [e.target.name]: e.target.value }));
@@ -28,6 +30,8 @@ const Register = () => {
     try {
       const data = await apiFetch("POST", "users/register", undefined, newUser);
       localStorage.setItem("token", data.token);
+      const { id, name, surname, email, avatar } = data;
+      setUser({ id, name, surname, email, avatar });
 
       router.push("/");
     } catch (error) {
