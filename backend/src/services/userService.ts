@@ -5,7 +5,7 @@ export const getUserService = async (email: string) => {
   return User.findOne({ where: { email } });
 };
 
-export const createUserService = async (name: string, surname: string, email: string, password: string, avatar: string) => {
+export const createUserService = async (name: string, surname: string, email: string, password: string, avatarPath: string | null) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -14,6 +14,6 @@ export const createUserService = async (name: string, surname: string, email: st
     surname,
     email,
     password: hashedPassword,
-    avatar
+    avatar: avatarPath,
   });
 };

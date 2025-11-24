@@ -1,12 +1,10 @@
-import type {PostType} from "@/shared/types";
-
 const baseURL = "http://localhost:8000/api";
 
 export const apiFetch = async (
   method: "GET" | "POST" | "PUT" | "DELETE",
   endpoint: string,
   params?: Record<string, number | string | string[]>,
-  data?: Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId"> | { email: string; password: string }
+  data?: any
 ) => {
   const url = new URL(`${baseURL}/${endpoint}`);
 
@@ -18,27 +16,32 @@ export const apiFetch = async (
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+  const isFormData = data instanceof FormData;
+
   const options: RequestInit = {
     method,
     headers: {
-      "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
+
+      // ❗ ONLY set JSON header if NOT FormData
+      ...(!isFormData && { "Content-Type": "application/json" }),
     },
+    body: isFormData ? data : JSON.stringify(data),
+    cache: "no-store",
   };
 
-  if (method === "POST" || method === "PUT") {
-    options.body = JSON.stringify(data);
+  const res = await fetch(url, options);
+
+  // If response is NOT JSON (HTML error), throw readable message
+  const text = await res.text();
+  try {
+    const json = JSON.parse(text);
+
+    if (!res.ok) throw new Error(json.message);
+    return json;
+  } catch {
+    console.error("Server returned non-JSON:");
+    console.error(text);
+    throw new Error("Server returned HTML instead of JSON. (FormData error?)");
   }
-
-  const res = await fetch(url, {
-    ...options,
-    cache: "no-store"
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message);
-  }
-
-  return res.json();
 };

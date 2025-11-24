@@ -4,7 +4,7 @@ export interface PostType {
 	subtitle: string;
 	category: string;
 	description: string;
-	image: string;
+	image: string | null;
 	createdAt: string;
 	updatedAt: string;
 	author: {
@@ -12,9 +12,34 @@ export interface PostType {
 		name: string;
 		surname: string;
 		email: string;
-		avatar: string;
+		avatar: string | null;
 	}
 	userId: number;
+}
+
+export interface UpdatePostType {
+	title: string;
+	subtitle: string;
+	category: string;
+	description: string;
+	image: File | string | null;
+}
+
+export interface CreatePostType {
+	title: string;
+	subtitle: string;
+	category: string;
+	description: string;
+	image: File | null;
+}
+
+export interface RegisterFormType {
+	name: string;
+	surname: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+	avatar: File | null;
 }
 
 export interface UserType {
@@ -22,8 +47,9 @@ export interface UserType {
 	name: string;
 	surname: string;
 	email: string;
-	avatar: string;
 	password: string;
+	confirmPassword: string;
+	avatar: string | null;
 }
 
 export interface NotificationType {

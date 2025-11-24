@@ -1,9 +1,29 @@
 import Joi from "joi";
 
 export const createUserSchema = Joi.object({
-  name: Joi.string().min(3).required(),
-  surname: Joi.string().min(3).required(),
-  email: Joi.string().email().required(),
-  avatar: Joi.string().uri().allow(""),
-  password: Joi.string().min(8).required()
+  name: Joi.string().min(3).required().messages({
+    'string.min': 'Name must be at least 3 characters long.',
+    'string.empty': 'Name is a required field.',
+    'any.required': 'Name is a required field.',
+  }),
+  surname: Joi.string().min(3).required().messages({
+    'string.min': 'Surname must be at least 3 characters long.',
+    'string.empty': 'Surname is a required field.',
+    'any.required': 'Surname is a required field.',
+  }),
+  email: Joi.string().email().required().messages({
+    'string.email': 'Please provide a valid email address.',
+    'string.empty': 'Email is a required field.',
+    'any.required': 'Email is a required field.',
+  }),
+  password: Joi.string().min(8).required().messages({
+    'string.min': 'Password must be at least 8 characters long.',
+    'string.empty': 'Password is a required field.',
+    'any.required': 'Password is a required field.',
+  }),
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    'string.empty': 'Confirm password is a required field.',
+    'any.required': 'Confirm password is a required field.',
+    'any.only': "Confirm password does not match the password.",
+  }),
 });

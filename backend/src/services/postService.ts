@@ -43,10 +43,19 @@ export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy 
 };
 
 export const createPostService = async (data: PostCreationType) => {
-  return Post.create(data);
+  const { title, subtitle, description, category, imagePath, userId } = data;
+
+  return Post.create({
+    title,
+    subtitle,
+    description,
+    category,
+    image: imagePath,
+    userId,
+  });
 };
 
-export const updatePostService = async (id: number, data: PostCreationType, userId: number) => {
+export const updatePostService = async (id: number, data: PostCreationType, imagePath, userId: number) => {
   const post = await Post.findByPk(id);
   if (!post) {
     throw new Error(`Post with the ID of ${id} was not found`);
@@ -56,7 +65,10 @@ export const updatePostService = async (id: number, data: PostCreationType, user
     throw new Error(`Only owner of this post can make changes in this post`);
   }
 
-  return post.update(data);
+  return post.update({
+    ...data,
+    image: imagePath,
+  });
 };
 
 export const deletePostService = async (id: number, userId: number) => {

@@ -40,9 +40,10 @@ export const getPosts = async (req: Request, res: Response) => {
 
 export const createPost = async (req: Request, res: Response) => {
   const data: PostCreationType = req.body;
+  const imagePath = req.file ? `/uploads/images/${req.file.filename}` : null;
 
   try {
-    const post = await createPostService({...data, userId: req.user.id });
+    const post = await createPostService({...data, imagePath, userId: req.user.id });
 
     return res.status(201).json(post);
   } catch (err) {
@@ -54,9 +55,10 @@ export const updatePost = async (req: Request, res: Response) => {
   const { id } = req.params;
   const data: PostCreationType = req.body;
   const { id: userId } = req.user;
+  const imagePath = req.file ? `/uploads/images/${req.file.filename}` : null;
 
   try {
-    const updatedPost = await updatePostService(parseInt(id), data, userId);
+    const updatedPost = await updatePostService(parseInt(id), data, imagePath, userId);
 
     if (updatedPost) {
       return res.status(200).json(updatedPost);

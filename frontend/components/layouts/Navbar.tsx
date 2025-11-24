@@ -20,6 +20,8 @@ const Navbar = () => {
     setUser(null);
   };
 
+  const fullAvatarUrl = `http://localhost:8000${user?.avatar}`;
+
   return (
     <>
       <nav className="sticky top-0 shadow-md w-full z-10 bg-white">
@@ -30,7 +32,7 @@ const Navbar = () => {
               <div className="flex items-center">
                 <div className={"flex items-center gap-3 cursor-pointer"} onClick={() => setOpenDrawer(true)}>
                   {user.avatar && (
-                    <Image src={user.avatar} alt={user.avatar} width={40} height={40} className="size-10 rounded-full object-cover"/>
+                    <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={40} height={40} unoptimized className="size-10 rounded-full object-cover"/>
                   )}
                   <div className={"flex flex-col justify-between text-gray-500 text-sm"}>
                     <span>{user.name} {user.surname}</span>
@@ -58,7 +60,7 @@ const Navbar = () => {
             <main>
               <div className={"flex flex-col justify-center items-center gap-3"}>
                 {user.avatar && (
-                  <Image src={user.avatar} alt={user.avatar} width={40} height={40} className="size-10 rounded-full object-cover"/>
+                  <Image src={fullAvatarUrl} alt={fullAvatarUrl} unoptimized width={40} height={40} className="size-10 rounded-full object-cover"/>
                 )}
                 <div className={"flex flex-col justify-between"}>
                   <span className={"text-xl"}>{user.name} {user.surname}</span>

@@ -10,19 +10,19 @@ import Form from "@/components/Form";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { SearchIcon } from "lucide-react";
-import type { PostType } from "@/shared/types";
+import type {CreatePostType, PostType} from "@/shared/types";
 import {useUser} from "@/hooks/useUser";
 
 const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], page: number, totalPostsQuantity: number }) => {
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [newPost, setNewPost] = useState<Omit<PostType, "id" | "createdAt" | "updatedAt" | "author" | "userId">>({
+  const [newPost, setNewPost] = useState<CreatePostType>({
     title: "",
     subtitle: "",
     description: "",
     category: "",
-    image: "",
+    image: null,
   });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -57,15 +57,25 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPost((prev) => ({...prev!, [e.target.name]: e.target.value }));
+    setNewPost(prev => ({ ...prev, image: e.target.files![0] }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setLoading(true);
+    const formData = new FormData();
+    formData.append("title", newPost.title);
+    formData.append("subtitle", newPost.subtitle);
+    formData.append("description", newPost.description);
+    formData.append("category", newPost.category);
+
+    if (newPost.image) {
+      formData.append("image", newPost.image);
+    }
+
     try {
-      await apiFetch("POST", "posts/create", undefined, newPost);
+      await apiFetch("POST", "posts/create", undefined, formData);
     } catch (error: any) {
       console.log(error.message);
 

@@ -6,8 +6,8 @@ interface UserAttributes {
   name: string;
   surname: string;
   email: string;
-  avatar: string;
   password: string;
+  avatar: string | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
@@ -18,6 +18,6 @@ export const User = sequelize.define<UserInstance>("User", {
   name: { type: DataTypes.STRING, allowNull: false },
   surname: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false },
-  avatar: { type: DataTypes.STRING },
   password: { type: DataTypes.STRING, allowNull: false },
+  avatar: { type: DataTypes.STRING, allowNull: true },
 });

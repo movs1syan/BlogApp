@@ -6,11 +6,14 @@ import { getDate } from "@/helpers/getDate";
 import type { PostType } from "@/shared/types";
 
 const PostCard = ({ post }: { post: PostType }) => {
+  const imageFullPath = `http://localhost:8000${post?.image}`;
+  const fullAvatarUrl = `http://localhost:8000${post?.author.avatar}`;
+
   return (
     <article className="rounded-xl p-6 shadow-xl hover:shadow-2xl flex flex-col justify-between gap-7 transition-shadow duration-200 md:max-w-90">
       <div className="flex flex-col justify-center gap-4">
         {post.image && (
-          <Image src={post.image} alt="Featured Image" width={400} height={400} className="md:h-50 w-full" />
+          <Image src={imageFullPath} alt="Featured Image" unoptimized width={400} height={400} className="md:h-50 w-full" />
         )}
         <span className="text-semibold text-blue-700">{post.category}</span>
 
@@ -25,7 +28,7 @@ const PostCard = ({ post }: { post: PostType }) => {
 
       <div className="flex items-center gap-3">
         {post.author.avatar && (
-          <Image src={post.author.avatar} alt={post.author.avatar} width={40} height={40} className="size-10 rounded-full object-cover" />
+          <Image src={fullAvatarUrl} alt={fullAvatarUrl} unoptimized width={40} height={40} className="size-10 rounded-full object-cover" />
         )}
 
         <div className="flex flex-col">

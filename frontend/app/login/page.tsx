@@ -6,7 +6,7 @@ import {apiFetch} from "@/lib/apiFetch";
 import {useUser} from "@/hooks/useUser";
 import ModalInput from "@/components/ModalInput";
 import Button from "@/components/ui/Button";
-import { UserLock } from "lucide-react";
+import {TriangleAlert, UserCheck} from "lucide-react";
 
 const Login = () => {
   const [userData, setUserData] = useState<{ email: string, password: string }>({
@@ -38,8 +38,8 @@ const Login = () => {
 
   return (
     <main className={"flex flex-col items-center justify-center py-10 xl:px-60"}>
-      <div className={"p-6 mt-10 shadow-2xl rounded-xl w-full"}>
-        <UserLock className="w-12 h-12 text-primary mx-auto mb-3" />
+      <div className={"p-6 mt-8 shadow-2xl rounded-xl w-full"}>
+        <UserCheck className="w-12 h-12 text-primary mx-auto mb-3" />
         <h1 className={"text-3xl font-semibold text-center py-5"}>Good to See You Again</h1>
         <h2 className={"text-center text-gray-500"}>Sign in to access your account and keep your journey going.</h2>
 
@@ -47,10 +47,15 @@ const Login = () => {
           <ModalInput handleChange={handleChange} fieldName={"Email"} inputName={"email"} />
           <ModalInput handleChange={handleChange} fieldName={"Password"} inputName={"password"} />
 
-          {error && <p className={"text-red-600 text-sm"}>{error}</p>}
           <div className="mx-auto">
             <Button htmlType={"submit"} type="primary">Submit</Button>
           </div>
+          {error && (
+            <div className={"flex justify-center items-center gap-2 text-red-600"}>
+              <TriangleAlert size={20} />
+              <p className={"text-sm"}>{error}</p>
+            </div>
+          )}
         </form>
       </div>
     </main>

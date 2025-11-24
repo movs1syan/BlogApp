@@ -1,13 +1,14 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.ts";
-import {createUserService, getUserService} from "../services/userService.ts";
+import { createUserService, getUserService } from "../services/userService.ts";
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { name, surname, email, password, avatar } = req.body;
+  const { name, surname, email, password, confirmPassword } = req.body;
+  const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
 
   try {
-    if (!name || !surname || !email || !password) {
+    if (!name || !surname || !email || !password || !confirmPassword) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -16,7 +17,11 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = await createUserService(name, surname, email, password, avatar);
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords don't match" });
+    }
+
+    const newUser = await createUserService(name, surname, email, password, avatarPath);
     if (!newUser) {
       return res.status(400).json({ message: "Invalid user data" });
     }
@@ -64,7 +69,7 @@ export const authUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserProfile = async (req: Request, res: Response) => {
+export const getUserInfo = async (req: Request, res: Response) => {
   const { id, name, surname, email, avatar } = req.user;
 
   return res.status(200).json({id, name, surname, email, avatar});

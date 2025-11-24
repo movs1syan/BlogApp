@@ -3,9 +3,9 @@ import type { ObjectSchema } from "joi";
 
 export const validate = (schema: ObjectSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
+    const { error } = schema.validate(req.body, { abortEarly: true });
     if (error) {
-      return res.status(400).json({ message: `Validation failed: ${error.message}` });
+      return res.status(400).json({ message: error.details[0].message });
     }
 
     next();

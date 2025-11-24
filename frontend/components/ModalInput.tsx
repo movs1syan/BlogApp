@@ -12,7 +12,7 @@ const ModalInput = ({ handleChange, fieldName, inputName, value }: Props) => {
     <label>
       {fieldName}
       <input
-        type={inputName === "image" ? "url" : inputName === "password" ? "password" : "text"}
+        type={inputName === "password" || inputName === "confirmPassword" ? "password" : "text"}
         name={inputName}
         value={value}
         onChange={handleChange}

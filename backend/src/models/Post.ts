@@ -7,7 +7,7 @@ interface PostAttributes {
   subtitle: string;
   description: string;
   category: string;
-  image: string;
+  image: string | null;
   userId: number;
 }
 
@@ -20,7 +20,7 @@ export const Post = sequelize.define<PostInstance>("Post", {
   subtitle: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.STRING, allowNull: false },
   category: { type: DataTypes.STRING, allowNull: false },
-  image: { type: DataTypes.STRING },
+  image: { type: DataTypes.STRING, allowNull: true },
   userId: { type: DataTypes.INTEGER, allowNull: false }
 },
 {
