@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.ts";
-import { createUserService, getUserService } from "../services/userService.ts";
+import {createUserService, getUserProfileService, getUserService} from "../services/userService.ts";
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, surname, email, password, confirmPassword } = req.body;
@@ -72,5 +72,11 @@ export const authUser = async (req: Request, res: Response) => {
 export const getUserInfo = async (req: Request, res: Response) => {
   const { id, name, surname, email, avatar } = req.user;
 
-  return res.status(200).json({id, name, surname, email, avatar});
+  return res.status(200).json({ id, name, surname, email, avatar});
+};
+
+export const getUserProfile = async (req: Request, res: Response) => {
+  const user = await getUserProfileService(req.user.id);
+
+  return res.status(200).json(user);
 };

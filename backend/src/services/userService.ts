@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { User } from "../models/index.ts";
+import { User, Post } from "../models/index.ts";
 
 export const getUserService = async (email: string) => {
   return User.findOne({ where: { email } });
@@ -15,5 +15,18 @@ export const createUserService = async (name: string, surname: string, email: st
     email,
     password: hashedPassword,
     avatar: avatarPath,
+  });
+};
+
+export const getUserProfileService = async (id: number) => {
+  return User.findByPk(id, {
+    include: [
+      {
+        model: Post,
+        as: "posts",
+        attributes: ["id", "title", "subtitle", "description", "category", "image", "createdAt"],
+      }
+    ],
+    attributes: { exclude: ["id", "password"] }
   });
 };

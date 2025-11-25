@@ -8,13 +8,32 @@ export interface PostType {
 	createdAt: string;
 	updatedAt: string;
 	author: {
-		id: number;
+		id?: number;
 		name: string;
 		surname: string;
 		email: string;
 		avatar: string | null;
 	}
 	userId: number;
+}
+
+export interface UserWithPostType {
+	id: number;
+	name: string;
+	surname: string;
+	email: string;
+	password: string;
+	confirmPassword: string;
+	avatar: string | null;
+	posts?: {
+		title: string;
+		subtitle: string;
+		category: string;
+		description: string;
+		image: string | null;
+		createdAt: string;
+		updatedAt: string;
+	}[];
 }
 
 export interface UpdatePostType {

@@ -1,23 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {useUser} from "@/hooks/useUser";
 import Drawer from "@/components/ui/Drawer";
 import {useState} from "react";
-import { Folder } from "lucide-react";
+import { UserCog } from "lucide-react";
 
 const Navbar = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const pathname = usePathname();
   const { user, setUser } = useUser();
+  const router = useRouter();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setOpenDrawer(false);
     setUser(null);
+
+    router.push("/");
   };
 
   const fullAvatarUrl = `http://localhost:8000${user?.avatar}`;
@@ -63,15 +67,17 @@ const Navbar = () => {
                   <Image src={fullAvatarUrl} alt={fullAvatarUrl} unoptimized width={40} height={40} className="size-10 rounded-full object-cover"/>
                 )}
                 <div className={"flex flex-col justify-between"}>
-                  <span className={"text-xl"}>{user.name} {user.surname}</span>
+                  <span className={"text-xl text-center"}>{user.name} {user.surname}</span>
                   <span className={"text-gray-500"}>{user.email}</span>
                 </div>
               </div>
               <div className={"mt-5"}>
-                <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-700 hover:text-white duration-100 cursor-pointer px-3 py-2 rounded-lg"}>
-                  <Folder size={25} />
-                  <span>My Posts</span>
-                </div>
+                <Link href={'/profile'} onClick={() => setOpenDrawer(false)}>
+                  <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
+                    <UserCog size={25} />
+                    <span>My Profile</span>
+                  </div>
+                </Link>
               </div>
             </main>
           )}

@@ -28,6 +28,8 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const { notify } = useNotification();
   const { user } = useUser();
 
+  console.log(user, "user");
+
   const onDelete = async () => {
     setLoading(true);
     try {
