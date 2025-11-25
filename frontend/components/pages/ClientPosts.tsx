@@ -57,7 +57,11 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPost(prev => ({ ...prev, image: e.target.files![0] }));
+    if (e.target.name === "image" && e.target.files) {
+      setNewPost(prev => ({ ...prev, image: e.target.files![0] }));
+    } else {
+      setNewPost(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,6 +80,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
 
     try {
       await apiFetch("POST", "posts/create", undefined, formData);
+      setNewPost({ title: "", subtitle: "", description: "", category: "", image: null });
     } catch (error: any) {
       console.log(error.message);
 
@@ -130,9 +135,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
           ))}
         </div>
       ) : (
-        <p className="text-gray-500 text-center mt-6">
-          No posts found.
-        </p>
+        <p className="text-gray-500 text-center mt-6">No posts found.</p>
       )}
 
       <div className="flex justify-center items-center gap-2 mt-6">

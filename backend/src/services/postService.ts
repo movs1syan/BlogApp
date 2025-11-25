@@ -55,7 +55,7 @@ export const createPostService = async (data: PostCreationType) => {
   });
 };
 
-export const updatePostService = async (id: number, data: PostCreationType, imagePath, userId: number) => {
+export const updatePostService = async (id: number, data: PostCreationType, imagePath: string | null, userId: number) => {
   const post = await Post.findByPk(id);
   if (!post) {
     throw new Error(`Post with the ID of ${id} was not found`);
@@ -65,10 +65,16 @@ export const updatePostService = async (id: number, data: PostCreationType, imag
     throw new Error(`Only owner of this post can make changes in this post`);
   }
 
-  return post.update({
-    ...data,
-    image: imagePath,
-  });
+  if (post.image !== null && imagePath === null) {
+    return post.update({
+      ...data,
+    });
+  }
+
+    return post.update({
+      ...data,
+      image: imagePath
+    });
 };
 
 export const deletePostService = async (id: number, userId: number) => {

@@ -19,12 +19,12 @@ const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading
       <ModalInput handleChange={handleChange} fieldName={"Subtitle"} inputName={"subtitle"} value={post?.subtitle} />
       <ModalInput handleChange={handleChange} fieldName={"Description"} inputName={"description"} value={post?.description} />
       <ModalInput handleChange={handleChange} fieldName={"Category"} inputName={"category"} value={post?.category} />
-      <Button type={"link"} icon={"ImageUp"}>
-        <label className={"cursor-pointer"}>
-          Upload image for avatar
-          <input type={"file"} name={"image"} accept={"image/*"} onChange={handleChange} />
-        </label>
-      </Button>
+      <label className={"flex flex-col gap-2"}>
+        Upload image for post
+        <Button icon={"ImageUp"}>
+          <input type={"file"} name={"image"} accept={"image/*"} onChange={handleChange} className={"cursor-pointer"} />
+        </Button>
+      </label>
 
       <div className="flex gap-5 justify-end mt-3">
         <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>

@@ -10,7 +10,6 @@ import type {UpdatePostType, PostType} from "@/shared/types";
 import Form from "@/components/Form";
 import { useNotification } from "@/hooks/useNotification";
 import {useUser} from "@/hooks/useUser";
-import { UserCircle } from "lucide-react";
 import Image from "next/image";
 
 const ClientPost = ({ post }: { post: PostType }) => {
@@ -91,7 +90,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
     router.refresh();
   };
 
-  const fullImageURL = `http://localhost:8000${post.image}`;
+  const fullImageURL = `http://localhost:8000${currentPost.image}`;
   const fullAvatarURL = `http://localhost:8000${post.author.avatar}`;
 
   return (
@@ -99,7 +98,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
       <article className="py-6 flex flex-col justify-between gap-7 md:max-w-200">
         <div className="flex flex-col justify-center gap-4">
           {currentPost.image && (
-            <Image src={fullImageURL} alt={fullImageURL} width={400} height={400} className="md:h-110 w-full" unoptimized />
+            <Image src={fullImageURL} alt={fullImageURL} width={400} height={400} loading={"eager"} className="md:h-110 w-full" unoptimized />
           )}
           <span className="text-semibold text-blue-700 text-lg">{currentPost.category}</span>
 
@@ -111,10 +110,8 @@ const ClientPost = ({ post }: { post: PostType }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {post.author.avatar ? (
-            <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} unoptimized className={"size-10 object-cover rounded-full"} />
-          ) : (
-            <UserCircle size={40} />
+          {post.author.avatar && (
+            <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} loading={"eager"} unoptimized className={"size-10 object-cover rounded-full"} />
           )}
 
           <div className="flex flex-col">

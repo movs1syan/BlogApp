@@ -70,12 +70,12 @@ const Register = () => {
           <ModalInput handleChange={handleChange} fieldName={"Email"} inputName={"email"} />
           <ModalInput handleChange={handleChange} fieldName={"Password"} inputName={"password"} />
           <ModalInput handleChange={handleChange} fieldName={"Confirm password"} inputName={"confirmPassword"} />
-          <Button type={"link"} icon={"ImageUp"}>
-            <label className={"cursor-pointer"}>
-              Upload image for avatar
-              <input type={"file"} name={"avatar"} accept={"image/*"} onChange={handleChange} />
-            </label>
-          </Button>
+          <label className={"flex flex-col gap-2"}>
+            Upload image for avatar
+            <Button icon={"ImageUp"}>
+              <input type={"file"} name={"avatar"} accept={"image/*"} onChange={handleChange} className={"cursor-pointer"} />
+            </Button>
+          </label>
 
           <div className="mx-auto">
             <Button htmlType={"submit"} type="primary">Submit</Button>

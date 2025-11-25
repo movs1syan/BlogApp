@@ -22,8 +22,6 @@ export const apiFetch = async (
     method,
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
-
-      // ❗ ONLY set JSON header if NOT FormData
       ...(!isFormData && { "Content-Type": "application/json" }),
     },
     body: isFormData ? data : JSON.stringify(data),
@@ -32,16 +30,10 @@ export const apiFetch = async (
 
   const res = await fetch(url, options);
 
-  // If response is NOT JSON (HTML error), throw readable message
-  const text = await res.text();
-  try {
-    const json = JSON.parse(text);
-
-    if (!res.ok) throw new Error(json.message);
-    return json;
-  } catch {
-    console.error("Server returned non-JSON:");
-    console.error(text);
-    throw new Error("Server returned HTML instead of JSON. (FormData error?)");
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message);
   }
+
+  return res.json();
 };

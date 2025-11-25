@@ -26,4 +26,5 @@ export const createUserSchema = Joi.object({
     'any.required': 'Confirm password is a required field.',
     'any.only': "Confirm password does not match the password.",
   }),
+  avatar: Joi.string().optional(),
 });
