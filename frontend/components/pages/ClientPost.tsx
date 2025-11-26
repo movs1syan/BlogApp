@@ -8,7 +8,6 @@ import Modal from "@/components/ui/Modal";
 import { getDate } from "@/helpers/getDate";
 import type {UpdatePostType, PostType} from "@/shared/types";
 import Form from "@/components/Form";
-import { useNotification } from "@/hooks/useNotification";
 import {useUser} from "@/hooks/useUser";
 import Image from "next/image";
 
@@ -24,27 +23,22 @@ const ClientPost = ({ post }: { post: PostType }) => {
     return { title, subtitle, description, category, image };
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { notify } = useNotification();
   const { user } = useUser();
-
-  console.log(user, "user");
 
   const onDelete = async () => {
     setLoading(true);
     try {
       await apiFetch("DELETE", `posts/delete/${post.id}`);
-    } catch (error) {
-      notify({
-        type: "error",
-        message: "Error!",
-        description: `${error}`,
-      });
-
+    } catch (error: any) {
       setLoading(false);
+      setError(error.message);
+
       return;
     }
     setLoading(false);
+    setError(null);
 
     router.back();
     setTimeout(() => router.refresh(), 10);
@@ -76,13 +70,9 @@ const ClientPost = ({ post }: { post: PostType }) => {
       const updatedPost: PostType = await apiFetch("PUT", `posts/update/${post.id}`, undefined, formData);
       setCurrentPost(updatedPost);
     } catch (error: any) {
-      notify({
-        type: "info",
-        message: "Info!",
-        description: `${error.message}`,
-      });
-
       setLoading(false);
+      setError(error.message);
+
       return;
     }
 
@@ -147,7 +137,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
       </Modal>
 
       <Modal title={"Update post"} isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
-        <Form handleSubmit={handleSubmit} handleChange={handleChange} post={editPost} setIsModalOpen={setIsEditOpen} event={"Update"} loading={loading} />
+        <Form handleSubmit={handleSubmit} handleChange={handleChange} post={editPost} setIsModalOpen={setIsEditOpen} event={"Update"} loading={loading} error={error} />
       </Modal>
     </>
   );

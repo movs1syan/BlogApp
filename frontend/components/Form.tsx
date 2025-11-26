@@ -2,6 +2,7 @@ import React from 'react';
 import Button from "@/components/ui/Button";
 import ModalInput from './ModalInput';
 import type { UpdatePostType } from "@/shared/types";
+import {TriangleAlert} from "lucide-react";
 
 interface Props {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -10,9 +11,10 @@ interface Props {
   setIsModalOpen: (isOpen: boolean) => void;
   event: "Update" | "Create";
   loading?: boolean;
+  error?: string | null;
 }
 
-const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading }: Props) => {
+const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading, error }: Props) => {
   return (
     <form onSubmit={handleSubmit} className={"flex flex-col gap-3"}>
       <ModalInput handleChange={handleChange} fieldName={"Title"} inputName={"title"} value={post?.title} />
@@ -26,6 +28,12 @@ const Form = ({ handleSubmit, handleChange, post, setIsModalOpen, event, loading
         </Button>
       </label>
 
+      {error && (
+        <div className={"flex justify-center items-center gap-2 text-red-600 mt-2"}>
+          <TriangleAlert size={20} />
+          <p className={"text-sm"}>{error}</p>
+        </div>
+      )}
       <div className="flex gap-5 justify-end mt-3">
         <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
         <Button htmlType="submit" type="primary" loading={loading}>{event}</Button>

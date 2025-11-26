@@ -16,3 +16,12 @@ export interface PostCreationType {
   imagePath: string | null;
   userId: number;
 }
+
+export interface UserType {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  password: string;
+  avatar: string | null;
+}

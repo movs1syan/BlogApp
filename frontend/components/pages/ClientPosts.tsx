@@ -17,6 +17,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const [filteredPosts, setFilteredPosts] = useState<PostType[]>(posts);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [newPost, setNewPost] = useState<CreatePostType>({
     title: "",
     subtitle: "",
@@ -67,7 +68,6 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setLoading(true);
     const formData = new FormData();
     formData.append("title", newPost.title);
     formData.append("subtitle", newPost.subtitle);
@@ -78,23 +78,25 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       formData.append("image", newPost.image);
     }
 
+    setLoading(true);
     try {
       await apiFetch("POST", "posts/create", undefined, formData);
       setNewPost({ title: "", subtitle: "", description: "", category: "", image: null });
-    } catch (error: any) {
-      console.log(error.message);
 
+      notify({
+        type: "success",
+        message: "Success!",
+        description: `Created post "${newPost.title}"`
+      });
+    } catch (error: any) {
       setLoading(false);
+      setError(error.message);
       return;
     }
-    setLoading(false);
-    setIsOpen(false);
 
-    notify({
-      type: "success",
-      message: "Success!",
-      description: `Created post "${newPost.title}"`
-    });
+    setLoading(false);
+    setError(null);
+    setIsOpen(false);
 
     router.refresh();
   };
@@ -149,7 +151,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
       </div>
 
       <Modal title={"Create new post"} isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Form handleSubmit={handleSubmit} handleChange={handleChange} setIsModalOpen={setIsOpen} event={"Create"} loading={loading} />
+        <Form handleSubmit={handleSubmit} handleChange={handleChange} setIsModalOpen={setIsOpen} event={"Create"} loading={loading} error={error} />
       </Modal>
     </main>
   );

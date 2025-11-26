@@ -72,7 +72,7 @@ const Navbar = () => {
                 </div>
               </div>
               <div className={"mt-5"}>
-                <Link href={'/profile'} onClick={() => setOpenDrawer(false)}>
+                <Link href={`/profile`} onClick={() => setOpenDrawer(false)}>
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
                     <UserCog size={25} />
                     <span>My Profile</span>

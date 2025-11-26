@@ -20,6 +20,7 @@ const Register = () => {
     avatar: null
   });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { setUser } = useUser();
 
@@ -45,6 +46,8 @@ const Register = () => {
       formData.append("avatar", newUser.avatar);
     }
 
+    setLoading(true);
+
     try {
       const data = await apiFetch("POST", "users/register", undefined, formData);
       localStorage.setItem("token", data.token);
@@ -54,6 +57,7 @@ const Register = () => {
 
       router.push("/");
     } catch (error: any) {
+      setLoading(false);
       setError(error.message);
     }
   }
@@ -78,7 +82,7 @@ const Register = () => {
           </label>
 
           <div className="mx-auto">
-            <Button htmlType={"submit"} type="primary">Submit</Button>
+            <Button htmlType={"submit"} type="primary" loading={loading}>Submit</Button>
           </div>
           {error && (
             <div className={"flex justify-center items-center gap-2 text-red-600"}>

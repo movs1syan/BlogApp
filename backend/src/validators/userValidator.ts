@@ -28,3 +28,17 @@ export const createUserSchema = Joi.object({
   }),
   avatar: Joi.string().optional(),
 });
+
+export const updateUserSchema = Joi.object({
+  name: Joi.string().min(3).required().messages({
+    'string.min': 'Name must be at least 3 characters long.',
+    'string.empty': 'Name is a required field.',
+    'any.required': 'Name is a required field.',
+  }),
+  surname: Joi.string().min(3).required().messages({
+    'string.min': 'Surname must be at least 3 characters long.',
+    'string.empty': 'Surname is a required field.',
+    'any.required': 'Surname is a required field.',
+  }),
+  avatar: Joi.string().optional(),
+})

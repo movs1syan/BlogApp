@@ -2,52 +2,106 @@
 
 import React, { useState, useEffect } from 'react';
 import {apiFetch} from "@/lib/apiFetch";
-import { PostType, UserWithPostType } from "@/shared/types";
+import {PostType, UserWithPostType} from "@/shared/types";
 import PostCard from "@/components/PostCard";
 import Image from "next/image";
-import {Bookmark} from "lucide-react";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
+import ModalInput from "@/components/ModalInput";
+import {useUser} from "@/hooks/useUser";
+import {TriangleAlert} from "lucide-react";
 
-const Page = () => {
-  const [user, setUser] = useState<UserWithPostType | null>(null);
+const UserProfilePage = () => {
+  const [currentUser, setCurrentUser] = useState<UserWithPostType | null>(null);
+  const [editUser, setEditUser] = useState<{name: string, surname: string, avatar: string | File | null} | null>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useUser();
 
   useEffect(() => {
     (async () => {
-      const user = await apiFetch("GET", "users/profile");
-      setUser(user);
-      console.log(user);
-      setPosts(user.posts);
+      const userData = await apiFetch("GET", `users/profile`);
+      const { name, surname, avatar } = userData;
+
+      setCurrentUser(userData);
+      setEditUser({ name, surname, avatar });
+      setPosts(userData.posts);
     })();
   }, []);
 
-  const fullAvatarUrl = `http://localhost:8000${user?.avatar}`;
+  const fullAvatarUrl = `http://localhost:8000${currentUser?.avatar}`;
 
-  return user && (
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === "avatar" && e.target.files) {
+      setEditUser(prevState => ({ ...prevState!, avatar: e.target.files![0] }));
+    } else {
+      setEditUser(prevState => ({ ...prevState!, [e.target.name]: e.target.value }))
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    if (editUser) {
+      formData.append("name", editUser.name);
+      formData.append("surname", editUser.surname);
+
+      if (editUser.avatar) {
+        formData.append("avatar", editUser.avatar);
+      }
+
+      setLoading(true);
+      try {
+        const updatedUser = await apiFetch("PUT", "users/update", undefined, formData);
+        setCurrentUser(updatedUser);
+      } catch (error: any) {
+        setLoading(false);
+        setError(error.message);
+
+        return;
+      }
+
+      const updatedUser = await apiFetch("GET", "users/me");
+      setUser(updatedUser);
+
+      setLoading(false);
+      setIsEditOpen(false);
+      setError(null);
+    }
+  };
+
+  return currentUser && (
+    <>
     <main className={"flex flex-col py-10"}>
       <div className={"flex gap-10"}>
-        {user.avatar && (
-          <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={150} unoptimized />
+        {currentUser.avatar && (
+          <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={150} unoptimized className={"size-40"} />
         )}
-        <div className={"flex flex-col gap-3"}>
-          <span className={"text-3xl"}>{user.name} {user.surname}</span>
-          <span className={"text-gray-500"}>{user.email}</span>
+        <div className={"flex flex-col justify-between"}>
+          <div className={"flex flex-col gap-3"}>
+            <span className={"text-3xl"}>{currentUser.name} {currentUser.surname}</span>
+            <span className={"text-gray-500"}>{currentUser.email}</span>
+          </div>
+          <div>
+            <Button icon={"UserPen"} onClick={() => setIsEditOpen(true)}>Update profile</Button>
+          </div>
         </div>
       </div>
 
-      <div className={"flex items-center gap-2 mt-10"}>
-        <Bookmark size={25} />
-        <h1 className={"font-semibold text-2xl"}>My posts</h1>
-      </div>
+      <h1 className={"font-bold text-2xl mt-10"}>My posts</h1>
       {posts.length > 0 ? (
         <div className={"grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-15 mt-3"}>
           {posts.map((post) => {
             post = {
               ...post,
               author: {
-                name: user.name,
-                surname: user.surname,
-                email: user.surname,
-                avatar: user.avatar,
+                name: currentUser.name,
+                surname: currentUser.surname,
+                email: currentUser.surname,
+                avatar: currentUser.avatar,
               }
             };
 
@@ -60,7 +114,32 @@ const Page = () => {
         <p>No posts</p>
       )}
     </main>
+
+      <Modal title={"Update profile"} isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
+        <form onSubmit={handleSubmit} className={"flex flex-col gap-3"}>
+          <ModalInput handleChange={handleChange} fieldName={"Name"} inputName={"name"} value={editUser?.name} />
+          <ModalInput handleChange={handleChange} fieldName={"Surname"} inputName={"surname"} value={editUser?.surname} />
+          <label className={"flex flex-col gap-2"}>
+            Upload image for avatar
+            <Button icon={"ImageUp"}>
+              <input type={"file"} name={"avatar"} accept={"image/*"} onChange={handleChange} className={"cursor-pointer"} />
+            </Button>
+          </label>
+
+          {error && (
+            <div className={"flex justify-center items-center gap-2 text-red-600 mt-2"}>
+              <TriangleAlert size={20} />
+              <p className={"text-sm"}>{error}</p>
+            </div>
+          )}
+          <div className="flex gap-5 justify-end mt-3">
+            <Button onClick={() => setIsEditOpen(false)}>Cancel</Button>
+            <Button htmlType="submit" type="primary" loading={loading}>Update</Button>
+          </div>
+        </form>
+      </Modal>
+    </>
   );
 };
 
-export default Page;
+export default UserProfilePage;

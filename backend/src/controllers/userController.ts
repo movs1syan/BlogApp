@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.ts";
-import {createUserService, getUserProfileService, getUserService} from "../services/userService.ts";
+import {createUserService, getUserProfileService, getUserService, updateUserService} from "../services/userService.ts";
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, surname, email, password, confirmPassword } = req.body;
@@ -67,6 +67,27 @@ export const authUser = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: `Authentication failed: ${error}` });
   }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  const { name, surname } = req.body;
+  const user = req.user;
+  const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
+
+  if (!name || !surname) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const updatedUser = await updateUserService(name, surname, avatarPath, user);
+
+    if (updatedUser) {
+      return res.status(200).json(updatedUser);
+    }
+  } catch (err) {
+    res.status(500).json({ message: `Failed to update user: ${err}` });
+  }
+
 };
 
 export const getUserInfo = async (req: Request, res: Response) => {
