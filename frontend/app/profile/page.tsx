@@ -31,8 +31,6 @@ const UserProfilePage = () => {
     })();
   }, []);
 
-  const fullAvatarUrl = `http://localhost:8000${currentUser?.avatar}`;
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "avatar" && e.target.files) {
       setEditUser(prevState => ({ ...prevState!, avatar: e.target.files![0] }));
@@ -54,6 +52,7 @@ const UserProfilePage = () => {
       }
 
       setLoading(true);
+
       try {
         const updatedUser = await apiFetch("PUT", "users/update", undefined, formData);
         setCurrentUser(updatedUser);
@@ -73,12 +72,14 @@ const UserProfilePage = () => {
     }
   };
 
+  const fullAvatarUrl = `http://localhost:8000${currentUser?.avatar}`;
+
   return currentUser && (
     <>
     <main className={"flex flex-col py-10"}>
       <div className={"flex gap-10"}>
         {currentUser.avatar && (
-          <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={150} unoptimized className={"size-40"} />
+          <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={200} unoptimized />
         )}
         <div className={"flex flex-col justify-between"}>
           <div className={"flex flex-col gap-3"}>

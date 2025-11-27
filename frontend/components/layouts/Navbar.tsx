@@ -7,13 +7,13 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {useUser} from "@/hooks/useUser";
 import Drawer from "@/components/ui/Drawer";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { UserCog } from "lucide-react";
 
 const Navbar = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const pathname = usePathname();
-  const { user, setUser } = useUser();
+  const { user, setUser, loading } = useUser();
   const router = useRouter();
 
   const handleLogout = () => {

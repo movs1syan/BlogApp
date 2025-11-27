@@ -25,9 +25,12 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setLoading(true);
+
     try {
       const data = await apiFetch("POST", "users/login", undefined, userData);
       localStorage.setItem("token", data.token);
+
       const { id, name, surname, email, avatar } = data;
       setUser({ id, name, surname, email, avatar });
 
