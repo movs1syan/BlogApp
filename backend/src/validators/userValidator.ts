@@ -41,4 +41,25 @@ export const updateUserSchema = Joi.object({
     'any.required': 'Surname is a required field.',
   }),
   avatar: Joi.string().optional(),
-})
+});
+
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.email': 'Please provide a valid email address.',
+    'string.empty': 'Email is a required field.',
+    'any.required': 'Email is a required field.',
+  })
+});
+
+export const resetPasswordSchema = Joi.object({
+  newPassword: Joi.string().min(8).required().messages({
+    'string.min': 'Password must be at least 8 characters long.',
+    'string.empty': 'Password is a required field.',
+    'any.required': 'Password is a required field.',
+  }),
+  confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required().messages({
+    'string.empty': 'Confirm password is a required field.',
+    'any.required': 'Confirm password is a required field.',
+    'any.only': "Confirm password does not match the password.",
+  }),
+});

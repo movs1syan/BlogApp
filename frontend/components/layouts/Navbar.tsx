@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {useUser} from "@/hooks/useUser";
 import Drawer from "@/components/ui/Drawer";
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import { UserCog } from "lucide-react";
 
 const Navbar = () => {
@@ -32,7 +32,9 @@ const Navbar = () => {
         <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
           <Link href="/" className={`${pathname ? "text-blue-700" : ""}`}>Home</Link>
           <div className="flex gap-4">
-            {user ? (
+            {loading ? (
+              <div className={"h-[42px] w-[175px] rounded-md bg-gray-300 animate-pulse"}></div>
+            ) : user ? (
               <div className="flex items-center">
                 <div className={"flex items-center gap-3 cursor-pointer"} onClick={() => setOpenDrawer(true)}>
                   {user.avatar && (
@@ -40,7 +42,7 @@ const Navbar = () => {
                   )}
                   <div className={"flex flex-col justify-between text-gray-500 text-sm"}>
                     <span>{user.name} {user.surname}</span>
-                    <span>{user.email}</span>
+                    <span className={"mt-[2px]"}>{user.email}</span>
                   </div>
                 </div>
               </div>

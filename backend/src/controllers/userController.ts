@@ -1,7 +1,14 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import generateToken from "../utils/generateToken.ts";
 import {createUserService, getUserProfileService, getUserService, updateUserService} from "../services/userService.ts";
+import { transporter } from "../utils/nodemailer.ts";
+import {User} from "../models/index.ts";
+
+interface JwtPayloadWithId extends jwt.JwtPayload {
+  id: number;
+}
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, surname, email, password, confirmPassword } = req.body;
@@ -66,6 +73,63 @@ export const authUser = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).json({ message: `Authentication failed: ${error}` });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  try {
+    const user = await getUserService(email);
+    if (!user) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    const resetToken = generateToken(user.id);
+    const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Reset Your Password",
+      html: `
+        <h3>Password Reset</h3>
+        <p>Click below to reset your password:</p>
+        <a href="${resetURL}">${resetURL}</a>
+      `,
+    });
+
+    return res.json({ message: "Reset email sent" });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { newPassword, confirmNewPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET!) as JwtPayloadWithId;
+    console.log(decoded, "decoded")
+
+    const user = await User.findByPk(decoded.id);
+
+    console.log(user);
+    if (!user) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Passwords don't match" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.json({ message: "Password successfully updated" });
+  } catch (error) {
+    return res.status(400).json({ message: "Invalid or expired token" });
   }
 };
 

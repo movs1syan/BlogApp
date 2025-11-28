@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/useUser';
 import Button from "@/components/ui/Button";
 import ModalInput from "@/components/ModalInput";
 import { UserPlus, TriangleAlert } from "lucide-react";
+import Link from "next/link";
 
 const Register = () => {
   const [newUser, setNewUser] = useState<RegisterFormType>({
@@ -84,13 +85,18 @@ const Register = () => {
           <div className="mx-auto">
             <Button htmlType={"submit"} type="primary" loading={loading}>Submit</Button>
           </div>
-          {error && (
-            <div className={"flex justify-center items-center gap-2 text-red-600"}>
-              <TriangleAlert size={20} />
-              <p className={"text-sm"}>{error}</p>
-            </div>
-          )}
         </form>
+
+        <Link href={"/login"}>
+          <Button type={"link"}>Already have an account ?</Button>
+        </Link>
+
+        {error && (
+          <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
+            <TriangleAlert size={20} />
+            <p className={"text-sm"}>{error}</p>
+          </div>
+        )}
       </div>
     </main>
   );

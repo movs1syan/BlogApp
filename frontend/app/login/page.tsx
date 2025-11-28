@@ -7,6 +7,7 @@ import {useUser} from "@/hooks/useUser";
 import ModalInput from "@/components/ModalInput";
 import Button from "@/components/ui/Button";
 import {TriangleAlert, UserCheck} from "lucide-react";
+import Link from "next/link";
 
 const Login = () => {
   const [userData, setUserData] = useState<{ email: string, password: string }>({
@@ -55,13 +56,23 @@ const Login = () => {
           <div className="mx-auto">
             <Button htmlType={"submit"} type="primary" loading={loading}>Submit</Button>
           </div>
-          {error && (
-            <div className={"flex justify-center items-center gap-2 text-red-600"}>
-              <TriangleAlert size={20} />
-              <p className={"text-sm"}>{error}</p>
-            </div>
-          )}
         </form>
+
+        <div>
+          <Link href={"/register"}>
+            <Button type={"link"}>Don&#39;t have an account ?</Button>
+          </Link>
+          <Link href={"/forgot-password"}>
+            <Button type={"link"}>Forgot password ?</Button>
+          </Link>
+        </div>
+
+        {error && (
+          <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
+            <TriangleAlert size={20} />
+            <p className={"text-sm"}>{error}</p>
+          </div>
+        )}
       </div>
     </main>
   );
