@@ -1,23 +1,26 @@
 "use client";
 
 import React, {useState} from 'react';
-import {useParams} from "next/navigation"
-import {TriangleAlert, KeyRound} from "lucide-react";
+import { useRouter } from "next/navigation";
+import {TriangleAlert, RotateCcwKey} from "lucide-react";
 import ModalInput from "@/components/ModalInput";
 import Button from "@/components/ui/Button";
 import {apiFetch} from "@/lib/apiFetch";
+import { useNotification } from "@/hooks/useNotification";
 
 const ForgotPasswordPage = () => {
-  const [password, setPassword] = useState<{ newPassword: string, confirmNewPassword: string }>({
+  const [changePassword, setChangePassword] = useState<{ password: string, newPassword: string, confirmNewPassword: string }>({
+    password: "",
     newPassword: "",
     confirmNewPassword: ""
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { token } = useParams<{token: string}>();
+  const router = useRouter();
+  const { notify } = useNotification();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
+    setChangePassword(prevState => ({ ...prevState, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,7 +28,15 @@ const ForgotPasswordPage = () => {
 
     setLoading(true);
     try {
-      await apiFetch("POST", `users/reset-password/${token}`, undefined, password);
+      await apiFetch("POST", `users/change-password`, undefined, changePassword);
+
+      router.push("/profile");
+
+      notify({
+        type: "success",
+        message: "Success!",
+        description: "Password changed successfully.",
+      });
     } catch (error: any) {
       setError(error.message);
     }
@@ -35,11 +46,12 @@ const ForgotPasswordPage = () => {
   return (
     <main className={"flex flex-col items-center justify-center py-10 xl:px-60"}>
       <div className={"p-6 mt-8 shadow-2xl rounded-xl w-full"}>
-        <KeyRound className="w-12 h-12 text-primary mx-auto mb-3" />
-        <h1 className={"text-3xl font-semibold text-center py-5"}>Reset Your Password</h1>
+        <RotateCcwKey className="w-12 h-12 text-primary mx-auto mb-3" />
+        <h1 className={"text-3xl font-semibold text-center py-5"}>Change Your Password</h1>
         <h2 className={"text-center text-gray-500"}>Create a new password for your account.</h2>
 
         <form onSubmit={handleSubmit} className={"flex flex-col gap-5 mt-5"}>
+          <ModalInput handleChange={handleChange} fieldName={"Password"} inputName={"password"} />
           <ModalInput handleChange={handleChange} fieldName={"New password"} inputName={"newPassword"} />
           <ModalInput handleChange={handleChange} fieldName={"Confirm new password"} inputName={"confirmNewPassword"} />
 

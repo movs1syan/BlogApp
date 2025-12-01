@@ -4,6 +4,7 @@ import {
   authUser,
   forgotPassword,
   resetPassword,
+  changePassword,
   updateUser,
   getUserInfo,
   getUserProfile
@@ -12,22 +13,25 @@ import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
 import {
   createUserSchema,
+  authUserSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  updateUserSchema
+  updateUserSchema,
+  changePasswordSchema
 } from "../validators/userValidator.ts";
-import { uploadMiddleware } from "../middlewares/uploadMiddleware.ts";
+import { uploadAvatarMiddleware } from "../middlewares/uploadAvatarMiddleware.ts";
 
 const router = Router();
 
-router.post("/register", uploadMiddleware.single("avatar"), validate(createUserSchema), registerUser);
-router.post("/login", authUser);
-router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
-router.post("/reset-password/:token", validate(resetPasswordSchema), resetPassword);
-
-router.put("/update", uploadMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
-
 router.get("/me", authMiddleware, getUserInfo);
 router.get("/profile", authMiddleware, getUserProfile);
+
+router.post("/register", uploadAvatarMiddleware.single("avatar"), validate(createUserSchema), registerUser);
+router.post("/login", validate(authUserSchema), authUser);
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
+router.post("/change-password", validate(changePasswordSchema), authMiddleware, changePassword);
+
+router.put("/update", uploadAvatarMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
 
 export default router;

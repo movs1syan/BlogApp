@@ -87,16 +87,16 @@ const Register = () => {
           </div>
         </form>
 
-        <Link href={"/login"}>
-          <Button type={"link"}>Already have an account ?</Button>
-        </Link>
-
         {error && (
           <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
             <TriangleAlert size={20} />
             <p className={"text-sm"}>{error}</p>
           </div>
         )}
+
+        <Link href={"/login"}>
+          <Button type={"link"}>Already have an account ?</Button>
+        </Link>
       </div>
     </main>
   );

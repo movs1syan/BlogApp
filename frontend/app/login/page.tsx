@@ -58,6 +58,13 @@ const Login = () => {
           </div>
         </form>
 
+        {error && (
+          <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
+            <TriangleAlert size={20} />
+            <p className={"text-sm"}>{error}</p>
+          </div>
+        )}
+
         <div>
           <Link href={"/register"}>
             <Button type={"link"}>Don&#39;t have an account ?</Button>
@@ -66,13 +73,6 @@ const Login = () => {
             <Button type={"link"}>Forgot password ?</Button>
           </Link>
         </div>
-
-        {error && (
-          <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
-            <TriangleAlert size={20} />
-            <p className={"text-sm"}>{error}</p>
-          </div>
-        )}
       </div>
     </main>
   );

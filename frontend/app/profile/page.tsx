@@ -10,6 +10,7 @@ import Modal from "@/components/ui/Modal";
 import ModalInput from "@/components/ModalInput";
 import {useUser} from "@/hooks/useUser";
 import {TriangleAlert} from "lucide-react";
+import Link from "next/link";
 
 const UserProfilePage = () => {
   const [currentUser, setCurrentUser] = useState<UserWithPostType | null>(null);
@@ -81,13 +82,18 @@ const UserProfilePage = () => {
         {currentUser.avatar && (
           <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={200} unoptimized />
         )}
-        <div className={"flex flex-col justify-between"}>
+        <div className={"flex flex-col gap-26"}>
           <div className={"flex flex-col gap-3"}>
             <span className={"text-3xl"}>{currentUser.name} {currentUser.surname}</span>
             <span className={"text-gray-500"}>{currentUser.email}</span>
           </div>
-          <div>
+
+          <div className={"flex items-center gap-3"}>
             <Button icon={"UserPen"} onClick={() => setIsEditOpen(true)}>Update profile</Button>
+
+            <Link href="/change-password">
+              <Button type={"link"}>Change password</Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -112,7 +118,7 @@ const UserProfilePage = () => {
           })}
         </div>
       ) : (
-        <p>No posts</p>
+        <p className={"mt-3"}>No posts yet</p>
       )}
     </main>
 

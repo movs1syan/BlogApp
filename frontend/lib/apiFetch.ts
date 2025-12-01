@@ -30,8 +30,6 @@ export const apiFetch = async (
 
   const res = await fetch(url, options);
 
-  console.log(options, "res");
-
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.message);

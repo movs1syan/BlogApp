@@ -12,4 +12,4 @@ const storage = multer.diskStorage({
   },
 });
 
-export const uploadMiddleware = multer({ storage });
+export const uploadAvatarMiddleware = multer({ storage });
