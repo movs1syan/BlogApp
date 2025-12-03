@@ -5,23 +5,33 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import {useUser} from "@/hooks/useUser";
 import Drawer from "@/components/ui/Drawer";
-import {useState} from "react";
+import {FC, useEffect, useState} from "react";
 import { UserCog } from "lucide-react";
+import { handleLogoutFn } from "@/lib/actions";
+import type {UserType} from "@/shared/types";
+import {useUser} from "@/hooks/useUser";
 
-const Navbar = () => {
+interface INavbar {
+  user?: Omit<UserType, "password" | "confirmPassword">;
+}
+
+const Navbar: FC<INavbar> = ({ user }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const pathname = usePathname();
-  const { user, setUser, loading } = useUser();
   const router = useRouter();
+  const { setUser } = useUser();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setOpenDrawer(false);
+  useEffect(() => {
+    setUser(user as Omit<UserType, "password" | "confirmPassword"> | null);
+  }, [setUser, user]);
+
+  const handleLogout = async () => {
+    await handleLogoutFn();
     setUser(null);
+    setOpenDrawer(false);
 
-    router.push("/");
+    router.push("/login");
   };
 
   const fullAvatarUrl = `http://localhost:8000${user?.avatar}`;
@@ -32,9 +42,7 @@ const Navbar = () => {
         <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
           <Link href="/" className={`${pathname ? "text-blue-700" : ""}`}>Home</Link>
           <div className="flex gap-4">
-            {loading ? (
-              <div className={"h-[42px] w-[175px] rounded-md bg-gray-300 animate-pulse"}></div>
-            ) : user ? (
+            {user ? (
               <div className="flex items-center">
                 <div className={"flex items-center gap-3 cursor-pointer"} onClick={() => setOpenDrawer(true)}>
                   {user.avatar && (

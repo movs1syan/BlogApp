@@ -5,13 +5,14 @@ import {
   createUserService,
   getUserProfileService,
   getUserService,
-  resetUserPassService,
-  updateUserService
+  changeUserPassService,
+  updateUserService, resetUserPassService
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
+import * as crypto from "node:crypto";
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { name, surname, email, password, confirmPassword } = req.body;
+  const { name, surname, email, password } = req.body;
   const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
 
   try {
@@ -25,14 +26,7 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid user data" });
     }
 
-    return res.status(201).json({
-      id: newUser.id,
-      name: newUser.name,
-      surname: newUser.surname,
-      email: newUser.email,
-      avatar: newUser.avatar,
-      token: generateToken(newUser.id)
-    });
+    return res.status(201).json({ token: generateToken(newUser.id) });
   } catch (error) {
     res.status(500).json({ message: `Registration failed: ${error}` });
   }
@@ -48,18 +42,12 @@ export const authUser = async (req: Request, res: Response) => {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      return res.status(200).json({
-        id: user.id,
-        name: user.name,
-        surname: user.surname,
-        email: user.email,
-        avatar: user.avatar,
-        token: generateToken(user.id)
-      })
+      return res.status(200).json({ token: generateToken(user.id) })
     } else {
       return res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: `Authentication failed: ${error}` });
   }
 };
@@ -73,7 +61,14 @@ export const forgotPassword = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "User does not exist" });
     }
 
-    const resetURL = `http://localhost:3000/reset-password`;
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+    await user.save();
+
+    const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -86,22 +81,21 @@ export const forgotPassword = async (req: Request, res: Response) => {
       `,
     });
 
-    return res.status(200).json({
-      message: "Reset email sent",
-      token: generateToken(user.id)
-    });
+    return res.status(200).json({ message: "Reset email sent" });
   } catch (err) {
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-  const { newPassword, confirmNewPassword, token } = req.body;
+  const { token, newPassword } = req.body;
+
+  if (!token) return res.status(400).json({ message: "Token is required" });
 
   try {
-    await resetUserPassService(newPassword, confirmNewPassword, token);
+    await resetUserPassService(token, newPassword);
 
-    return res.status(200).json({ message: "Password successfully updated" });
+    return res.json({ message: "Password successfully updated" });
   } catch (error) {
     return res.status(400).json({ message: "Invalid or expired token" });
   }
@@ -109,20 +103,15 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export const changePassword = async (req: Request, res: Response) => {
   const { password, newPassword, confirmNewPassword } = req.body;
+  const user = req.user;
 
   try {
-    const user = req.user;
-
     if (user && (await bcrypt.compare(password, user.password))) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      await changeUserPassService(newPassword, confirmNewPassword, user);
 
-      user.password = hashedPassword;
-      await user.save();
-
-      return res.status(200).json({message: "Password changed successfully"});
+      return res.status(200).json({ message: "Password changed successfully" });
     } else {
-      return res.status(401).json({message: "Invalid password"});
+      return res.status(401).json({ message: "Invalid password" });
     }
   } catch (error) {
     return res.status(500).json({ message: "Server error" });

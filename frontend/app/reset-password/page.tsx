@@ -1,7 +1,7 @@
 "use client";
 
-import React, {useState} from 'react';
-import { useRouter } from "next/navigation";
+import React, { useState } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
 import {TriangleAlert, KeyRound} from "lucide-react";
 import ModalInput from "@/components/ModalInput";
 import Button from "@/components/ui/Button";
@@ -15,6 +15,7 @@ const ForgotPasswordPage = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { notify } = useNotification();
 
@@ -27,7 +28,7 @@ const ForgotPasswordPage = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("resetToken");
+      const token = searchParams.get("token");
       if (token) {
         await apiFetch("POST", `users/reset-password`, undefined, { ...password, token });
 
@@ -39,7 +40,6 @@ const ForgotPasswordPage = () => {
           description: "Password reseted successfully.",
         });
       }
-      localStorage.removeItem("resetToken");
     } catch (error: any) {
       setError(error.message);
     }

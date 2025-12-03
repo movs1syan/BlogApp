@@ -17,11 +17,13 @@ export interface PostCreationType {
   userId: number;
 }
 
-export interface UserType {
-  id: number;
-  name: string;
-  surname: string;
-  email: string;
-  password: string;
-  avatar: string | null;
-}
+
+//
+// export interface UserType {
+//   id: number;
+//   name: string;
+//   surname: string;
+//   email: string;
+//   password: string;
+//   avatar: string | null;
+// }

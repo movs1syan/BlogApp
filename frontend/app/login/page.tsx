@@ -2,12 +2,11 @@
 
 import React, {useState} from 'react';
 import { useRouter } from "next/navigation";
-import {apiFetch} from "@/lib/apiFetch";
-import {useUser} from "@/hooks/useUser";
 import ModalInput from "@/components/ModalInput";
 import Button from "@/components/ui/Button";
 import {TriangleAlert, UserCheck} from "lucide-react";
 import Link from "next/link";
+import {handleLogin} from "@/lib/actions";
 
 const Login = () => {
   const [userData, setUserData] = useState<{ email: string, password: string }>({
@@ -17,7 +16,6 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { setUser } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData(prevState => ({ ...prevState!, [e.target.name]: e.target.value }));
@@ -29,11 +27,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const data = await apiFetch("POST", "users/login", undefined, userData);
-      localStorage.setItem("token", data.token);
-
-      const { id, name, surname, email, avatar } = data;
-      setUser({ id, name, surname, email, avatar });
+      await handleLogin(userData);
 
       router.push("/");
     } catch (error: any) {

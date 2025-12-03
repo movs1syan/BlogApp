@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../models/index.ts";
+import { User } from "../models/models.ts";
 
 interface JwtPayloadWithId extends jwt.JwtPayload {
   id: number;

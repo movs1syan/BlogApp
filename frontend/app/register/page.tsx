@@ -3,13 +3,12 @@
 import React from 'react';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/apiFetch";
 import type {  RegisterFormType } from "@/shared/types";
-import { useUser } from '@/hooks/useUser';
 import Button from "@/components/ui/Button";
 import ModalInput from "@/components/ModalInput";
 import { UserPlus, TriangleAlert } from "lucide-react";
 import Link from "next/link";
+import {handleRegister} from "@/lib/actions";
 
 const Register = () => {
   const [newUser, setNewUser] = useState<RegisterFormType>({
@@ -23,7 +22,6 @@ const Register = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { setUser } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "avatar" && e.target.files) {
@@ -50,11 +48,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const data = await apiFetch("POST", "users/register", undefined, formData);
-      localStorage.setItem("token", data.token);
-
-      const { id, name, surname, email, avatar } = data;
-      setUser({ id, name, surname, email, avatar });
+      await handleRegister(formData);
 
       router.push("/");
     } catch (error: any) {

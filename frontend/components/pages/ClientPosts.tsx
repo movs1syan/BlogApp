@@ -144,12 +144,6 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
         <Activity mode={page > 1 ? "visible" : "hidden"}>
           <Button type={"link"} icon={"ArrowLeft"} onClick={() => goToPage(page - 1)}>Prev</Button>
         </Activity>
-        {/*<Activity mode={page * 9 - (page - 2) * 9 > 9 && page > 2 ? "visible" : "hidden"}>*/}
-        {/*  <Button type={"link"} onClick={() => goToPage(page - 2)}>{page - 2}</Button>*/}
-        {/*</Activity>*/}
-        {/*<Activity mode={page * 9 - (page - 1) * 9  > 0 && page > 1 ? "visible" : "hidden"}>*/}
-        {/*  <Button type={"link"} onClick={() => goToPage(page - 1)}>{page - 1}</Button>*/}
-        {/*</Activity>*/}
         <Activity mode={page > 1 ? "visible" : "hidden"}>
           <Button type={"link"} onClick={() => goToPage(1)}>1</Button>
         </Activity>
@@ -159,7 +153,10 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
         <Activity mode={page > 3 ? "visible" : "hidden"}>
           <Button type={"link"} onClick={() => goToPage(3)}>3</Button>
         </Activity>
-        <span>Page {page}</span>
+        <Activity mode={page > 4 ? "visible" : "hidden"}>
+          <span className={"font-bold"}>. . .</span>
+        </Activity>
+        <span className={"font-bold"}>{page}</span>
         <Activity mode={totalPostsQuantity - (page * 9) > 0 ? "visible" : "hidden"}>
           <Button type={"link"} onClick={() => goToPage(page + 1)}>{page + 1}</Button>
         </Activity>

@@ -1,11 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { User, Post } from "../models/index.ts";
-import type {UserInstance} from "../models/User.ts";
-import jwt from "jsonwebtoken";
-
-interface JwtPayloadWithId extends jwt.JwtPayload {
-  id: number;
-}
+import { User, Post } from "../models/models.ts";
+import {Op} from "sequelize";
+import crypto from "node:crypto";
 
 export const createUserService = async (name: string, surname: string, email: string, password: string, avatarPath: string | null) => {
   const salt = await bcrypt.genSalt(10);
@@ -24,7 +20,7 @@ export const getUserService = async (email: string) => {
   return User.findOne({ where: { email } });
 };
 
-export const updateUserService = async (name: string, surname: string, avatarPath: string | null, user: UserInstance) => {
+export const updateUserService = async (name: string, surname: string, avatarPath: string | null, user: any) => {
   if (user.avatar !== null && avatarPath === null) {
     return user.update({
       name,
@@ -54,14 +50,32 @@ export const getUserProfileService = async (id: number) => {
   });
 };
 
+export const resetUserPassService = async (token: string, newPassword: string) => {
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-export const resetUserPassService = async (newPassword: string, confirmNewPassword: string, token: string) => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayloadWithId;
-  const user = await User.findByPk(decoded.id);
+  const user = await User.findOne({
+    where: {
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { [Op.gt]: new Date() },
+    },
+  });
+
   if (!user) {
-    throw new Error("User does not exist")
+    throw new Error("User does not exist.");
   }
 
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  user.password = hashedPassword;
+
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
+
+  await user.save();
+};
+
+export const changeUserPassService = async (newPassword: string, confirmNewPassword: string, user: any) => {
   if (newPassword !== confirmNewPassword) {
     throw new Error("Passwords don't match")
   }

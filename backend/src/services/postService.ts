@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Post, User } from "../models/index.ts";
+import { Post, User } from "../models/models.ts";
 import type { PostCreationType } from "../types";
 
 export const getSinglePostService = async (id: number) => {
@@ -14,7 +14,7 @@ export const getSinglePostService = async (id: number) => {
   });
 };
 
-export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy }: { page: number; limit: number; search: string; sortBy: string; orderBy: string }) => {
+export const getAllPostsService = async ({ page, limit, search }: { page: number; limit: number; search: string; }) => {
   const offset = (page - 1) * limit;
 
   const searchFilter = search ? {
@@ -29,7 +29,7 @@ export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy 
     where: searchFilter,
     limit,
     offset,
-    order: [[sortBy, orderBy]],
+    order: [["createdAt", "DESC"]],
     include: [
       {
         model: User,
@@ -38,6 +38,10 @@ export const getAllPostsService = async ({ page, limit, search, sortBy, orderBy 
       },
     ]
   });
+
+  if (offset > totalPostsQuantity) {
+    throw new Error(`Page ${page} not found`);
+  }
 
   return { totalPostsQuantity, posts };
 };

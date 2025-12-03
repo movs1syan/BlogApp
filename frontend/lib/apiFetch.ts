@@ -1,3 +1,7 @@
+"use server";
+
+import { getToken } from "@/lib/cookies";
+
 const baseURL = "http://localhost:8000/api";
 
 export const apiFetch = async (
@@ -14,8 +18,7 @@ export const apiFetch = async (
     }
   }
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+  const token =  await getToken();
   const isFormData = data instanceof FormData;
 
   const options: RequestInit = {

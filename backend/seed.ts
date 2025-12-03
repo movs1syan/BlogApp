@@ -7,7 +7,7 @@ const pool = new Pool({
   database: 'blog_app',
   password: "qwerty123",
   port: 5432,
-})
+});
 
 async function seedDatabase() {
   try {

@@ -101,15 +101,21 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {post.author.avatar && (
-            <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} loading={"eager"} unoptimized className={"size-10 object-cover rounded-full"} />
-          )}
+        <div className={"flex items-center gap-5"}>
+          <div className="flex items-center gap-3">
+            {post.author.avatar && (
+              <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} loading={"eager"} unoptimized className={"size-10 object-cover rounded-full"} />
+            )}
 
-          <div className="flex flex-col">
-            <p>{post.author.name} {post.author.surname}</p>
-            <p className="text-gray-600">{getDate(post.createdAt)}</p>
+            <div className="flex flex-col">
+              <p>{post.author.name} {post.author.surname}</p>
+              <p className="text-gray-600">{getDate(post.createdAt)}</p>
+            </div>
           </div>
+
+          <Activity mode={user && user.id !== post.userId ? "visible" : "hidden"}>
+            <Button type={"link"} icon={"UserPlus"}>Follow</Button>
+          </Activity>
         </div>
 
         <Activity mode={user !== null && user.id === post.userId ? "visible" : "hidden"}>

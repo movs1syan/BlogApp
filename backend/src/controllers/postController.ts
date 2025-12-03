@@ -24,10 +24,8 @@ export const getPosts = async (req: Request, res: Response) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 9;
     const search = String(req.query.search || "");
-    const sortBy = String(req.query.sortBy || "createdAt");
-    const orderBy = String(req.query.orderBy || "DESC");
 
-    const posts = await getAllPostsService({ page, limit, search, sortBy, orderBy });
+    const posts = await getAllPostsService({ page, limit, search });
     if (!posts) {
       return res.status(404).json({ message: `No posts found` });
     }

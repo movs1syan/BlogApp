@@ -25,7 +25,6 @@ const ForgotPasswordPage = () => {
     try {
       const response = await apiFetch("POST", "users/forgot-password", undefined, {email});
       setMessage(response.message);
-      localStorage.setItem("resetToken", response.token);
     } catch (error: any) {
       setError(error.message);
     }
