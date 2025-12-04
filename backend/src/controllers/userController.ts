@@ -10,6 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
+import {User} from "../models/models.ts";
 
 export const registerUser = async (req: Request, res: Response) => {
   const { name, surname, email, password } = req.body;
@@ -145,4 +146,43 @@ export const getUserProfile = async (req: Request, res: Response) => {
   const user = await getUserProfileService(req.user.id);
 
   return res.status(200).json(user);
+};
+
+export const getUserWithFollowers = async (req: Request, res: Response) => {
+  const { id } = req.user;
+
+  try {
+    const user = await User.findByPk(id, {
+      include: [
+        {
+          model: User,
+          as: "followers",
+          attributes: ["id"],
+          through: { attributes: [], where: { status: "accepted" } }
+        },
+        {
+          model: User,
+          as: "following",
+          attributes: ["id"],
+          through: { attributes: [], where: { status: "accepted" } }
+        },
+        {
+          model: User,
+          as: "pending",
+          attributes: ["id"],
+          through: { attributes: [], where: { status: "pending" } }
+        }
+      ],
+      attributes: { exclude: ["password", "resetPasswordToken", "resetPasswordExpires", "createdAt", "updatedAt"] },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
 };

@@ -7,7 +7,8 @@ import {
   changePassword,
   updateUser,
   getUserInfo,
-  getUserProfile
+  getUserProfile,
+  getUserWithFollowers
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -25,6 +26,7 @@ const router = Router();
 
 router.get("/me", authMiddleware, getUserInfo);
 router.get("/profile", authMiddleware, getUserProfile);
+router.get("/me-with-followers", authMiddleware, getUserWithFollowers)
 
 router.post("/register", uploadAvatarMiddleware.single("avatar"), validate(createUserSchema), registerUser);
 router.post("/login", validate(authUserSchema), authUser);

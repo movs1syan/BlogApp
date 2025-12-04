@@ -30,11 +30,12 @@ export default async function RootLayout({
 }>) {
   const token = await getToken();
   const authorizedUser = token ? await apiFetch("GET", "users/me") : null;
+  const userData = token ? await apiFetch("GET", "users/me-with-followers") : null;
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <UserProvider>
+        <UserProvider userData={userData}>
           <NotificationProvider>
             <Navbar user={authorizedUser} />
             <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">

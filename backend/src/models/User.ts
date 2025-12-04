@@ -21,6 +21,27 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         foreignKey: "userId",
         as: "posts",
       });
+
+      this.belongsToMany(models.User, {
+        through: "Follows",
+        as: "followers",
+        foreignKey: "followingId",
+        otherKey: "followerId",
+      });
+
+      this.belongsToMany(models.User, {
+        through: "Follows",
+        as: "pending",
+        foreignKey: "followerId",
+        otherKey: "followingId",
+      });
+
+      this.belongsToMany(models.User, {
+        through: "Follows",
+        as: "following",
+        foreignKey: "followerId",
+        otherKey: "followingId",
+      });
     }
   }
 

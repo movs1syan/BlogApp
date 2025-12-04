@@ -130,9 +130,9 @@ const Button: React.FC<ButtonProps> = ({
         ${colorSet.base} ${colorSet.hover} ${colorSet.active} ${dashedClass}`}
     >
       {loading && (
-        <span className={`animate-spin rounded-full border-solid border-t-transparent ${loadingSizeMap[size]}`}></span>
+        <span className={`animate-spin rounded-full border-t-transparent ${loadingSizeMap[size]} ${type !== "link" && "border-solid"}`}></span>
       )}
-      {IconComponent && (
+      {!loading && IconComponent && (
         <IconComponent className={`${iconPosition === "end" ? "order-1" : ""}`} size={iconSizeMap[size]} />
       )}
       {children}

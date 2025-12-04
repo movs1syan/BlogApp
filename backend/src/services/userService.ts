@@ -37,15 +37,13 @@ export const updateUserService = async (name: string, surname: string, avatarPat
 
 export const getUserProfileService = async (id: number) => {
   return User.findByPk(id, {
-    include: [
-      {
-        model: Post,
-        as: "posts",
-        attributes: ["id", "title", "subtitle", "description", "category", "image", "createdAt"],
-        separate: true,
-        order: [["createdAt", "DESC"]]
-      }
-    ],
+    include: [{
+      model: Post,
+      as: "posts",
+      attributes: ["id", "title", "subtitle", "description", "category", "image", "createdAt"],
+      separate: true,
+      order: [["createdAt", "DESC"]]
+    }],
     attributes: { exclude: ["id", "password"] },
   });
 };

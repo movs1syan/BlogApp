@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src/**/*.ts --exec ts-node -r tsconfig-paths/register src/server.ts",
-    "seed": "ts-node -r tsconfig-paths/register seed.ts",
     "migrate:all": "npx sequelize-cli db:migrate",
-    "migrate:generate": "npx sequelize-cli migration:generate --name add-followers-table",
+    "migrate:generate": "npx sequelize-cli migration:generate --name add-status-field",
+    "migrate:generate:model": "npx sequelize-cli model:generate --name Followers --attributes followerId:Integer,followingId:Integer",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo",
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all --to 20251202114808-add-user-table.js",
     "seed:generate": "npx sequelize-cli seed:generate --name demo-posts",

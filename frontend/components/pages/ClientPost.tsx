@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Activity, useState } from "react";
+import React, {Activity, useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
 import Button from "@/components/ui/Button";
@@ -24,8 +24,30 @@ const ClientPost = ({ post }: { post: PostType }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFollowed, setIsFollowed] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
   const router = useRouter();
-  const { user } = useUser();
+  const { user, userWithFollowers } = useUser();
+
+  useEffect(() => {
+    if (!userWithFollowers) return;
+
+    userWithFollowers.following.forEach(user => {
+      if (user.id !== post.userId) {
+        setIsFollowed(false);
+      } else {
+        setIsFollowed(true);
+      }
+    });
+
+    userWithFollowers.pending.forEach(user => {
+      if (user.id === post.userId) {
+        setIsWaiting(true);
+      } else {
+        setIsWaiting(false);
+      }
+    });
+  }, [userWithFollowers, post]);
 
   const onDelete = async () => {
     setLoading(true);
@@ -82,6 +104,21 @@ const ClientPost = ({ post }: { post: PostType }) => {
     router.refresh();
   };
 
+  const handleFollow = async () => {
+    if (!user) return;
+    if (isFollowed) return;
+    if (isWaiting) return;
+
+    try {
+      setLoading(true);
+      await apiFetch("POST", `follows/follow/request`, undefined, { id: post.userId });
+      setLoading(false);
+      setIsWaiting(true);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
   const fullImageURL = `http://localhost:8000${currentPost.image}`;
   const fullAvatarURL = `http://localhost:8000${post.author.avatar}`;
 
@@ -114,7 +151,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
 
           <Activity mode={user && user.id !== post.userId ? "visible" : "hidden"}>
-            <Button type={"link"} icon={"UserPlus"}>Follow</Button>
+            <Button type={"link"} icon={!isFollowed && !isWaiting ? "UserPlus" : "UserCheck"} onClick={handleFollow} loading={loading}>{!isFollowed && !isWaiting ? "Follow" : !isFollowed && isWaiting ? "Request sent" : isFollowed && "Followed"}</Button>
           </Activity>
         </div>
 
