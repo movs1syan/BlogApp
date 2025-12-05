@@ -5,7 +5,6 @@ import cors from "cors";
 import { connectDB } from "./db.ts";
 import postRoutes from "./routes/postRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
-import followRoutes from "./routes/followRoutes.ts";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -20,7 +19,6 @@ app.use(express.json());
 
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/follows", followRoutes);
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 

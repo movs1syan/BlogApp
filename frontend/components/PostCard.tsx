@@ -27,8 +27,10 @@ const PostCard = ({ post }: { post: PostType }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {post.author.avatar && (
-          <Image src={fullAvatarUrl} alt={fullAvatarUrl} unoptimized width={40} height={40} className="size-10 rounded-full object-cover" />
+        {post.author.avatar ? (
+          <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
+        ) : (
+          <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
         )}
 
         <div className="flex flex-col">

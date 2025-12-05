@@ -26,21 +26,24 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         through: "Follows",
         as: "followers",
         foreignKey: "followingId",
-        otherKey: "followerId",
       });
 
       this.belongsToMany(models.User, {
         through: "Follows",
-        as: "pending",
+        as: "pendingToBeAccepted",
         foreignKey: "followerId",
-        otherKey: "followingId",
+      });
+
+      this.belongsToMany(models.User, {
+        through: "Follows",
+        as: "pendingToAccept",
+        foreignKey: "followingId",
       });
 
       this.belongsToMany(models.User, {
         through: "Follows",
         as: "following",
         foreignKey: "followerId",
-        otherKey: "followingId",
       });
     }
   }

@@ -37,7 +37,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <UserProvider userData={userData}>
           <NotificationProvider>
-            <Navbar user={authorizedUser} />
+            <Navbar user={userData} />
             <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
               {children}
             </div>

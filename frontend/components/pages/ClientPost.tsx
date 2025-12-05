@@ -27,27 +27,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
   const router = useRouter();
-  const { user, userWithFollowers } = useUser();
-
-  useEffect(() => {
-    if (!userWithFollowers) return;
-
-    userWithFollowers.following.forEach(user => {
-      if (user.id !== post.userId) {
-        setIsFollowed(false);
-      } else {
-        setIsFollowed(true);
-      }
-    });
-
-    userWithFollowers.pending.forEach(user => {
-      if (user.id === post.userId) {
-        setIsWaiting(true);
-      } else {
-        setIsWaiting(false);
-      }
-    });
-  }, [userWithFollowers, post]);
+  const { user } = useUser();
 
   const onDelete = async () => {
     setLoading(true);
@@ -111,7 +91,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
 
     try {
       setLoading(true);
-      await apiFetch("POST", `follows/follow/request`, undefined, { id: post.userId });
+      await apiFetch("POST", `users/follow/request`, undefined, { id: post.userId });
       setLoading(false);
       setIsWaiting(true);
     } catch (error: any) {
@@ -140,8 +120,10 @@ const ClientPost = ({ post }: { post: PostType }) => {
 
         <div className={"flex items-center gap-5"}>
           <div className="flex items-center gap-3">
-            {post.author.avatar && (
-              <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} loading={"eager"} unoptimized className={"size-10 object-cover rounded-full"} />
+            {post.author.avatar ? (
+              <Image src={fullAvatarURL} alt={fullAvatarURL} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
+            ) : (
+              <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
             )}
 
             <div className="flex flex-col">
@@ -149,10 +131,6 @@ const ClientPost = ({ post }: { post: PostType }) => {
               <p className="text-gray-600">{getDate(post.createdAt)}</p>
             </div>
           </div>
-
-          <Activity mode={user && user.id !== post.userId ? "visible" : "hidden"}>
-            <Button type={"link"} icon={!isFollowed && !isWaiting ? "UserPlus" : "UserCheck"} onClick={handleFollow} loading={loading}>{!isFollowed && !isWaiting ? "Follow" : !isFollowed && isWaiting ? "Request sent" : isFollowed && "Followed"}</Button>
-          </Activity>
         </div>
 
         <Activity mode={user !== null && user.id === post.userId ? "visible" : "hidden"}>

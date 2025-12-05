@@ -4,7 +4,7 @@
 export default {
   async up (queryInterface, Sequelize) {
      await queryInterface.addColumn('Follows', "status", {
-       type: Sequelize.STRING,
+       type: "pending" | "accepted",
        defaultValue: "pending",
      });
   },

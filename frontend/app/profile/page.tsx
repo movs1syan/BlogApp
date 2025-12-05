@@ -79,8 +79,10 @@ const UserProfilePage = () => {
     <>
     <main className={"flex flex-col py-10"}>
       <div className={"flex gap-10"}>
-        {currentUser.avatar && (
+        {currentUser.avatar ? (
           <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={150} height={200} unoptimized />
+        ) : (
+          <Image src={"/profile-picture.png"} alt={"avatar"} width={200} height={200} />
         )}
         <div className={"flex flex-col gap-26"}>
           <div className={"flex flex-col gap-3"}>
