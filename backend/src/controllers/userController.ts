@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Follows} from "../models/models.ts";
+import {User, Friend} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -152,21 +152,24 @@ export const getUserProfile = async (req: Request, res: Response) => {
 export const getAllUsers = async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 9;
-  const search = String(req.query.search || "");
+  const userSearch = String(req.query.userSearch || "");
 
   const offset = (page - 1) * limit;
 
-  const searchFilter = search ? {
+  const searchFilter = userSearch ? {
     [Op.or]: [
-      { name: { [Op.iLike]: `%${search}%` } },
-      { surname: { [Op.iLike]: `%${search}%` } },
-      { email: { [Op.iLike]: `%${search}%` } },
+      { name: { [Op.iLike]: `%${userSearch}%` } },
+      { surname: { [Op.iLike]: `%${userSearch}%` } },
+      { email: { [Op.iLike]: `%${userSearch}%` } },
     ]
   } : {};
 
   try {
     const { count: totalUsersQuantity, rows: users } = await User.findAndCountAll({
-      where: searchFilter,
+      where: {
+        ...searchFilter,
+        id: { [Op.ne]: req.user.id },
+      },
       limit,
       offset,
       order: [["createdAt", "DESC"]],
@@ -184,17 +187,17 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const sendFollow = async (req: Request, res: Response) => {
-  const followerId = req.user.id;
-  const followingId = Number(req.body.id);
+export const sendRequest = async (req: Request, res: Response) => {
+  const reqSenderId = req.user.id;
+  const reqTakerId = Number(req.body.id);
 
   try {
-    if (followerId === followingId) {
-      return res.status(400).json({ message: "You cannot follow yourself" });
+    if (reqSenderId === reqTakerId) {
+      return res.status(400).json({ message: "You cannot send friend request to you" });
     }
 
-    const existing = await Follows.findOne({
-      where: { followerId, followingId }
+    const existing = await Friend.findOne({
+      where: { reqSenderId, reqTakerId }
     });
 
     if (existing) {
@@ -202,62 +205,64 @@ export const sendFollow = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Request already sent" });
       }
       if (existing.status === "accepted") {
-        return res.status(400).json({ message: "Already following" });
+        return res.status(400).json({ message: "Already friends" });
       }
     }
 
-    await Follows.create({ followerId, followingId, status: "pending" });
+    await Friend.create({ reqSenderId, reqTakerId, status: "pending" });
 
-    return res.status(200).json({ message: "Follow request sent" });
+    return res.status(200).json({ message: "Friend request sent" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-export const acceptFollow = async (req: Request, res: Response) => {
-  const followingId = req.user.id;
-  const followerId = Number(req.body.id);
+export const acceptRequest = async (req: Request, res: Response) => {
+  const reqTakerId = req.user.id;
+  const reqSenderId = Number(req.body.id);
 
   try {
-    const follow = await Follows.findOne({
-      where: {
-        followerId,
-        followingId,
-        status: "pending"
-      }
+    const friends = await Friend.findOne({
+      where: { reqSenderId, reqTakerId, status: "pending" }
     });
 
-    if (!follow) {
-      return res.status(400).json({ message: "Follow request not found" });
+    if (!friends) {
+      return res.status(400).json({ message: "Friend request not found" });
     }
 
-    follow.status = "accepted";
-    await follow.save();
+    friends.status = "accepted";
+    await friends.save();
 
-    return res.status(200).json({ message: "Follow request accepted" });
+    await Friend.create({
+      reqSenderId: reqTakerId,
+      reqTakerId: reqSenderId,
+      status: "accepted",
+    });
+
+    return res.status(200).json({ message: "Friend request accepted" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-export const declineFollow = async (req: Request, res: Response) => {
+export const declineRequest = async (req: Request, res: Response) => {
   try {
-    const userId = req.user.id;
-    const followerId = Number(req.body.id);
+    const reqTakerId = req.user.id;
+    const reqSenderId = Number(req.body.id);
 
-    const follow = await Follows.findOne({
+    const friends = await Friend.findOne({
       where: {
-        followerId,
-        followingId: userId,
+        reqSenderId,
+        reqTakerId,
         status: "pending"
       }
     });
 
-    if (!follow) return res.status(404).json({ message: "Request not found" });
+    if (!friends) return res.status(404).json({ message: "Request not found" });
 
-    await follow.destroy();
+    await friends.destroy();
 
     res.json({ message: "Request declined" });
   } catch (e) {
@@ -266,22 +271,27 @@ export const declineFollow = async (req: Request, res: Response) => {
   }
 };
 
-export const unfollowUser = async (req: Request, res: Response) => {
+export const unfriendUser = async (req: Request, res: Response) => {
   try {
-    const followerId = req.user.id;
-    const followingId = Number(req.body.id);
+    const reqSenderId = req.user.id;
+    const reqTakerId = Number(req.body.id);
 
-    const alreadyFollowing = await Follows.findOne({
-      where: { followerId, followingId, status: "accepted" }
+    const friends1 = await Friend.findOne({
+      where: { reqSenderId, reqTakerId, status: "accepted" }
     });
 
-    if (!alreadyFollowing) {
-      return res.status(400).json({ message: "You are not following this user" });
+    const friends2 = await Friend.findOne({
+      where: { reqTakerId: reqSenderId, reqSenderId: reqTakerId, status: "accepted" }
+    })
+
+    if (!friends1 && !friends2) {
+      return res.status(400).json({ message: "You and this user are not friends" });
     }
 
-    await alreadyFollowing.destroy();
+    await friends1.destroy();
+    await friends2.destroy();
 
-    return res.json({ message: "Unfollowed successfully" });
+    return res.json({ message: "Unfriended successfully" });
   } catch (e) {
     console.log(e);
     return res.status(500).json({ message: "Server error" });
@@ -330,7 +340,7 @@ export const getFollowings = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserWithFollowers = async (req: Request, res: Response) => {
+export const getUserWithFriends = async (req: Request, res: Response) => {
   const { id } = req.user;
 
   try {
@@ -338,14 +348,8 @@ export const getUserWithFollowers = async (req: Request, res: Response) => {
       include: [
         {
           model: User,
-          as: "followers",
-          attributes: ["id"],
-          through: { attributes: [], where: { status: "accepted" } }
-        },
-        {
-          model: User,
-          as: "following",
-          attributes: ["id"],
+          as: "friends",
+          attributes: ["id", "name", "surname", "email", "avatar"],
           through: { attributes: [], where: { status: "accepted" } }
         },
         {

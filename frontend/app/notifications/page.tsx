@@ -1,25 +1,25 @@
 "use client";
 
 import {useUser} from "@/hooks/useUser";
-import FollowNotification from "@/components/ui/FollowNotification";
+import FriendNotification from "@/components/ui/FriendNotification";
 import { BellOff } from "lucide-react";
 import Spinner from "@/components/ui/Spinner";
 
 const NotificationsPage = () => {
-  const { userWithFollowers } = useUser();
+  const { userWithFriends } = useUser();
 
   return (
     <>
-      {!userWithFollowers?.pendingToAccept ? (
+      {!userWithFriends?.pendingToAccept ? (
         <div className={"mt-15 py-16"}>
           <Spinner size={"large"} tip={"Loading..."} />
         </div>
-      ) : userWithFollowers.pendingToAccept.length > 0 ? (
+      ) : userWithFriends.pendingToAccept.length > 0 ? (
         <div>
           <h1 className={"font-bold text-3xl mt-10"}>Notifications</h1>
           <div className={"flex flex-col gap-5 mt-4"}>
-            {userWithFollowers?.pendingToAccept.map(user => (
-              <FollowNotification key={user.id} user={user} />
+            {userWithFriends?.pendingToAccept.map(user => (
+              <FriendNotification key={user.id} user={user} />
             ))}
           </div>
         </div>

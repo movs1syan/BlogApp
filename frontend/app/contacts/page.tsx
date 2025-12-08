@@ -5,9 +5,9 @@ import ClientUsers from "@/components/pages/ClientUsers";
 export default async function Contacts(props: PageProps<'/contacts'>) {
   const resolvedParams = await props.searchParams;
   const page = Number(resolvedParams?.page || 1);
-  const search =  Array.isArray(resolvedParams?.search) ? resolvedParams.search[0] : resolvedParams?.search || "";
+  const userSearch =  Array.isArray(resolvedParams?.userSearch) ? resolvedParams.userSearch[0] : resolvedParams?.userSearch || "";
 
-  const { totalUsersQuantity, users } = await apiFetch("GET", "users/all-users", { page, limit: 9, search });
+  const { totalUsersQuantity, users } = await apiFetch("GET", "users/all-users", { page, limit: 6, userSearch });
 
   return (
     <main>
@@ -18,9 +18,9 @@ export default async function Contacts(props: PageProps<'/contacts'>) {
         <p className="text-center">Explore profiles, discover new connections, and grow your network. Add users as friends<br /> to stay updated with their latest activity.</p>
       </section>
 
-      {/* Blog Posts */}
+      {/* Users */}
       <section className="pb-10">
-        <ClientUsers users={users} totalUsersQuantity={totalUsersQuantity} />
+        <ClientUsers users={users} totalUsersQuantity={totalUsersQuantity} page={page} />
       </section>
     </main>
   );

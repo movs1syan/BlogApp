@@ -29,8 +29,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const token = await getToken();
-  const authorizedUser = token ? await apiFetch("GET", "users/me") : null;
-  const userData = token ? await apiFetch("GET", "users/me-with-followers") : null;
+  const userData = token ? await apiFetch("GET", "users/me") : null;
 
   return (
     <html lang="en">

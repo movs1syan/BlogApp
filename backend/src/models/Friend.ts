@@ -4,29 +4,29 @@ import Sequelize, { Model } from "sequelize";
 
 interface FollowsAttributes {
   id: number;
-  followerId: number;
-  followingId: number;
+  reqSenderId: number;
+  reqTakerId: number;
   status: "pending" | "accepted";
   createdAt: Date;
   updatedAt: Date;
 }
 
 export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
-  class Follows extends Model<FollowsAttributes> {
+  class Friend extends Model<FollowsAttributes> {
     static associate(models: any) {
-      this.belongsTo(models.User, { foreignKey: 'followerId', as: 'followerUser' });
-      this.belongsTo(models.User, { foreignKey: 'followingId', as: 'followingUser' });
+      this.belongsTo(models.User, { foreignKey: 'reqSenderId', as: 'reqSenderUser' });
+      this.belongsTo(models.User, { foreignKey: 'reqTakerId', as: 'reqTakerUser' });
     }
   }
 
-  Follows.init({
+  Friend.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    followerId: {
+    reqSenderId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -36,7 +36,7 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    followingId: {
+    reqTakerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -48,7 +48,6 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     },
     status: {
       type: DataTypes.ENUM("pending", "accepted"),
-      defaultValue: "pending",
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -60,8 +59,8 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Follows',
+    modelName: 'Friend',
   });
 
-  return Follows;
+  return Friend;
 };

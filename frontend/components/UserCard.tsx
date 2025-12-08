@@ -1,51 +1,87 @@
 "use client";
 
 import React, {Activity, useEffect, useState} from 'react';
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
-import { getDate } from "@/helpers/getDate";
+import { useRouter } from "next/navigation";
 import type { UserType } from "@/shared/types";
 import Button from './ui/Button';
 import {useUser} from "@/hooks/useUser";
 import {apiFetch} from "@/lib/apiFetch";
 
 const UserCard = ({ user }: { user: Omit<UserType, "password" | "confirmPassword"> }) => {
-  const { userWithFollowers } = useUser();
+  const { userWithFriends } = useUser();
   const [areFriends, setAreFriends] = useState(false);
-  const [isWaiting, setIsWaiting] = useState(false);
+  const [isWaitingToBeAccepted, setIsWaitingToBeAccepted] = useState(false);
+  const [isWaitingToAccept, setIsWaitingToAccept] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!userWithFollowers) return;
+    if (!userWithFriends) return;
 
-    userWithFollowers.following.forEach(person => {
-      if (person.id !== user.id) {
-        setAreFriends(false);
-      } else {
-        setAreFriends(true);
-      }
-    });
+    if (userWithFriends.friends.find(person => person.id === user.id)) {
+      setAreFriends(true)
+    } else {
+      setAreFriends(false)
+    }
 
-    userWithFollowers.pendingToBeAccepted.forEach(person => {
-      if (person.id === user.id) {
-        setIsWaiting(true);
-      } else {
-        setIsWaiting(false);
-      }
-    });
-  }, [userWithFollowers, user]);
+    if (userWithFriends.pendingToBeAccepted.find(person => person.id === user.id)) {
+      setIsWaitingToBeAccepted(true)
+    } else {
+      setIsWaitingToBeAccepted(false)
+    }
+
+    if (userWithFriends.pendingToAccept.find(person => person.id === user.id)) {
+      setIsWaitingToAccept(true)
+    } else {
+      setIsWaitingToAccept(false)
+    }
+  }, [userWithFriends, user]);
 
   const handleAddToFriends = async () => {
     if (areFriends) return;
-    if (isWaiting) return;
+    if (isWaitingToBeAccepted) return;
 
     try {
       setLoading(true);
-      await apiFetch("POST", `users/follow/request`, undefined, { id: user.id });
+      await apiFetch("POST", `users/friend/request`, undefined, { id: user.id });
       setLoading(false);
-      setIsWaiting(true);
+      setIsWaitingToBeAccepted(true);
     } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const handleAccept = async (id: number) => {
+    try {
+      await apiFetch("POST", "users/friend/accept", undefined, { id });
+      setIsWaitingToAccept(false);
+      setAreFriends(true);
+
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDecline = async (id: number) => {
+    try {
+      await apiFetch("POST", "users/friend/decline", undefined, { id });
+      setIsWaitingToAccept(false);
+
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUnfriend = async (id: number) => {
+    try {
+      await apiFetch("DELETE", "users/unfriend", undefined, { id });
+      setAreFriends(false);
+
+      router.refresh();
+    } catch (error) {
       console.log(error);
     }
   };
@@ -68,14 +104,27 @@ const UserCard = ({ user }: { user: Omit<UserType, "password" | "confirmPassword
 
       <div className={"flex gap-3"}>
         <Activity mode={user ? "visible" : "hidden"}>
-          <Button
-            type={"link"}
-            icon={!areFriends && !isWaiting ? "UserPlus" : "UserCheck"}
-            onClick={handleAddToFriends}
-            loading={loading}
-          >
-            {!areFriends && !isWaiting ? "Add to friends" : !areFriends && isWaiting ? "Request sent" : areFriends && "Friends"}
-          </Button>
+          {!isWaitingToAccept ? (
+            <>
+              <Button
+                type={"link"}
+                icon={!areFriends && !isWaitingToBeAccepted ? "UserPlus" : "UserCheck"}
+                onClick={handleAddToFriends}
+                loading={loading}
+              >
+                {!areFriends && !isWaitingToBeAccepted ? "Add to friends" : !areFriends && isWaitingToBeAccepted ? "Request sent" : areFriends && "Friends"}
+              </Button>
+
+              {areFriends && (
+                <Button type={"link"} color={"red"} icon={"UserMinusIcon"} onClick={() => handleUnfriend(user.id)}>Remove friend</Button>
+              )}
+            </>
+          ) : (
+            <div className={"flex gap-3"}>
+              <Button onClick={() => handleAccept(user.id)}>Accept</Button>
+              <Button color={"red"} onClick={() => handleDecline(user.id)}>Decline</Button>
+            </div>
+          )}
         </Activity>
       </div>
     </div>

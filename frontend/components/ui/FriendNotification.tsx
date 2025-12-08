@@ -6,7 +6,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import {apiFetch} from "@/lib/apiFetch";
 
-interface IFollowNotification {
+interface IFriendNotification {
   id: number;
   name: string;
   surname: string;
@@ -14,12 +14,12 @@ interface IFollowNotification {
   avatar: string;
 }
 
-const FollowNotification = ({ user } : { user: IFollowNotification }) => {
+const FriendNotification = ({ user } : { user: IFriendNotification }) => {
   const router = useRouter();
 
   const handleAccept = async (id: number) => {
     try {
-      await apiFetch("POST", "users/follow/accept", undefined, { id });
+      await apiFetch("POST", "users/friend/accept", undefined, { id });
 
       router.refresh();
     } catch (error) {
@@ -29,7 +29,7 @@ const FollowNotification = ({ user } : { user: IFollowNotification }) => {
 
   const handleDecline = async (id: number) => {
     try {
-      await apiFetch("POST", "users/follow/decline", undefined, { id });
+      await apiFetch("POST", "users/friend/decline", undefined, { id });
 
       router.refresh();
     } catch (error) {
@@ -61,4 +61,4 @@ const FollowNotification = ({ user } : { user: IFollowNotification }) => {
   );
 };
 
-export default FollowNotification;
+export default FriendNotification;

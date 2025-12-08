@@ -14,14 +14,14 @@ export const getSinglePostService = async (id: number) => {
   });
 };
 
-export const getAllPostsService = async ({ page, limit, search }: { page: number; limit: number; search: string; }) => {
+export const getAllPostsService = async ({ page, limit, postSearch }: { page: number; limit: number; postSearch: string; }) => {
   const offset = (page - 1) * limit;
 
-  const searchFilter = search ? {
+  const searchFilter = postSearch ? {
       [Op.or]: [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { subtitle: { [Op.iLike]: `%${search}%` } },
-        { category: { [Op.iLike]: `%${search}%` } },
+        { title: { [Op.iLike]: `%${postSearch}%` } },
+        { subtitle: { [Op.iLike]: `%${postSearch}%` } },
+        { category: { [Op.iLike]: `%${postSearch}%` } },
       ]
     } : {};
 

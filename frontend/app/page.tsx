@@ -5,9 +5,9 @@ import ClientPosts from "@/components/pages/ClientPosts";
 export default async function Home (props: PageProps<'/'>) {
   const resolvedParams = await props.searchParams;
   const page = Number(resolvedParams?.page || 1);
-  const search =  Array.isArray(resolvedParams?.search) ? resolvedParams.search[0] : resolvedParams?.search || "";
+  const postSearch =  Array.isArray(resolvedParams?.postSearch) ? resolvedParams.postSearch[0] : resolvedParams?.postSearch || "";
 
-  const { totalPostsQuantity, posts } = await apiFetch("GET", "posts/get", { page, limit: 9, search });
+  const { totalPostsQuantity, posts } = await apiFetch("GET", "posts/get", { page, limit: 9, postSearch });
 
   return (
     <main>

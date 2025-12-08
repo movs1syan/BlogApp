@@ -8,9 +8,9 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import ModalInput from "@/components/ModalInput";
-import {useUser} from "@/hooks/useUser";
 import {TriangleAlert} from "lucide-react";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 
 const UserProfilePage = () => {
   const [currentUser, setCurrentUser] = useState<UserWithPostType | null>(null);
@@ -19,7 +19,7 @@ const UserProfilePage = () => {
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { setUser } = useUser();
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -57,15 +57,14 @@ const UserProfilePage = () => {
       try {
         const updatedUser = await apiFetch("PUT", "users/update", undefined, formData);
         setCurrentUser(updatedUser);
+
+        router.refresh();
       } catch (error: any) {
         setLoading(false);
         setError(error.message);
 
         return;
       }
-
-      const updatedUser = await apiFetch("GET", "users/me");
-      setUser(updatedUser);
 
       setLoading(false);
       setIsEditOpen(false);

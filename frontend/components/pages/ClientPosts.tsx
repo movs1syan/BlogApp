@@ -46,10 +46,10 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
 
         const params = new URLSearchParams(window.location.search);
         if (query) {
-          params.set("search", query);
+          params.set("postSearch", query);
           params.set("page", "1");
         } else {
-          params.delete("search");
+          params.delete("postSearch");
         }
 
         router.replace(`/?${params.toString()}`, { scroll: false });

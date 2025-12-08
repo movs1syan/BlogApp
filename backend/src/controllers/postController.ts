@@ -23,9 +23,9 @@ export const getPosts = async (req: Request, res: Response) => {
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 9;
-    const search = String(req.query.search || "");
+    const postSearch = String(req.query.postSearch || "");
 
-    const posts = await getAllPostsService({ page, limit, search });
+    const posts = await getAllPostsService({ page, limit, postSearch });
     if (!posts) {
       return res.status(404).json({ message: `No posts found` });
     }

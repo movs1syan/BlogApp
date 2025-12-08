@@ -6,29 +6,21 @@ import Button from "@/components/ui/Button";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
-import {FC, useEffect, useState} from "react";
-import {Bell, UserCog} from "lucide-react";
+import {FC, useState} from "react";
+import {Bell, UserCog, BookUser} from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
-import type {UserType} from "@/shared/types";
-import {useUser} from "@/hooks/useUser";
 
 interface INavbar {
-  user?: {id: number; name: string; surname: string; email: string; avatar: string; followers: {id: number}[]; following: {id: number}[]; pendingToBeAccepted: {id: number}[]; pendingToAccept: {id: number}[] } | null;
+  user?: {id: number; name: string; surname: string; email: string; avatar: string; friends: {id: number}[]; pendingToBeAccepted: {id: number}[]; pendingToAccept: {id: number}[] } | null;
 }
 
 const Navbar: FC<INavbar> = ({ user }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { setUser } = useUser();
-
-  useEffect(() => {
-    setUser(user as Omit<UserType, "password" | "confirmPassword"> | null);
-  }, [setUser, user]);
 
   const handleLogout = async () => {
     await handleLogoutFn();
-    setUser(null);
     setOpenDrawer(false);
 
     router.push("/login");
@@ -100,7 +92,7 @@ const Navbar: FC<INavbar> = ({ user }) => {
                 <Link href={`/profile`} onClick={() => setOpenDrawer(false)}>
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
                     <UserCog size={25} />
-                    <span>My Profile</span>
+                    <span>Profile</span>
                   </div>
                 </Link>
                 <Link href={'/notifications'} onClick={() => setOpenDrawer(false)}>
@@ -108,6 +100,12 @@ const Navbar: FC<INavbar> = ({ user }) => {
                     <Bell size={25} />
                     <span>Notifications</span>
                     {user?.pendingToAccept.length > 0 && <div className={"px-2 w-fit rounded-full bg-blue-700 flex justify-center items-center text-white z-20"}>{user?.pendingToAccept.length}</div>}
+                  </div>
+                </Link>
+                <Link href={'/friends'} onClick={() => setOpenDrawer(false)}>
+                  <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
+                    <BookUser size={25} />
+                    <span>Friends</span>
                   </div>
                 </Link>
               </div>

@@ -9,13 +9,13 @@ import {
   getUserInfo,
   getUserProfile,
   getAllUsers,
-  getUserWithFollowers,
-  acceptFollow,
-  declineFollow,
+  getUserWithFriends,
+  acceptRequest,
+  declineRequest,
   getFollowers,
   getFollowings,
-  sendFollow,
-  unfollowUser
+  sendRequest,
+  unfriendUser,
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -31,24 +31,24 @@ import { uploadAvatarMiddleware } from "../middlewares/uploadAvatarMiddleware.ts
 
 const router = Router();
 
-router.get("/me", authMiddleware, getUserInfo);
+// router.get("/me", authMiddleware, getUserInfo);
 router.get("/profile", authMiddleware, getUserProfile);
-router.get("/me-with-followers", authMiddleware, getUserWithFollowers);
+router.get("/me", authMiddleware, getUserWithFriends);
 router.get("/all-users", authMiddleware, getAllUsers);
-router.get("/followers/:id", getFollowers);
-router.get("/following/:id", getFollowings);
+// router.get("/followers/:id", getFollowers);
+// router.get("/following/:id", getFollowings);
 
 router.post("/register", uploadAvatarMiddleware.single("avatar"), validate(createUserSchema), registerUser);
 router.post("/login", validate(authUserSchema), authUser);
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
 router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 router.post("/change-password", validate(changePasswordSchema), authMiddleware, changePassword);
-router.post("/follow/request", authMiddleware, sendFollow);
-router.post("/follow/accept", authMiddleware, acceptFollow);
-router.post("/follow/decline", authMiddleware, declineFollow);
+router.post("/friend/request", authMiddleware, sendRequest);
+router.post("/friend/accept", authMiddleware, acceptRequest);
+router.post("/friend/decline", authMiddleware, declineRequest);
 
 router.put("/update", uploadAvatarMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
 
-router.delete("/unfollow", authMiddleware, unfollowUser);
+router.delete("/unfriend", authMiddleware, unfriendUser);
 
 export default router;
