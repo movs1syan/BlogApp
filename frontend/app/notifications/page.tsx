@@ -1,6 +1,6 @@
 "use client";
 
-import {useUser} from "@/hooks/useUser";
+import { useUser } from "@/hooks/useUser";
 import FriendNotification from "@/components/ui/FriendNotification";
 import { BellOff } from "lucide-react";
 import Spinner from "@/components/ui/Spinner";

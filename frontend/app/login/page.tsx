@@ -8,7 +8,7 @@ import {TriangleAlert, UserCheck} from "lucide-react";
 import Link from "next/link";
 import {handleLogin} from "@/lib/actions";
 
-const Login = () => {
+const LoginPage = () => {
   const [userData, setUserData] = useState<{ email: string, password: string }>({
     email: "",
     password: "",
@@ -72,4 +72,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

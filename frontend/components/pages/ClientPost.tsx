@@ -1,6 +1,6 @@
 "use client";
 
-import React, {Activity, useEffect, useState} from "react";
+import React, {Activity, useState} from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/apiFetch";
 import Button from "@/components/ui/Button";
@@ -8,8 +8,8 @@ import Modal from "@/components/ui/Modal";
 import { getDate } from "@/helpers/getDate";
 import type {UpdatePostType, PostType} from "@/shared/types";
 import Form from "@/components/Form";
-import {useUser} from "@/hooks/useUser";
 import Image from "next/image";
+import { useUser } from "@/hooks/useUser";
 
 const ClientPost = ({ post }: { post: PostType }) => {
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
@@ -24,10 +24,8 @@ const ClientPost = ({ post }: { post: PostType }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isFollowed, setIsFollowed] = useState(false);
-  const [isWaiting, setIsWaiting] = useState(false);
   const router = useRouter();
-  const { user } = useUser();
+  const { userWithFriends } = useUser();
 
   const onDelete = async () => {
     setLoading(true);
@@ -84,21 +82,6 @@ const ClientPost = ({ post }: { post: PostType }) => {
     router.refresh();
   };
 
-  const handleFollow = async () => {
-    if (!user) return;
-    if (isFollowed) return;
-    if (isWaiting) return;
-
-    try {
-      setLoading(true);
-      await apiFetch("POST", `users/follow/request`, undefined, { id: post.userId });
-      setLoading(false);
-      setIsWaiting(true);
-    } catch (error: any) {
-      console.log(error);
-    }
-  };
-
   const fullImageURL = `http://localhost:8000${currentPost.image}`;
   const fullAvatarURL = `http://localhost:8000${post.author.avatar}`;
 
@@ -133,7 +116,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
         </div>
 
-        <Activity mode={user !== null && user.id === post.userId ? "visible" : "hidden"}>
+        <Activity mode={userWithFriends !== null && userWithFriends.id === post.userId ? "visible" : "hidden"}>
           <div className={"flex justify-end gap-5"}>
             <Button icon={"Edit"} onClick={() => setIsEditOpen(true)}>Edit</Button>
             <Button color={"red"} icon={"Trash2"} onClick={() => setIsDeleteOpen(true)}>Delete</Button>

@@ -103,6 +103,36 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+export const checkResetToken = async (req: Request, res: Response) => {
+  const token = String(req.query.token);
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  try {
+    const user = await User.findOne({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { [Op.gt]: new Date() },
+      }
+    });
+
+    if (!user) {
+      const expiredUser = await User.findOne({ where: { resetPasswordToken: hashedToken } });
+      if (expiredUser) {
+        expiredUser.resetPasswordToken = null;
+        expiredUser.resetPasswordExpires = null;
+
+        await expiredUser.save();
+      }
+
+      return res.status(404).json({ message: "Token invalid or expired" });
+    }
+
+    return res.status(200).json({ valid: true });
+  } catch (error) {
+    return res.status(400).json({ message: "Invalid or expired token" });
+  }
+};
+
 export const changePassword = async (req: Request, res: Response) => {
   const { password, newPassword, confirmNewPassword } = req.body;
   const user = req.user;
