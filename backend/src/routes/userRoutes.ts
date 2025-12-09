@@ -6,7 +6,6 @@ import {
   resetPassword,
   changePassword,
   updateUser,
-  getUserInfo,
   getUserProfile,
   getAllUsers,
   getUserWithFriends,
@@ -31,11 +30,10 @@ import { uploadAvatarMiddleware } from "../middlewares/uploadAvatarMiddleware.ts
 
 const router = Router();
 
-// router.get("/me", authMiddleware, getUserInfo);
 router.get("/profile", authMiddleware, getUserProfile);
 router.get("/me", authMiddleware, getUserWithFriends);
 router.get("/all-users", authMiddleware, getAllUsers);
-router.get("/reset-password", checkResetToken)
+router.get("/reset-password", checkResetToken);
 // router.get("/followers/:id", getFollowers);
 // router.get("/following/:id", getFollowings);
 
