@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Friend} from "../models/models.ts";
+import {User, Friend, Notification} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -264,6 +264,13 @@ export const acceptRequest = async (req: Request, res: Response) => {
       status: "accepted",
     });
 
+    await Notification.create({
+      senderId: reqTakerId,
+      receiverId: reqSenderId,
+      isRead: false,
+      message: `${req.user.name} ${req.user.surname} accepted your friend request!`
+    });
+
     return res.status(200).json({ message: "Friend request accepted" });
   } catch (error) {
     console.log(error);
@@ -287,6 +294,13 @@ export const declineRequest = async (req: Request, res: Response) => {
     if (!friends) return res.status(404).json({ message: "Request not found" });
 
     await friends.destroy();
+
+    await Notification.create({
+      senderId: reqTakerId,
+      receiverId: reqSenderId,
+      isRead: false,
+      message: `${req.user.name} ${req.user.surname} declined your friend request.`
+    });
 
     res.json({ message: "Request declined" });
   } catch (e) {
@@ -315,6 +329,13 @@ export const unfriendUser = async (req: Request, res: Response) => {
     await friends1.destroy();
     await friends2.destroy();
 
+    await Notification.create({
+      senderId: reqSenderId,
+      receiverId: reqTakerId,
+      isRead: false,
+      message: `${req.user.name} ${req.user.surname} unfriends you.`
+    });
+
     return res.json({ message: "Unfriended successfully" });
   } catch (e) {
     console.log(e);
@@ -322,47 +343,70 @@ export const unfriendUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getFollowers = async (req: Request, res: Response) => {
-  const userId = Number(req.params.id);
+export const readNotification = async (req: Request, res: Response) => {
+  const notificationsIds = req.body.notificationsId;
 
   try {
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: User,
-        as: "followers",
-        attributes: ["name", "surname", "email", "avatar"],
-        through: { attributes: [], where: { status: "accepted" } },
-      }]
-    });
+    await Notification.update(
+      { isRead: true },
+      {
+        where: {
+          id: {
+            [Op.in]: notificationsIds,
+          },
+          isRead: false,
+        },
+      }
+    );
 
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    return res.status(200).json(user.followers);
+    return res.status(200).json({ message: "Notifications read." })
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error });
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getFollowings = async (req: Request, res: Response) => {
-  const userId = Number(req.params.id);
-
-  try {
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: User,
-        as: "following",
-        attributes: ["name", "surname", "email", "avatar"],
-        through: { attributes: [], where: { status: "accepted" } },
-      }]
-    });
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    return res.status(200).json(user.following);
-  } catch (error) {
-    return res.status(500).json({ message: "Server error", error });
-  }
-};
+// export const getFollowers = async (req: Request, res: Response) => {
+//   const userId = Number(req.params.id);
+//
+//   try {
+//     const user = await User.findByPk(userId, {
+//       include: [{
+//         model: User,
+//         as: "followers",
+//         attributes: ["name", "surname", "email", "avatar"],
+//         through: { attributes: [], where: { status: "accepted" } },
+//       }]
+//     });
+//
+//     if (!user) return res.status(404).json({ message: "User not found" });
+//
+//     return res.status(200).json(user.followers);
+//   } catch (error) {
+//     return res.status(500).json({ message: "Server error", error });
+//   }
+// };
+//
+// export const getFollowings = async (req: Request, res: Response) => {
+//   const userId = Number(req.params.id);
+//
+//   try {
+//     const user = await User.findByPk(userId, {
+//       include: [{
+//         model: User,
+//         as: "following",
+//         attributes: ["name", "surname", "email", "avatar"],
+//         through: { attributes: [], where: { status: "accepted" } },
+//       }]
+//     });
+//
+//     if (!user) return res.status(404).json({ message: "User not found" });
+//
+//     return res.status(200).json(user.following);
+//   } catch (error) {
+//     return res.status(500).json({ message: "Server error", error });
+//   }
+// };
 
 export const getUserWithFriends = async (req: Request, res: Response) => {
   const { id } = req.user;
@@ -387,6 +431,12 @@ export const getUserWithFriends = async (req: Request, res: Response) => {
           as: "pendingToAccept",
           attributes: ["id", "name", "surname", "email", "avatar"],
           through: { attributes: [], where: { status: "pending" } }
+        },
+        {
+          model: Notification,
+          as: "notifications",
+          attributes: ["id", "message", "isRead"],
+          order: [["createdAt", "DESC"]]
         }
       ],
       attributes: { exclude: ["password", "resetPasswordToken", "resetPasswordExpires", "createdAt", "updatedAt"] },

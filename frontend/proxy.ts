@@ -13,7 +13,7 @@ export async function proxy(req: NextRequest) {
     }
   } else {
     if (req.nextUrl.pathname !== "/" && !req.nextUrl.pathname.startsWith("/blog") && !isGuestOnly) {
-      return NextResponse.redirect(new URL('/', req.url));
+      return NextResponse.redirect(new URL('/login', req.url));
     }
   }
 
@@ -21,8 +21,6 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|pub|profile-picture.png$).*)'
-  ]
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)']
 };
 

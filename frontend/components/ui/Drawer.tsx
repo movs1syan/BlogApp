@@ -37,7 +37,7 @@ const Drawer: React.FC<DrawerProps> = ({
   if (!isMounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-10">
+    <div className="fixed inset-0 z-50">
 
       {/* Overlay */}
       <div className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`} onClick={onClose}></div>

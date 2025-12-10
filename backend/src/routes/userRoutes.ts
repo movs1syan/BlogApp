@@ -11,10 +11,10 @@ import {
   getUserWithFriends,
   acceptRequest,
   declineRequest,
-  getFollowers,
-  getFollowings,
   sendRequest,
-  unfriendUser, checkResetToken,
+  unfriendUser,
+  checkResetToken,
+  readNotification
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -47,6 +47,7 @@ router.post("/friend/accept", authMiddleware, acceptRequest);
 router.post("/friend/decline", authMiddleware, declineRequest);
 
 router.put("/update", uploadAvatarMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
+router.put('/read-notification', authMiddleware, readNotification)
 
 router.delete("/unfriend", authMiddleware, unfriendUser);
 

@@ -2,19 +2,12 @@
 
 import React from 'react';
 import { useRouter } from "next/navigation";
+import type { UserType } from "@/shared/types"
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import {apiFetch} from "@/lib/apiFetch";
 
-interface IFriendNotification {
-  id: number;
-  name: string;
-  surname: string;
-  email: string;
-  avatar: string;
-}
-
-const FriendNotification = ({ user } : { user: IFriendNotification }) => {
+const FriendNotification = ({ user } : { user: Omit<UserType, "password" | "confirmPassword"> }) => {
   const router = useRouter();
 
   const handleAccept = async (id: number) => {

@@ -37,7 +37,7 @@ export default async function RootLayout({
         <UserProvider userData={userData}>
           <NotificationProvider>
             <Navbar user={userData} />
-            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10">
+            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative" id="container">
               {children}
             </div>
           </NotificationProvider>
