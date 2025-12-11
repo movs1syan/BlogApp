@@ -436,9 +436,9 @@ export const getUserWithFriends = async (req: Request, res: Response) => {
           model: Notification,
           as: "notifications",
           attributes: ["id", "message", "isRead"],
-          order: [["createdAt", "DESC"]]
         }
       ],
+      order: [[{ model: Notification, as: "notifications" }, "createdAt", "DESC"]],
       attributes: { exclude: ["password", "resetPasswordToken", "resetPasswordExpires", "createdAt", "updatedAt"] },
     });
 

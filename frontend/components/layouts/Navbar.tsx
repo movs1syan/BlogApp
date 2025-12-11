@@ -67,7 +67,7 @@ const Navbar: FC<INavbar> = ({ user }) => {
 
   return (
     <>
-      <nav className="sticky top-0 shadow-md w-full z-20 bg-white">
+      <nav className="sticky top-0 shadow-md w-full z-40 bg-white">
         <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
           <div className={"flex gap-10"}>
             <Link href="/" className={`${pathname === "/" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Home</Link>
@@ -117,13 +117,13 @@ const Navbar: FC<INavbar> = ({ user }) => {
       </nav>
 
       {openNotifications && (
-        <div className="fixed top-[82px] left-0 bottom-0 right-0 z-10">
+        <div className="fixed top-[82px] left-0 bottom-0 right-0 z-20">
           <div
-            className="absolute inset-0 bg-black/10"
+            className="absolute inset-0 bg-black/10 z-20"
             onClick={() => setOpenNotifications(false)}
           />
           <NotificationsPortal>
-            <div className="absolute bg-white text-black shadow-lg rounded-lg min-w-[350px] p-4 z-10 top-2 right-0 animate-[slideInTopNot_0.3s_ease_forwards]">
+            <div className="absolute bg-white text-black shadow-lg rounded-lg min-w-[350px] p-4 z-30 top-2 right-0 animate-[slideInTopNot_0.3s_ease_forwards]">
               <div className="flex items-center justify-between border-b pb-3 border-[#e0e0e0]">
                 <h3 className="text-lg font-semibold">Notifications</h3>
                 <button
@@ -133,14 +133,9 @@ const Navbar: FC<INavbar> = ({ user }) => {
                   ✕
                 </button>
               </div>
-              <div className={"mt-2 flex flex-col gap-2"}>
+              <div className={"mt-4 flex flex-col gap-2"}>
                 {notifications && notifications.length > 0 ? notifications.map((notif) => (
-                  <div key={notif.id} className={`py-2 rounded-lg font-semibold flex items-center gap-3 ${notif.message.endsWith("!") ? "text-green-700" : "text-red-700"}`}>
-                    {notif.message.endsWith("!") ? (
-                      <Check size={20} />
-                    ) : (
-                      <X size={20} />
-                    )}
+                  <div key={notif.id} className={`p-2 rounded-lg font-semibold bg-gray-100 border-l-6 ${notif.message.includes("accept") ? "border-green-600" : "border-red-600"}`}>
                     {notif.message}
                   </div>
                 )) : (
