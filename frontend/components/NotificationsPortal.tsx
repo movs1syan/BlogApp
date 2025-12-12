@@ -9,7 +9,7 @@ export default function NotificationsPortal({ children }) {
 
   useEffect(() => {
     setMounted(true);
-    setContainer(document.getElementById("container"));
+    setContainer(document.body);
   }, []);
 
   if (!mounted || !container) return null;

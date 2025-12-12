@@ -6,19 +6,19 @@ import {UserX} from "lucide-react";
 import Spinner from "@/components/ui/Spinner";
 
 const RequestsPage = () => {
-  const { userWithFriends } = useUser();
+  const { pendingToAccept } = useUser();
 
   return (
     <>
-      {!userWithFriends?.pendingToAccept ? (
+      {!pendingToAccept ? (
         <div className={"mt-15 py-16"}>
           <Spinner size={"large"} tip={"Loading..."} />
         </div>
-      ) : userWithFriends.pendingToAccept.length > 0 ? (
+      ) : pendingToAccept.length > 0 ? (
         <div>
           <h1 className={"font-bold text-3xl mt-10"}>Requests</h1>
           <div className={"flex flex-col gap-5 mt-4"}>
-            {userWithFriends?.pendingToAccept.map(user => (
+            {pendingToAccept.map(user => (
               <FriendNotification key={user.id} user={user} />
             ))}
           </div>

@@ -7,38 +7,48 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
 import React, {FC, useState, useEffect} from "react";
-import {Bell, UserCog, BookUser, Users, Check, X, BellOff} from "lucide-react";
+import {Bell, UserCog, BookUser, Users, UserCheck, UserX, UserMinus, BellOff} from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
-import type {UserType} from "@/shared/types";
 import { apiFetch } from "@/lib/apiFetch";
 import NotificationsPortal from "@/components/NotificationsPortal";
 
-interface INavbar {
-  user?: {
-    id: number;
-    name: string;
-    surname: string;
-    email: string;
-    avatar: string;
-    friends: Omit<UserType, "password" | "confirmPassword">[];
-    pendingToBeAccepted: Omit<UserType, "password" | "confirmPassword">[];
-    pendingToAccept: Omit<UserType, "password" | "confirmPassword">[];
-    notifications: { id: number; message: string; isRead: boolean }[],
-  }
+interface SingleUser {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  avatar: string;
+  createdAt: Date,
 }
 
-const Navbar: FC<INavbar> = ({ user }) => {
+interface INavbar {
+  user?: SingleUser,
+  pendingToAccept?: SingleUser[],
+  notifications?: {
+    id: number;
+    message: string;
+    isRead: boolean;
+    createdAt: Date
+  }[]
+}
+
+const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: number; message: string; isRead: boolean }[] | null>(null);
+  const [unreadMessages, setUnreadMessages] = useState<number>(0)
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    if (user) {
-      setNotifications(user.notifications);
+    if (notifications) {
+
+      notifications.forEach(notification => {
+        if (!notification.isRead) {
+          setUnreadMessages(prevState => prevState + 1);
+        }
+      })
     }
-  }, [user]);
+  }, [notifications]);
 
   const handleLogout = async () => {
     await handleLogoutFn();
@@ -78,15 +88,17 @@ const Navbar: FC<INavbar> = ({ user }) => {
               <div className="flex gap-5 items-center">
                 <div className={"relative cursor-pointer active:text-gray-500"} onClick={handleNotify}>
                   <Bell size={25} />
-                  {user.notifications.length > 0 && user.notifications.find(message => !message.isRead) && (
-                    <div className={"w-2 h-2 rounded-full bg-red-600 absolute top-[-2px] left-4 z-20"}></div>
+                  {notifications && notifications.length > 0 && notifications.find(message => !message.isRead) && (
+                    <div className={"w-4 h-4 flex items-center text-white text-[10px] justify-center rounded-full bg-red-600 absolute top-[-2px] left-4 z-20"}>
+                      {unreadMessages > 0 && unreadMessages}
+                    </div>
                   )}
                 </div>
                 <div className={"flex items-center gap-3 cursor-pointer"} onClick={() => setOpenDrawer(true)}>
                   <div className={"relative"}>
-                    {user.pendingToAccept.length > 0 && (
+                    {pendingToAccept && pendingToAccept.length > 0 && (
                       <div className={"px-2 w-fit rounded-full bg-red-600 flex justify-center items-center text-white absolute top-[-8px] left-6 z-20"}>
-                        {user.pendingToAccept.length}
+                        {pendingToAccept.length}
                       </div>
                     )}
 
@@ -116,14 +128,9 @@ const Navbar: FC<INavbar> = ({ user }) => {
         </div>
       </nav>
 
-      {openNotifications && (
-        <div className="fixed top-[82px] left-0 bottom-0 right-0 z-20">
-          <div
-            className="absolute inset-0 bg-black/10 z-20"
-            onClick={() => setOpenNotifications(false)}
-          />
-          <NotificationsPortal>
-            <div className="absolute bg-white text-black shadow-lg rounded-lg min-w-[350px] p-4 z-30 top-2 right-0 animate-[slideInTopNot_0.3s_ease_forwards]">
+      {user && openNotifications && (
+        <NotificationsPortal>
+            <div className="fixed bg-white text-black shadow-lg rounded-lg min-w-[350px] p-4 z-30 top-[84px] right-[350px] animate-[slideInTopNot_0.3s_ease_forwards]">
               <div className="flex items-center justify-between border-b pb-3 border-[#e0e0e0]">
                 <h3 className="text-lg font-semibold">Notifications</h3>
                 <button
@@ -135,19 +142,25 @@ const Navbar: FC<INavbar> = ({ user }) => {
               </div>
               <div className={"mt-4 flex flex-col gap-2"}>
                 {notifications && notifications.length > 0 ? notifications.map((notif) => (
-                  <div key={notif.id} className={`p-2 rounded-lg font-semibold bg-gray-100 border-l-6 ${notif.message.includes("accept") ? "border-green-600" : "border-red-600"}`}>
+                  <div key={notif.id} className={`p-3 rounded-lg flex items-center gap-3 font-semibold bg-gray-100 ${notif.message.includes("accept") ? "text-green-700" : "text-red-700"}`}>
+                    {notif.message.includes("accept") ? (
+                      <UserCheck size={20} />
+                    ) : notif.message.includes("decline") ? (
+                      <UserX size={20} />
+                    ) : (
+                      <UserMinus size={20} />
+                    )}
                     {notif.message}
                   </div>
                 )) : (
                   <div className="flex flex-col items-center justify-center text-center text-gray-600">
-                    <BellOff size={25} className="mb-1 opacity-70 mt-2" />
+                    <BellOff size={25} className="mb-1 opacity-70" />
                     <h2 className="font-semibold mt-2">Notifications are empty!</h2>
                   </div>
                 )}
               </div>
             </div>
           </NotificationsPortal>
-        </div>
       )}
 
       <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)} title={"My Profile"}>
@@ -176,7 +189,11 @@ const Navbar: FC<INavbar> = ({ user }) => {
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
                     <Users size={25} />
                     <span>Requests</span>
-                    {user?.pendingToAccept.length > 0 && <div className={"px-2 w-fit rounded-full bg-blue-700 flex justify-center items-center text-white z-20"}>{user?.pendingToAccept.length}</div>}
+                    {pendingToAccept && pendingToAccept.length > 0 &&
+                      <div className={"px-2 w-fit rounded-full bg-blue-700 flex justify-center items-center text-white z-20"}>
+                        {pendingToAccept.length}
+                      </div>
+                    }
                   </div>
                 </Link>
                 <Link href={'/friends'} onClick={() => setOpenDrawer(false)}>

@@ -25,7 +25,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { userWithFriends } = useUser();
+  const { user } = useUser();
 
   const onDelete = async () => {
     setLoading(true);
@@ -116,7 +116,7 @@ const ClientPost = ({ post }: { post: PostType }) => {
           </div>
         </div>
 
-        <Activity mode={userWithFriends !== null && userWithFriends.id === post.userId ? "visible" : "hidden"}>
+        <Activity mode={user !== null && user.id === post.userId ? "visible" : "hidden"}>
           <div className={"flex justify-end gap-5"}>
             <Button icon={"Edit"} onClick={() => setIsEditOpen(true)}>Edit</Button>
             <Button color={"red"} icon={"Trash2"} onClick={() => setIsDeleteOpen(true)}>Delete</Button>

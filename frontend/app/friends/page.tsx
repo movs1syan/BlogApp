@@ -8,20 +8,20 @@ import Button from "@/components/ui/Button";
 import Link from "next/link";
 
 const FriendsPage = () => {
-  const { userWithFriends } = useUser();
+  const { friends } = useUser();
 
   return (
     <>
-      {!userWithFriends?.friends ? (
+      {!friends ? (
         <div className={"mt-15 py-16"}>
           <Spinner size={"large"} tip={"Loading..."} />
         </div>
-      ) : userWithFriends.friends.length > 0 ? (
+      ) : friends.length > 0 ? (
         <div>
           <h1 className={"font-bold text-3xl mt-10"}>My Friends</h1>
           <div className={"flex flex-col gap-5 mt-4"}>
-            {userWithFriends?.friends.map(user => (
-              <UserCard key={user.id} user={user} />
+            {friends.map(user => (
+              <UserCard key={user.id} singleUser={user} />
             ))}
           </div>
         </div>

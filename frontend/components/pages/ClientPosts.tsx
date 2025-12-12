@@ -29,7 +29,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const { notify } = useNotification();
-  const { userWithFriends } = useUser();
+  const { user } = useUser();
 
   useEffect(() => {
     if (posts.length === 0 && !inputRef.current) router.push(`/?page=${page - 1}`);
@@ -121,7 +121,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
         <SearchIcon size={20} className={"absolute top-1/2 left-4 -translate-y-1/2 text-gray-400"} />
       </div>
 
-      <Activity mode={userWithFriends ? "visible" : "hidden"}>
+      <Activity mode={user ? "visible" : "hidden"}>
         <div className={"mt-10 flex justify-end"}>
           <Button icon={"PlusIcon"} onClick={() => setIsOpen(true)}>Create new post</Button>
         </div>

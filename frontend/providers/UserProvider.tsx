@@ -1,33 +1,40 @@
 "use client";
 
-import React, {createContext, useEffect, useState} from 'react';
-import type { UserType } from "@/shared/types";
+import React, {createContext} from 'react';
+
+interface SingleUser {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  avatar: string;
+  createdAt: Date,
+}
 
 interface UserContextType {
-  userWithFriends: {
-    id: number;
-    name: string;
-    surname: string;
-    email: string;
-    avatar: string;
-    friends: Omit<UserType, "password" | "confirmPassword">[];
-    pendingToBeAccepted: Omit<UserType, "password" | "confirmPassword">[];
-    pendingToAccept: Omit<UserType, "password" | "confirmPassword">[];
-    notifications: { id: number; message: string; isRead: boolean }[],
-  } | null;
+  user: SingleUser | null;
+  friends: SingleUser[] | null,
+  pendingToBeAccepted: SingleUser[] | null,
+  pendingToAccept: SingleUser[] | null,
 }
 
 export const UserContext = createContext<UserContextType | null>(null);
 
-export const UserProvider = ({ userData, children }: { userData: {id: number; name: string; surname: string; email: string; avatar: string; friends: Omit<UserType, "password" | "confirmPassword">[]; pendingToBeAccepted: Omit<UserType, "password" | "confirmPassword">[]; pendingToAccept: Omit<UserType, "password" | "confirmPassword">[]; notifications: { id: number; message: string; isRead: boolean }[]} | null; children: React.ReactNode }) => {
-  const [userWithFriends, setUserWithFollowers] = useState<{id: number; name: string; surname: string; email: string; avatar: string; friends: Omit<UserType, "password" | "confirmPassword">[]; pendingToBeAccepted: Omit<UserType, "password" | "confirmPassword">[]; pendingToAccept: Omit<UserType, "password" | "confirmPassword">[]; notifications: { id: number; message: string; isRead: boolean }[]} | null>(null);
-
-  useEffect(() => {
-    setUserWithFollowers(userData);
-  }, [userData]);
-
+export const UserProvider = ({
+  user,
+  friends,
+  pendingToBeAccepted,
+  pendingToAccept,
+  children
+}: {
+  user: SingleUser | null,
+  friends: SingleUser[] | null,
+  pendingToBeAccepted: SingleUser[] | null,
+  pendingToAccept: SingleUser[] | null,
+  children: React.ReactNode
+}) => {
   return (
-    <UserContext.Provider value={{ userWithFriends }}>
+    <UserContext.Provider value={{ user, friends, pendingToBeAccepted, pendingToAccept }}>
       {children}
     </UserContext.Provider>
   );

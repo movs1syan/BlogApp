@@ -2,13 +2,21 @@
 
 import React, {useState, useRef, Activity, useEffect} from 'react';
 import { useRouter } from "next/navigation";
-import type { UserType} from "@/shared/types";
 import {SearchIcon} from "lucide-react";
 import UserCard from "@/components/UserCard";
 import Button from "@/components/ui/Button";
 
-const ClientUsers = ({ totalUsersQuantity, users, page }: { totalUsersQuantity: number; users: Omit<UserType, "password" | "confirmPassword">[], page: number }) => {
-  const [filteredUsers, setFilteredUsers] = useState<Omit<UserType, "password" | "confirmPassword">[]>(users);
+export interface User {
+  id: number;
+  name: string;
+  surname: string;
+  email: string;
+  avatar: string;
+  createdAt: Date;
+}
+
+const ClientUsers = ({ totalUsersQuantity, users, page }: { totalUsersQuantity: number; users: User[], page: number }) => {
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -59,8 +67,8 @@ const ClientUsers = ({ totalUsersQuantity, users, page }: { totalUsersQuantity: 
 
       {filteredUsers.length > 0 ? (
         <div className={"flex flex-col gap-8 mt-15"}>
-          {filteredUsers.map((user: Omit<UserType, "password" | "confirmPassword">) => (
-            <UserCard key={user.id} user={user} />
+          {filteredUsers.map((user: User) => (
+            <UserCard key={user.id} singleUser={user} />
           ))}
         </div>
       ) : (

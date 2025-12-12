@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/apiFetch";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import apiFetchAuth from "@/lib/apiFetchAuth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,16 +29,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const token = await getToken();
-  const userData = token ? await apiFetch("GET", "users/me") : null;
+  const [user, friends, pendingToAccept, pendingToBeAccepted, notifications] = await Promise.all([
+    apiFetchAuth("GET", "users/me"),
+    apiFetchAuth("GET", "users/friends"),
+    apiFetchAuth("GET", "users/pending-to-accept"),
+    apiFetchAuth("GET", "users/pending-to-be-accepted"),
+    apiFetchAuth("GET", "users/notifications")
+  ]);
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <UserProvider userData={userData}>
+        <UserProvider user={user} pendingToAccept={pendingToAccept} pendingToBeAccepted={pendingToBeAccepted} friends={friends}>
           <NotificationProvider>
-            <Navbar user={userData} />
-            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative" id="container">
+            <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} />
+            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
               {children}
             </div>
           </NotificationProvider>

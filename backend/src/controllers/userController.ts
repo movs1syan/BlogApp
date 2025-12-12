@@ -196,8 +196,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
       },
       limit,
       offset,
+      attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
       order: [["createdAt", "DESC"]],
-      attributes: ["id", "name", "surname", "email", "avatar"],
     });
 
     if (offset > totalUsersQuantity) {
@@ -366,89 +366,85 @@ export const readNotification = async (req: Request, res: Response) => {
   }
 };
 
-// export const getFollowers = async (req: Request, res: Response) => {
-//   const userId = Number(req.params.id);
-//
-//   try {
-//     const user = await User.findByPk(userId, {
-//       include: [{
-//         model: User,
-//         as: "followers",
-//         attributes: ["name", "surname", "email", "avatar"],
-//         through: { attributes: [], where: { status: "accepted" } },
-//       }]
-//     });
-//
-//     if (!user) return res.status(404).json({ message: "User not found" });
-//
-//     return res.status(200).json(user.followers);
-//   } catch (error) {
-//     return res.status(500).json({ message: "Server error", error });
-//   }
-// };
-//
-// export const getFollowings = async (req: Request, res: Response) => {
-//   const userId = Number(req.params.id);
-//
-//   try {
-//     const user = await User.findByPk(userId, {
-//       include: [{
-//         model: User,
-//         as: "following",
-//         attributes: ["name", "surname", "email", "avatar"],
-//         through: { attributes: [], where: { status: "accepted" } },
-//       }]
-//     });
-//
-//     if (!user) return res.status(404).json({ message: "User not found" });
-//
-//     return res.status(200).json(user.following);
-//   } catch (error) {
-//     return res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-export const getUserWithFriends = async (req: Request, res: Response) => {
-  const { id } = req.user;
-
+export const getUserInfo = async (req: Request, res: Response) => {
   try {
-    const user = await User.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: "friends",
-          attributes: ["id", "name", "surname", "email", "avatar"],
-          through: { attributes: [], where: { status: "accepted" } }
-        },
-        {
-          model: User,
-          as: "pendingToBeAccepted",
-          attributes: ["id", "name", "surname", "email", "avatar"],
-          through: { attributes: [], where: { status: "pending" } }
-        },
-        {
-          model: User,
-          as: "pendingToAccept",
-          attributes: ["id", "name", "surname", "email", "avatar"],
-          through: { attributes: [], where: { status: "pending" } }
-        },
-        {
-          model: Notification,
-          as: "notifications",
-          attributes: ["id", "message", "isRead"],
-        }
-      ],
-      order: [[{ model: Notification, as: "notifications" }, "createdAt", "DESC"]],
-      attributes: { exclude: ["password", "resetPasswordToken", "resetPasswordExpires", "createdAt", "updatedAt"] },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await User.findByPk(req.user.id, {
+      attributes: ["id", "name", "surname", "email", "avatar"]
+    })
 
     return res.json(user);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getPendingToAcceptRequests = async (req: Request, res: Response) => {
+  try {
+    const me = await User.findByPk(req.user.id);
+
+    const pendingToAccept = await me.getPendingToAccept({
+      order: [["createdAt", "DESC"]],
+      attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
+      joinTableAttributes: [],
+      through: { where: { status: "pending" } }
+    })
+
+    return res.status(200).json(pendingToAccept);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" })
+  }
+};
+
+export const getPendingToBeAcceptedRequests = async (req: Request, res: Response) => {
+  try {
+    const me = await User.findByPk(req.user.id);
+
+    const pendingToBeAccepted = await me.getPendingToBeAccepted({
+      order: [["createdAt", "DESC"]],
+      attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
+      joinTableAttributes: [],
+      through: { where: { status: "pending" } }
+    });
+
+    return res.status(200).json(pendingToBeAccepted);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getFriendsList = async (req: Request, res: Response) => {
+  try {
+    const me = await User.findByPk(req.user.id);
+
+    const friends = await me.getFriends({
+      order: [["createdAt", "DESC"]],
+      attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
+      joinTableAttributes: [],
+      through: { where: { status: "accepted" } }
+    });
+
+    return res.status(200).json(friends);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" })
+  }
+};
+
+export const getNotificationsList = async (req: Request, res: Response) => {
+  try {
+    const me = await User.findByPk(req.user.id);
+
+    const notifications = await me.getNotifications({
+      attributes: ["id", "message", "isRead", "createdAt"],
+      order: [["createdAt", "DESC"]]
+    });
+
+    return res.status(200).json(notifications);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" })
   }
 };

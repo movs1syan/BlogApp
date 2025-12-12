@@ -8,13 +8,13 @@ import {
   updateUser,
   getUserProfile,
   getAllUsers,
-  getUserWithFriends,
+  getUserInfo,
   acceptRequest,
   declineRequest,
   sendRequest,
   unfriendUser,
   checkResetToken,
-  readNotification
+  readNotification, getPendingToAcceptRequests, getPendingToBeAcceptedRequests, getNotificationsList, getFriendsList
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -31,11 +31,13 @@ import { uploadAvatarMiddleware } from "../middlewares/uploadAvatarMiddleware.ts
 const router = Router();
 
 router.get("/profile", authMiddleware, getUserProfile);
-router.get("/me", authMiddleware, getUserWithFriends);
+router.get("/me", authMiddleware, getUserInfo);
 router.get("/all-users", authMiddleware, getAllUsers);
+router.get("/pending-to-accept", authMiddleware, getPendingToAcceptRequests);
+router.get("/pending-to-be-accepted", authMiddleware, getPendingToBeAcceptedRequests);
+router.get("/friends", authMiddleware, getFriendsList);
+router.get("/notifications", authMiddleware, getNotificationsList);
 router.get("/reset-password", checkResetToken);
-// router.get("/followers/:id", getFollowers);
-// router.get("/following/:id", getFollowings);
 
 router.post("/register", uploadAvatarMiddleware.single("avatar"), validate(createUserSchema), registerUser);
 router.post("/login", validate(authUserSchema), authUser);
