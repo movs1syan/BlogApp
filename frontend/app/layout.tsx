@@ -2,12 +2,11 @@ import React from "react";
 import UserProvider from "@/providers/UserProvider";
 import NotificationProvider from "@/providers/NotificationProvider";
 import Navbar from "@/components/layouts/Navbar";
-import { getToken } from "@/lib/cookies";
-import { apiFetch } from "@/lib/apiFetch";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import apiFetchAuth from "@/lib/apiFetchAuth";
+import {SocketProvider} from "@/providers/SocketProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,10 +41,12 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <UserProvider user={user} pendingToAccept={pendingToAccept} pendingToBeAccepted={pendingToBeAccepted} friends={friends}>
           <NotificationProvider>
-            <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} />
-            <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
-              {children}
-            </div>
+            <SocketProvider user={user}>
+              <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} />
+              <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
+                {children}
+              </div>
+            </SocketProvider>
           </NotificationProvider>
         </UserProvider>
       </body>

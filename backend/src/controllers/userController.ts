@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Friend, Notification} from "../models/models.ts";
+import {User, Friend, Notification, Message} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -446,5 +446,24 @@ export const getNotificationsList = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" })
+  }
+};
+
+export const sendMessage = async (req: Request, res: Response) => {
+  const senderId = req.user.id;
+  const { receiverId, message } = req.body;
+
+  try {
+    await Message.create({
+      senderId,
+      receiverId,
+      message,
+      isRead: false,
+    });
+
+    return res.status(200).json({ message: "Message sent!" })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };

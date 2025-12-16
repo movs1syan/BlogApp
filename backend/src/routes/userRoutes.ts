@@ -14,7 +14,8 @@ import {
   sendRequest,
   unfriendUser,
   checkResetToken,
-  readNotification, getPendingToAcceptRequests, getPendingToBeAcceptedRequests, getNotificationsList, getFriendsList
+  readNotification, getPendingToAcceptRequests, getPendingToBeAcceptedRequests, getNotificationsList, getFriendsList,
+  sendMessage
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -47,6 +48,7 @@ router.post("/change-password", validate(changePasswordSchema), authMiddleware, 
 router.post("/friend/request", authMiddleware, sendRequest);
 router.post("/friend/accept", authMiddleware, acceptRequest);
 router.post("/friend/decline", authMiddleware, declineRequest);
+router.post("/message", authMiddleware, sendMessage)
 
 router.put("/update", uploadAvatarMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
 router.put('/read-notification', authMiddleware, readNotification)

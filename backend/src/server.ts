@@ -1,10 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
+import http from "http";
 import path from "path";
 import cors from "cors";
-import { connectDB } from "./db.ts";
+import {connectDB} from "./db.ts";
 import postRoutes from "./routes/postRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import { initSocket } from "./socket/socket.ts";
+import {Server} from "socket.io";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -20,6 +23,16 @@ app.use(express.json());
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+const server = http.createServer(app);
+const io: Server = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true
+  }
+});
+
+initSocket(io);
+
+server.listen(port, () => console.log(`Server is running on port ${port}`));
 
 connectDB().catch((err) => console.log(`Failed to connect to DB: ${err}`));

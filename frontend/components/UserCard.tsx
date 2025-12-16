@@ -1,20 +1,35 @@
 "use client";
 
-import React, {Activity, useEffect, useState} from 'react';
+import React, {Activity, useEffect, useState, useRef} from 'react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { User } from "@/components/pages/ClientUsers";
 import Button from './ui/Button';
-import {useUser} from "@/hooks/useUser";
-import {apiFetch} from "@/lib/apiFetch";
+import { useUser } from "@/hooks/useUser";
+import { apiFetch } from "@/lib/apiFetch";
+import Modal from "@/components/ui/Modal";
+import {useSocket} from "@/hooks/useSocket";
 
 const UserCard = ({ singleUser }: { singleUser: User }) => {
-  const { pendingToAccept, pendingToBeAccepted, friends } = useUser();
+  const { user, pendingToAccept, pendingToBeAccepted, friends } = useUser();
+  const [message, setMessage] = useState<string>("");
+  const [messages, setMessages] = useState<any[]>([]);
   const [areFriends, setAreFriends] = useState(false);
   const [isWaitingToBeAccepted, setIsWaitingToBeAccepted] = useState(false);
   const [isWaitingToAccept, setIsWaitingToAccept] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
+  const { socket } = useSocket();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!pendingToAccept || !pendingToBeAccepted || !friends) return;
@@ -85,6 +100,50 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      if (inputRef.current) {
+        if (inputRef.current.value !== "") {
+          socket?.emit("sendMessage", {
+            senderId: user?.id,
+            receiverId: singleUser.id,
+            message,
+          });
+        }
+
+        inputRef.current.value = "";
+      }
+
+      setMessage("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const handleClickMessages = () => {
+    setIsChatOpen(true);
+
+    if (!socket) return;
+
+    socket.emit("joinRoom", { friendId: singleUser.id });
+    socket.emit("getMessages", ({ friendId: singleUser.id }));
+
+    const onMessages = (msgs) => setMessages(msgs);
+    const onReceive = (msg) => {
+      const alreadySet = messages.find(message => message.id === msg.id);
+      if (!alreadySet) setMessages((prev) => [...prev, msg]);
+    };
+
+    socket.on("oldMessages", onMessages);
+    socket.on("receiveMessage", onReceive);
+  };
+
   const fullAvatarURL = `http://localhost:8000${singleUser?.avatar}`;
 
   return singleUser && (
@@ -105,6 +164,14 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
         <Activity mode={singleUser ? "visible" : "hidden"}>
           {!isWaitingToAccept ? (
             <>
+              {areFriends && (
+                <>
+                  <Button type={"link"} icon={"MessageCircleMore"} onClick={handleClickMessages}>Message</Button>
+
+                  <div className={"h-10 w-[1px] border border-gray-200 my-auto"}></div>
+                </>
+              )}
+
               <Button
                 type={"link"}
                 icon={!areFriends && !isWaitingToBeAccepted ? "UserPlus" : "UserCheck"}
@@ -126,6 +193,36 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
           )}
         </Activity>
       </div>
+
+      {areFriends && (
+        <Modal title={"Friend Chat"} isOpen={isChatOpen} onClose={() => setIsChatOpen(false)}>
+          <main className={"flex flex-col gap-3"}>
+            <div className={"h-120 w-200 max-w-200 bg-blue-100 rounded-lg overflow-y-auto p-4 flex flex-col gap-3"} ref={containerRef}>
+              {messages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender.id === user?.id ? "justify-end" : "justify-start"} gap-3`}>
+                  {msg.sender.id !== user?.id && msg.sender.avatar ? (
+                    <Image src={`http://localhost:8000${msg.sender.avatar}`} alt={msg.sender.name} height={40} width={40} unoptimized className={"size-10 rounded-full object-cover"} />
+                  ) : msg.sender.id !== user?.id && (
+                    <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} unoptimized className="size-10 rounded-full object-cover"/>
+                  )}
+                  <div className={`py-1.5 px-3 rounded-lg bg-blue-700 text-white h-fit max-w-[300px] break-words ${msg.sender.id === user?.id ? "rounded-tr-none" : "rounded-tl-none"}`}>
+                    {msg.message}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleSubmit} className={"flex gap-4"}>
+              <input
+                className={"border-2 border-gray-200 rounded-lg py-2 px-4 focus:outline-none focus:border-blue-700 w-full flex flex-1"}
+                placeholder={"Type message . . ."}
+                ref={inputRef}
+                onChange={handleChange}
+              />
+              <Button htmlType={"submit"} type={"primary"} icon={"Send"}></Button>
+            </form>
+          </main>
+        </Modal>
+      )}
     </div>
   );
 };

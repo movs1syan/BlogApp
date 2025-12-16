@@ -27,6 +27,16 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         as: "notifications"
       });
 
+      this.hasMany(models.Message, {
+        foreignKey: "receiverId",
+        as: "receivedMessages"
+      });
+
+      this.hasMany(models.Message, {
+        foreignKey: "senderId",
+        as: "sentMessages"
+      });
+
       this.belongsToMany(models.User, {
         through: "Friends",
         as: "friends",

@@ -106,7 +106,7 @@ const ClientPosts = ({ posts, page, totalPostsQuantity }: { posts: PostType[], p
     if (inputRef.current) {
       inputRef.current.value = "";
     }
-  }
+  };
 
   return (
     <main>
