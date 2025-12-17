@@ -20,10 +20,32 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { socket } = useSocket();
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleOldMessages = (msgs) => {
+      setMessages(msgs);
+    };
+
+    const handleReceiveMessage = (msg) => {
+      setMessages((prev) => {
+        if (prev.some(message => message.id === msg.id)) return prev;
+        return [...prev, msg];
+      });
+    };
+
+    socket.on("oldMessages", handleOldMessages);
+    socket.on("receiveMessage", handleReceiveMessage);
+
+    return () => {
+      socket.off("oldMessages", handleOldMessages);
+      socket.off("receiveMessage", handleReceiveMessage);
+    };
+  }, [socket, messages]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -128,20 +150,12 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
 
   const handleClickMessages = () => {
     setIsChatOpen(true);
+    setMessages([]);
 
     if (!socket) return;
 
     socket.emit("joinRoom", { friendId: singleUser.id });
-    socket.emit("getMessages", ({ friendId: singleUser.id }));
-
-    const onMessages = (msgs) => setMessages(msgs);
-    const onReceive = (msg) => {
-      const alreadySet = messages.find(message => message.id === msg.id);
-      if (!alreadySet) setMessages((prev) => [...prev, msg]);
-    };
-
-    socket.on("oldMessages", onMessages);
-    socket.on("receiveMessage", onReceive);
+    socket.emit("getMessages", { friendId: singleUser.id });
   };
 
   const fullAvatarURL = `http://localhost:8000${singleUser?.avatar}`;
@@ -205,7 +219,7 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
                   ) : msg.sender.id !== user?.id && (
                     <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} unoptimized className="size-10 rounded-full object-cover"/>
                   )}
-                  <div className={`py-1.5 px-3 rounded-lg bg-blue-700 text-white h-fit max-w-[300px] break-words ${msg.sender.id === user?.id ? "rounded-tr-none" : "rounded-tl-none"}`}>
+                  <div className={`py-1.5 px-3 rounded-lg  text-white h-fit max-w-[300px] break-words ${msg.sender.id === user?.id ? "rounded-tr-none bg-blue-700" : "rounded-tl-none bg-blue-400"}`}>
                     {msg.message}
                   </div>
                 </div>

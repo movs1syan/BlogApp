@@ -7,7 +7,7 @@
     "dev": "nodemon --watch src/**/*.ts --exec ts-node -r tsconfig-paths/register src/server.ts",
     "migrate:all": "npx sequelize-cli db:migrate",
     "migrate:generate": "npx sequelize-cli migration:generate --name create-message-table",
-    "migrate:generate:model": "npx sequelize-cli model:generate --name Message --attributes senderId:Integer,receiverId:Integer,text:String,isRead:Boolean",
+    "migrate:generate:model": "npx sequelize-cli model:generate --name GroupMember --attributes groupId:Integer,userId:Integer,role:string",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo",
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all --to 20251202114808-add-user-table.js",
     "seed:generate": "npx sequelize-cli seed:generate --name demo-posts",

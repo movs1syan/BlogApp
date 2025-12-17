@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
 import React, {FC, useState, useEffect} from "react";
-import {Bell, UserCog, BookUser, Users, UserCheck, UserX, UserMinus, BellOff} from "lucide-react";
+import {Bell, UserCog, BookUser, UserPlus, UserCheck, UserX, UserMinus, BellOff, Users} from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
 import { apiFetch } from "@/lib/apiFetch";
 import NotificationsPortal from "@/components/NotificationsPortal";
@@ -171,7 +171,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
                 {user.avatar ? (
                   <Image src={fullAvatarUrl} alt={fullAvatarUrl} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
                 ) : (
-                  <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} unoptimized className="size-10 rounded-full object-cover z-10"/>
+                  <Image src={"/profile-picture.png"} alt={"Avatar"} width={40} height={40} className="size-10 rounded-full object-cover z-10"/>
                 )}
                 <div className={"flex flex-col justify-between"}>
                   <span className={"text-xl text-center"}>{user.name} {user.surname}</span>
@@ -187,7 +187,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
                 </Link>
                 <Link href={'/requests'} onClick={() => setOpenDrawer(false)}>
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
-                    <Users size={25} />
+                    <UserPlus size={25} />
                     <span>Requests</span>
                     {pendingToAccept && pendingToAccept.length > 0 &&
                       <div className={"px-2 w-fit rounded-full bg-blue-700 flex justify-center items-center text-white z-20"}>
@@ -200,6 +200,12 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
                     <BookUser size={25} />
                     <span>Friends</span>
+                  </div>
+                </Link>
+                <Link href={"/groups"} onClick={() => setOpenDrawer(false)}>
+                  <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
+                    <Users size={25} />
+                    <span>Groups</span>
                   </div>
                 </Link>
               </div>

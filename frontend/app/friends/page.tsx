@@ -1,11 +1,12 @@
 "use client";
 
 import {useUser} from "@/hooks/useUser";
+import Link from "next/link";
 import { UserX } from "lucide-react";
 import Spinner from "@/components/ui/Spinner";
 import UserCard from "@/components/UserCard";
 import Button from "@/components/ui/Button";
-import Link from "next/link";
+
 
 const FriendsPage = () => {
   const { friends } = useUser();

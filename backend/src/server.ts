@@ -1,13 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import http from "http";
+import { Server } from "socket.io";
 import path from "path";
 import cors from "cors";
 import {connectDB} from "./db.ts";
 import postRoutes from "./routes/postRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
-import { initSocket } from "./socket/socket.ts";
-import {Server} from "socket.io";
+import { initSocket } from "./socket/index.ts";
 
 dotenv.config();
 const port = process.env.PORT || 5000;

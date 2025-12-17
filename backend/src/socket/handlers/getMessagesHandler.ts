@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import { Message, User } from "../../models/models.ts";
+import { Message, User, Friend } from "../../models/models.ts";
 import { Op } from "sequelize";
 
 export const getMessagesHandler = (io: Server, socket: Socket) => {
@@ -7,23 +7,31 @@ export const getMessagesHandler = (io: Server, socket: Socket) => {
     const userId = socket.user!.id;
     const roomId = [userId, friendId].sort().join("_");
 
-    const messages = await Message.findAll({
+    const areFriends = await Friend.findOne({
       where: {
-        [Op.or]: [
-          { senderId: userId, receiverId: friendId },
-          { senderId: friendId, receiverId: userId },
-        ],
+        reqSenderId: userId, reqTakerId: friendId,
       },
-      order: [["createdAt", "ASC"]],
-      include: [
-        {
-          model: User,
-          as: "sender",
-          attributes: ["id", "name", "surname", "avatar"],
-        },
-      ],
     });
 
-    io.to(roomId).emit("oldMessages", messages);
+    if (areFriends) {
+      const messages = await Message.findAll({
+        where: {
+          [Op.or]: [
+            { senderId: userId, receiverId: friendId },
+            { senderId: friendId, receiverId: userId },
+          ],
+        },
+        order: [["createdAt", "ASC"]],
+        include: [
+          {
+            model: User,
+            as: "sender",
+            attributes: ["id", "name", "surname", "avatar"],
+          },
+        ],
+      });
+
+      io.to(roomId).emit("oldMessages", messages);
+    }
   });
 };
