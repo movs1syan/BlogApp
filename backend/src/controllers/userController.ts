@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Friend, Notification, Message} from "../models/models.ts";
+import {User, Friend, Notification, Message, Group, GroupUser, GroupMessage} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -462,6 +462,69 @@ export const sendMessage = async (req: Request, res: Response) => {
     });
 
     return res.status(200).json({ message: "Message sent!" })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const createGroupAndInclude = async (req: Request, res: Response) => {
+  const { id } = req.user;
+  const { name, friends } = req.body;
+
+  try {
+    if (!name || !friends) {
+      return res.status(400).json({ message: "Missing required fields!" });
+    }
+
+    const group = await Group.create({
+      name,
+      adminId: id,
+    });
+
+    const friendsArray = friends.map(friendId => {
+      return { userId: friendId, groupId: group.id, role: "member" };
+    });
+
+    console.log(friendsArray);
+
+    if (group) {
+      const groupUser = await GroupUser.bulkCreate([
+        { userId: group.adminId, groupId: group.id, role: "admin" },
+        ...friendsArray
+      ]);
+
+      if (groupUser) {
+        return res.status(201).json(groupUser);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getGroupsList = async (req: Request, res: Response) => {
+  try {
+    const groups = await Group.findAll({
+      where: {
+        adminId: req.user.id
+      },
+      include: [
+        {
+          model: User,
+          as: "users",
+          attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
+          through: { attributes: [] }
+        }
+      ]
+    });
+
+    if (!groups) {
+      return res.status(400).json({ message: "No founded groups" });
+    }
+
+    return res.status(200).json(groups);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });

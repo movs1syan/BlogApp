@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type {  RegisterFormType } from "@/shared/types";
 import Button from "@/components/ui/Button";
-import ModalInput from "@/components/ModalInput";
+import ModalInput from "@/components/ui/ModalInput";
 import { UserPlus, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import {handleRegister} from "@/lib/actions";

@@ -42,8 +42,13 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         as: "createdGroups"
       });
 
+      this.hasMany(models.GroupMessage, {
+        foreignKey: "senderId",
+        as: "groupMessages"
+      });
+
       this.belongsToMany(models.Group, {
-        through: "GroupMembers",
+        through: "GroupUsers",
         foreignKey: "userId",
         as: "groups"
       });

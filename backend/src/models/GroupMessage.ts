@@ -1,36 +1,46 @@
 'use strict';
+
 import Sequelize, { Model } from "sequelize";
 
-interface GroupMemberAttributes {
+interface GroupMessageAttributes {
   id: number;
+  senderId: number;
   groupId: number;
-  userId: number;
-  role: 'admin' | 'member';
+  message: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
-  class GroupMember extends Model {
+  class GroupMessage extends Model<GroupMessageAttributes> {
     static associate(models: any) {
-      this.belongsTo(models.Group, {
-        foreignKey: "groupId",
-        as: "group"
+      this.belongsTo(models.User, {
+        foreignKey: "senderId",
+        as: "messageSender"
       });
 
-      this.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "member"
+      this.belongsTo(models.Group, {
+        foreignKey: "groupId",
+        as: "groupOfMessage"
       });
     }
   }
-
-  GroupMember.init({
+  GroupMessage.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
       autoIncrement: true
+    },
+    senderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "id"
+      },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE"
     },
     groupId: {
       type: DataTypes.INTEGER,
@@ -42,18 +52,8 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE"
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Users",
-        key: "id"
-      },
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE"
-    },
-    role: {
-      type: DataTypes.ENUM('admin', 'member'),
+    message: {
+      type: DataTypes.STRING,
       allowNull: false
     },
     createdAt: {
@@ -63,12 +63,11 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false
-    }
+    },
   }, {
     sequelize,
-    modelName: 'GroupMember',
-    tableName: 'GroupMembers'
+    modelName: 'GroupMessage',
+    tableName: 'GroupMessages'
   });
-
-  return GroupMember;
+  return GroupMessage;
 };

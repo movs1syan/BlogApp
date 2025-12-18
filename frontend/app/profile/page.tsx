@@ -7,7 +7,7 @@ import PostCard from "@/components/PostCard";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import ModalInput from "@/components/ModalInput";
+import ModalInput from "@/components/ui/ModalInput";
 import {TriangleAlert} from "lucide-react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";

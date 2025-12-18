@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import { useRouter } from "next/navigation";
-import ModalInput from "@/components/ModalInput";
+import ModalInput from "@/components/ui/ModalInput";
 import Button from "@/components/ui/Button";
 import {TriangleAlert, UserCheck} from "lucide-react";
 import Link from "next/link";

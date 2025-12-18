@@ -71,6 +71,15 @@ export interface UserType {
 	avatar: string | null;
 }
 
+export interface IGroup {
+	id: number;
+	name: string;
+	adminId: number;
+	createdAt: Date;
+	updatedAt: Date;
+	users: Omit<UserType, "password" | "confirmPassword">[];
+}
+
 export interface NotificationType {
 	id: string;
 	type: "success" | "error" | "info" | "warning";

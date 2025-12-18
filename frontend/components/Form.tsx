@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from "@/components/ui/Button";
-import ModalInput from './ModalInput';
+import ModalInput from './ui/ModalInput';
 import type { UpdatePostType } from "@/shared/types";
 import {TriangleAlert} from "lucide-react";
 

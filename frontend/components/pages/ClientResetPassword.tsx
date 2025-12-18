@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from "next/navigation";
 import {TriangleAlert, KeyRound} from "lucide-react";
-import ModalInput from "@/components/ModalInput";
+import ModalInput from "@/components/ui/ModalInput";
 import Button from "@/components/ui/Button";
 import {apiFetch} from "@/lib/apiFetch";
 import { useNotification } from "@/hooks/useNotification";

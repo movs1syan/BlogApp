@@ -1,47 +1,48 @@
 'use strict';
 import Sequelize, { Model } from "sequelize";
 
-interface GroupAttributes {
+interface GroupUserAttributes {
   id: number;
-  name: string;
-  adminId: number;
+  groupId: number;
+  userId: number;
+  role: 'admin' | 'member';
   createdAt: Date;
   updatedAt: Date;
 }
 
 export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
-  class Group extends Model<GroupAttributes> {
+  class GroupUser extends Model<GroupUserAttributes> {
     static associate(models: any) {
+      this.belongsTo(models.Group, {
+        foreignKey: "groupId",
+        as: "group"
+      });
+
       this.belongsTo(models.User, {
-        foreignKey: "adminId",
-        as: "groupCreator"
-      });
-
-      this.belongsToMany(models.User, {
-        through: "GroupUsers",
-        foreignKey: "groupId",
-        as: "users"
-      });
-
-      this.hasMany(models.GroupMessage, {
-        foreignKey: "groupId",
-        as: "messagesOfGroup"
+        foreignKey: "userId",
+        as: "user"
       });
     }
   }
 
-  Group.init({
+  GroupUser.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
       autoIncrement: true
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
+    groupId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Groups",
+        key: "id"
+      },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE"
     },
-    adminId: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -50,6 +51,10 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
       },
       onDelete: "CASCADE",
       onUpdate: "CASCADE"
+    },
+    role: {
+      type: DataTypes.ENUM('admin', 'member'),
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -61,9 +66,9 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     }
   }, {
     sequelize,
-    tableName: 'Groups',
-    modelName: 'Group',
+    modelName: 'GroupUser',
+    tableName: 'GroupUsers'
   });
 
-  return Group;
+  return GroupUser;
 };
