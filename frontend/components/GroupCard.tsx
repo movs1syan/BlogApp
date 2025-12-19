@@ -68,7 +68,11 @@ const GroupCard = ({ group }: { group: IGroup }) => {
     try {
       if (inputRef.current) {
         if (inputRef.current.value !== "") {
-          socket.emit("sendGroupMessage", { friendsIds, message: inputRef.current.value, groupId: group.id });
+          socket.emit("sendGroupMessage", {
+            friendsIds,
+            message: inputRef.current.value,
+            groupId: group.id
+          });
         }
 
         inputRef.current.value = "";

@@ -7,6 +7,7 @@ import cors from "cors";
 import {connectDB} from "./db.ts";
 import postRoutes from "./routes/postRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import productRoutes from "./routes/productRoutes.ts";
 import { initSocket } from "./socket/index.ts";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
 
 const server = http.createServer(app);
 const io: Server = new Server(server, {

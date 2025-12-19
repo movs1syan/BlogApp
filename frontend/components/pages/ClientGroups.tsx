@@ -1,6 +1,6 @@
 "use client";
 
-import {ArrowUpRight, TriangleAlert, Users} from "lucide-react";
+import { TriangleAlert, Users } from "lucide-react";
 import Button from "@/components/ui/Button";
 import React, {useState, useEffect} from "react";
 import { useUser } from "@/hooks/useUser";

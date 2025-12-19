@@ -80,6 +80,17 @@ export interface IGroup {
 	users: Omit<UserType, "password" | "confirmPassword">[];
 }
 
+export interface ProductType {
+	id: number;
+	userId: number;
+	name: string;
+	description: string;
+	price: number;
+	image?: File | string | null;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 export interface NotificationType {
 	id: string;
 	type: "success" | "error" | "info" | "warning";

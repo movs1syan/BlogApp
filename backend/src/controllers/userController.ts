@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Friend, Notification, Message, Group, GroupUser, GroupMessage} from "../models/models.ts";
+import {User, Friend, Notification, Message, Group, GroupUser} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {

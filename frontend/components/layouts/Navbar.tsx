@@ -81,6 +81,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
         <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
           <div className={"flex gap-10"}>
             <Link href="/" className={`${pathname === "/" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Home</Link>
+            <Link href={"/store"} className={`${pathname === "/store" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Store</Link>
             {user && <Link href={"/contacts"} className={`${pathname === "/contacts" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Contacts</Link>}
           </div>
           <div className="flex gap-4">
