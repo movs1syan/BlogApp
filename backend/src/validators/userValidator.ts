@@ -95,3 +95,16 @@ export const changePasswordSchema = Joi.object({
     'any.only': "Confirm password does not match the password.",
   }),
 });
+
+export const createGroupSchema = Joi.object({
+  name: Joi.string().min(3).required().messages({
+    'string.min': 'Group name must be at least 3 characters long.',
+    'string.empty': 'Group name is a required field.',
+    'any.required': 'Group name is a required field.',
+  }),
+  friends: Joi.array().items(Joi.number()).min(2).required().messages({
+    "array.min": `Group must contain at least 2 members`,
+    "any.required": `Group members are required`,
+    "number.base": `"friends" must only contain numbers`,
+  })
+});

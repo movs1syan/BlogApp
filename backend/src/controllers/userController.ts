@@ -473,20 +473,14 @@ export const createGroupAndInclude = async (req: Request, res: Response) => {
   const { name, friends } = req.body;
 
   try {
-    if (!name || !friends) {
-      return res.status(400).json({ message: "Missing required fields!" });
-    }
-
     const group = await Group.create({
       name,
       adminId: id,
     });
 
-    const friendsArray = friends.map(friendId => {
+    const friendsArray = friends.map((friendId: number) => {
       return { userId: friendId, groupId: group.id, role: "member" };
     });
-
-    console.log(friendsArray);
 
     if (group) {
       const groupUser = await GroupUser.bulkCreate([
@@ -495,7 +489,7 @@ export const createGroupAndInclude = async (req: Request, res: Response) => {
       ]);
 
       if (groupUser) {
-        return res.status(201).json(groupUser);
+        return res.status(201).json({ message: `Created group ${group.name}` });
       }
     }
   } catch (error) {
@@ -506,25 +500,54 @@ export const createGroupAndInclude = async (req: Request, res: Response) => {
 
 export const getGroupsList = async (req: Request, res: Response) => {
   try {
-    const groups = await Group.findAll({
-      where: {
-        adminId: req.user.id
-      },
+    const result = await User.findByPk(req.user.id, {
+      attributes: [],
       include: [
         {
-          model: User,
-          as: "users",
-          attributes: ["id", "name", "surname", "email", "avatar", "createdAt"],
-          through: { attributes: [] }
+          model: Group,
+          as: "groups",
+          attributes: ["id", "name", "adminId"],
+          through: { attributes: [] },
+          include: [
+            {
+              model: User,
+              as: "users",
+              attributes: ["id", "name", "surname", "avatar"],
+              through: { attributes: [] }
+            }
+          ],
         }
-      ]
+      ],
     });
 
-    if (!groups) {
+    if (!result.groups) {
       return res.status(400).json({ message: "No founded groups" });
     }
 
-    return res.status(200).json(groups);
+    return res.status(200).json(result.groups);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteGroup = async (req: Request, res: Response) => {
+  const { groupId } = req.body;
+
+  try {
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      return res.status(400).json({ message: "Group does not exist" });
+    }
+
+    const isAdmin = req.user.id === group.adminId;
+    if (!isAdmin) {
+      return res.status(400).json({ message: "Only admin has permission of deleting a group" });
+    }
+
+    await group.destroy();
+
+    return res.status(200).json({ message: "Group has been deleted." })
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });

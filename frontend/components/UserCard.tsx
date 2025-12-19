@@ -12,7 +12,6 @@ import {useSocket} from "@/hooks/useSocket";
 
 const UserCard = ({ singleUser }: { singleUser: User }) => {
   const { user, pendingToAccept, pendingToBeAccepted, friends } = useUser();
-  const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<any[]>([]);
   const [areFriends, setAreFriends] = useState(false);
   const [isWaitingToBeAccepted, setIsWaitingToBeAccepted] = useState(false);
@@ -27,11 +26,11 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleOldMessages = (msgs) => {
+    const handleOldMessages = (msgs: any) => {
       setMessages(msgs);
     };
 
-    const handleReceiveMessage = (msg) => {
+    const handleReceiveMessage = (msg: any) => {
       setMessages((prev) => {
         if (prev.some(message => message.id === msg.id)) return prev;
         return [...prev, msg];
@@ -122,30 +121,28 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       if (inputRef.current) {
         if (inputRef.current.value !== "") {
           socket?.emit("sendMessage", {
-            senderId: user?.id,
             receiverId: singleUser.id,
-            message,
+            message: inputRef.current.value,
           });
         }
 
         inputRef.current.value = "";
       }
 
-      setMessage("");
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
+    if (inputRef.current) inputRef.current.value = e.target.value;
   };
 
   const handleClickMessages = () => {

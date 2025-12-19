@@ -1,6 +1,6 @@
 "use client";
 
-import {ArrowUpRight, Users} from "lucide-react";
+import {ArrowUpRight, TriangleAlert, Users} from "lucide-react";
 import Button from "@/components/ui/Button";
 import React, {useState, useEffect} from "react";
 import { useUser } from "@/hooks/useUser";
@@ -10,13 +10,17 @@ import {apiFetch} from "@/lib/apiFetch";
 import {useRouter} from "next/navigation";
 import GroupCard from "@/components/GroupCard";
 import type { IGroup } from "@/shared/types";
+import {useNotification} from "@/hooks/useNotification";
 
 const ClientGroupsPage = ({ groups }: { groups: IGroup[] }) => {
   const [groupsList, setGroupsList] = useState<IGroup[]>(groups)
   const [groupName, setGroupName] = useState<string>("");
   const [friendsList, setFriendsList] = useState<number[]>([]);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { friends } = useUser();
+  const { notify } = useNotification();
   const router = useRouter();
 
   useEffect(() => {
@@ -34,15 +38,29 @@ const ClientGroupsPage = ({ groups }: { groups: IGroup[] }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await apiFetch("POST", "users/group/create", undefined, {
-      name: groupName,
-      friends: friendsList
-    });
+    try {
+      setLoading(true);
+      const response = await apiFetch("POST", "users/group/create", undefined, {
+        name: groupName,
+        friends: friendsList
+      });
 
-    setGroupName("");
-    setFriendsList([]);
+      setGroupName("");
+      setFriendsList([]);
+      setIsGroupModalOpen(false);
 
-    setIsGroupModalOpen(false);
+      notify({
+        type: "success",
+        message: "Success!",
+        description: response.message,
+      });
+    } catch (error: any) {
+      console.log(error);
+      setError(error.message)
+    } finally {
+      setLoading(false);
+    }
+
     router.refresh();
   };
 
@@ -93,8 +111,15 @@ const ClientGroupsPage = ({ groups }: { groups: IGroup[] }) => {
 
           <div className={"flex gap-3 justify-end mt-3"}>
             <Button onClick={() => setIsGroupModalOpen(false)}>Cancel</Button>
-            <Button htmlType={"submit"} type={"primary"}>Create</Button>
+            <Button htmlType={"submit"} type={"primary"} loading={loading}>Create</Button>
           </div>
+
+          {error && (
+            <div className={"flex justify-center items-center gap-2 text-red-600 mt-3"}>
+              <TriangleAlert size={20} />
+              <p className={"text-sm"}>{error}</p>
+            </div>
+          )}
         </form>
       </Modal>
     </>

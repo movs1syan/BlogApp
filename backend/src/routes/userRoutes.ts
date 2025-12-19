@@ -17,7 +17,8 @@ import {
   readNotification, getPendingToAcceptRequests, getPendingToBeAcceptedRequests, getNotificationsList, getFriendsList,
   sendMessage,
   createGroupAndInclude,
-  getGroupsList
+  getGroupsList,
+  deleteGroup
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -27,7 +28,8 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   updateUserSchema,
-  changePasswordSchema
+  changePasswordSchema,
+  createGroupSchema
 } from "../validators/userValidator.ts";
 import { uploadAvatarMiddleware } from "../middlewares/uploadAvatarMiddleware.ts";
 
@@ -52,11 +54,12 @@ router.post("/friend/request", authMiddleware, sendRequest);
 router.post("/friend/accept", authMiddleware, acceptRequest);
 router.post("/friend/decline", authMiddleware, declineRequest);
 router.post("/message", authMiddleware, sendMessage);
-router.post("/group/create", authMiddleware, createGroupAndInclude);
+router.post("/group/create", validate(createGroupSchema), authMiddleware, createGroupAndInclude);
 
 router.put("/update", uploadAvatarMiddleware.single("avatar"), validate(updateUserSchema), authMiddleware, updateUser);
 router.put('/read-notification', authMiddleware, readNotification)
 
 router.delete("/unfriend", authMiddleware, unfriendUser);
+router.delete("/group/delete", authMiddleware, deleteGroup)
 
 export default router;

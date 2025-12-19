@@ -18,7 +18,7 @@ const Modal: React.FC<ModalProps> = ({isOpen, onClose, title, children}) => {
       <div className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`} onClick={onClose}></div>
 
       {/* Modal */}
-      <div className={`absolute left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-xl min-w-100 w-fit h-fit p-5
+      <div className={`absolute top-[82px] left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-xl min-w-100 w-fit h-fit p-5
         ${isOpen ? "animate-[slideInTop_0.4s_ease_forwards]" : ""}
       `}>
 

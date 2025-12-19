@@ -89,7 +89,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
                 <div className={"relative cursor-pointer active:text-gray-500"} onClick={handleNotify}>
                   <Bell size={25} />
                   {notifications && notifications.length > 0 && notifications.find(message => !message.isRead) && (
-                    <div className={"w-4 h-4 flex items-center text-white text-[10px] justify-center rounded-full bg-red-600 absolute top-[-2px] left-4 z-20"}>
+                    <div className={"w-4 h-4 flex items-center justify-center text-white text-[10px] rounded-full bg-red-600 absolute top-[-2px] left-4 z-20"}>
                       {unreadMessages > 0 && unreadMessages}
                     </div>
                   )}

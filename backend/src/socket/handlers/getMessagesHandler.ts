@@ -1,11 +1,11 @@
 import { Socket, Server } from "socket.io";
-import { Message, User, Friend } from "../../models/models.ts";
+import { Message, User, Friend, GroupMessage } from "../../models/models.ts";
 import { Op } from "sequelize";
 
 export const getMessagesHandler = (io: Server, socket: Socket) => {
   socket.on("getMessages", async ({ friendId }) => {
     const userId = socket.user!.id;
-    const roomId = [userId, friendId].sort().join("_");
+    const roomId = [userId, friendId].sort().join(":");
 
     const areFriends = await Friend.findOne({
       where: {
@@ -33,5 +33,23 @@ export const getMessagesHandler = (io: Server, socket: Socket) => {
 
       io.to(roomId).emit("oldMessages", messages);
     }
+  });
+
+  socket.on("getGroupMessages", async ({ friendsIds, groupId }) => {
+    const roomId = friendsIds.sort().join(":");
+
+    const messages = await GroupMessage.findAll({
+      where: { groupId },
+      order: [["createdAt", "ASC"]],
+      include: [
+        {
+          model: User,
+          as: "messageSender",
+          attributes: ["id", "name", "surname", "avatar"],
+        }
+      ],
+    });
+
+    io.to(roomId).emit("oldGroupMessages", messages);
   });
 };
