@@ -8,6 +8,7 @@ interface ProductAttributes {
   name: string;
   description: string;
   price: number;
+  image: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +51,10 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     createdAt: {
       type: DataTypes.DATE,

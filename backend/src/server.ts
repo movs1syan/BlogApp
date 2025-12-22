@@ -18,6 +18,7 @@ app.use(cors());
 
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
 app.use("/uploads/images", express.static(path.join(process.cwd(), "uploads", "images")));
+app.use("/uploads/products", express.static(path.join(process.cwd(), "uploads", "products")));
 
 app.use(express.json());
 

@@ -86,9 +86,16 @@ export interface ProductType {
 	name: string;
 	description: string;
 	price: number;
-	image?: File | string | null;
+	image: string | null;
 	createdAt: Date;
 	updatedAt: Date;
+}
+
+export interface ProductCreationType {
+	name: string;
+	description: string;
+	price: string;
+	image: File | null;
 }
 
 export interface NotificationType {

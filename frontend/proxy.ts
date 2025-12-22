@@ -12,7 +12,7 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   } else {
-    if (req.nextUrl.pathname !== "/" && !req.nextUrl.pathname.startsWith("/blog") && !isGuestOnly) {
+    if (req.nextUrl.pathname !== "/" && req.nextUrl.pathname !== "/store" && !req.nextUrl.pathname.startsWith("/blog") && !isGuestOnly) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
   }

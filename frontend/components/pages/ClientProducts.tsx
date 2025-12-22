@@ -1,35 +1,78 @@
 "use client";
 
 import React, {useState, useEffect, Activity} from 'react';
+import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
-import type {ProductType} from "@/shared/types";
+import type {ProductType, ProductCreationType} from "@/shared/types";
 import Button from "@/components/ui/Button";
 import { useUser } from "@/hooks/useUser";
 import Modal from "@/components/ui/Modal";
 import ModalInput from '../ui/ModalInput';
 import {TriangleAlert} from "lucide-react";
+import {apiFetch} from "@/lib/apiFetch";
+import {useNotification} from "@/hooks/useNotification";
 
 const ClientProductsPage = ({ products }: { products: ProductType[] }) => {
   const [productsData, setProductsData] = useState<ProductType[]>(products);
-  const [newProduct, setNewProduct] = useState({
+  const [newProduct, setNewProduct] = useState<ProductCreationType>({
     name: "",
     description: "",
     price: "",
     image: null,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
+  const { notify } = useNotification();
+  const router = useRouter();
 
   useEffect(() => {
     setProductsData(products);
   }, [products]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "image" && e.target.files) {
       setNewProduct(prev => ({ ...prev, image: e.target.files![0] }));
+    } else {
+      setNewProduct(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append('name', newProduct.name);
+    formData.append('description', newProduct.description);
+    formData.append('price', newProduct.price);
+    if (newProduct.image) {
+      formData.append('image', newProduct.image);
+    }
+
+    setLoading(true);
+    try {
+      await apiFetch("POST", "products/create", undefined, formData);
+      setNewProduct({ name: "", description: "", price: "", image: null });
+
+      notify({
+        type: "success",
+        message: "Success!",
+        description: `Created product "${newProduct.name}"`
+      });
+
+      setIsModalOpen(false);
+    } catch (error: any) {
+      setLoading(false);
+      setError(error.message);
+      return;
+    }
+      setLoading(false);
+      setError(null);
+
+      router.refresh();
   };
 
   return (
@@ -56,26 +99,26 @@ const ClientProductsPage = ({ products }: { products: ProductType[] }) => {
 
       <Modal title={"Create Product"} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <form onSubmit={handleSubmit} className={"flex flex-col gap-3"}>
-          <ModalInput fieldName={"Name"} inputName={"name"} handleChange={handleChange} />
-          <ModalInput fieldName={"Description"} inputName={"description"} handleChange={handleChange} />
-          <ModalInput fieldName={"Price"} inputName={"price"} handleChange={handleChange} />
+          <ModalInput fieldName={"Name"} inputName={"name"} handleChange={handleChange} value={newProduct.name} />
+          <ModalInput fieldName={"Description"} inputName={"description"} handleChange={handleChange} value={newProduct.description} />
+          <ModalInput fieldName={"Price"} inputName={"price"} handleChange={handleChange} value={newProduct.price} />
           <label className={"flex flex-col gap-2"}>
             Upload image for product
             <Button icon={"ImageUp"}>
-              <input type={"file"} name={"product"} accept={"image/*"} onChange={handleChange} className={"cursor-pointer"} />
+              <input type={"file"} name={"image"} accept={"image/*"} onChange={handleChange} className={"cursor-pointer"} />
             </Button>
           </label>
 
-          {/*{error && (*/}
-          {/*  <div className={"flex justify-center items-center gap-2 text-red-600 mt-2"}>*/}
-          {/*    <TriangleAlert size={20} />*/}
-          {/*    <p className={"text-sm"}>{error}</p>*/}
-          {/*  </div>*/}
-          {/*)}*/}
+          {error && (
+            <div className={"flex justify-center items-center gap-2 text-red-600 mt-2"}>
+              <TriangleAlert size={20} />
+              <p className={"text-sm"}>{error}</p>
+            </div>
+          )}
 
           <div className="flex gap-5 justify-end mt-3">
             <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button htmlType="submit" type="primary">Create</Button>
+            <Button htmlType="submit" type="primary" loading={loading}>Create</Button>
           </div>
         </form>
       </Modal>

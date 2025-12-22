@@ -1,13 +1,17 @@
-import React from 'react';
+import React, {Activity, memo} from 'react';
 import {ProductType} from "@/shared/types";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import { useUser } from "@/hooks/useUser";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
+  const { user } = useUser();
+  const fullImageUrl = `http://localhost:8000${product.image}`;
+
   return (
     <article className="rounded-xl p-6 shadow-xl hover:shadow-2xl flex flex-col justify-between gap-7 transition-shadow duration-200 md:max-w-90">
       <div className="flex flex-col justify-center gap-4">
-        <Image src={"/iphone17pro_orange.jpg"} alt="Featured Image" unoptimized width={400} height={400} className="md:h-60 w-full" />
+        <Image src={product.image ? fullImageUrl : '/no-image.jpg'} alt="Featured Image" unoptimized width={400} height={600} />
 
         <h2 className="text-xl font-semibold">{product.name}</h2>
 
@@ -15,12 +19,13 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 
         <div className={"flex justify-between items-center"}>
           <span className={"text-4xl font-bold"}>$ {product.price}</span>
-          <Button type={"primary"} icon={"BadgeDollarSign"}>Buy</Button>
+          <Activity mode={product.userId !== user?.id ? "visible" : "hidden"}>
+            <Button type={"primary"} icon={"BadgeDollarSign"}>Buy</Button>
+          </Activity>
         </div>
       </div>
-
     </article>
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

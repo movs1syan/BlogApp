@@ -14,5 +14,6 @@ export const createProductSchema = Joi.object({
   price: Joi.number().required().messages({
     'number.empty': 'Product price is a required field',
     'any.required': 'Product price is a required field'
-  })
+  }),
+  image: Joi.string().optional()
 });
