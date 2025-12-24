@@ -1,38 +1,33 @@
 'use strict';
 
-import Sequelize, { Model } from "sequelize";
-
-interface ProductAttributes {
+interface OrderAttributes {
   id: number;
   userId: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
+  paymentIntentId: number;
+  totalAmount: number;
+  status: 'pending' | 'paid' | 'failed';
   createdAt: Date;
   updatedAt: Date;
 }
 
+import Sequelize, { Model } from 'sequelize';
+
 export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
-  class Product extends Model<ProductAttributes> {
+  class Order extends Model<OrderAttributes> {
     static associate(models: any) {
       this.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "owner"
+        foreignKey: 'userId',
+        as: 'client'
       });
 
-      this.hasMany(models.Order, {
+      this.belongsTo(models.Product, {
         foreignKey: 'productId',
-        as: 'orders'
-      });
-
-      this.hasMany(models.CartItem, {
-        foreignKey: 'productId'
+        as: 'product'
       });
     }
   }
 
-  Product.init({
+  Order.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -43,27 +38,23 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Users",
-        key: "id"
+        model: 'Users',
+        key: 'id'
       },
       onDelete: "CASCADE",
       onUpdate: "CASCADE"
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    price: {
+    paymentIntentId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true
+    totalAmount: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'paid', 'failed'),
+      defaultValue: 'pending'
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -75,9 +66,9 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Product',
-    tableName: 'Products'
+    modelName: 'Order',
+    tableName: 'Orders'
   });
 
-  return Product;
+  return Order;
 };

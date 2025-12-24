@@ -80,6 +80,17 @@ export interface IGroup {
 	users: Omit<UserType, "password" | "confirmPassword">[];
 }
 
+export interface ICartItem {
+	id: number;
+	quantity: number;
+	product: {
+		id: number;
+		name: string;
+		price: string;
+		image: string;
+	}
+}
+
 export interface ProductType {
 	id: number;
 	userId: number;

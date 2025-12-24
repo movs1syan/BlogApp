@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
 import React, {FC, useState, useEffect} from "react";
-import {Bell, UserCog, BookUser, UserPlus, UserCheck, UserX, UserMinus, BellOff, Users} from "lucide-react";
+import {Bell, UserCog, BookUser, UserPlus, UserCheck, UserX, UserMinus, BellOff, Users, ShoppingCart} from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
 import { apiFetch } from "@/lib/apiFetch";
 import NotificationsPortal from "@/components/NotificationsPortal";
@@ -29,10 +29,11 @@ interface INavbar {
     message: string;
     isRead: boolean;
     createdAt: Date
-  }[]
+  }[],
+  cartItemsQuantity: number;
 }
 
-const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
+const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQuantity }) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState<number>(0)
@@ -86,7 +87,13 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications }) => {
           </div>
           <div className="flex gap-4">
             {user ? (
-              <div className="flex gap-5 items-center">
+              <div className="relative flex gap-5 items-center">
+                <Link href={'/cart'}>
+                  <ShoppingCart size={25} className={"cursor-pointer active:text-gray-500"} />
+                  <div className={"absolute w-4 h-4 flex items-center justify-center text-white text-[10px] top-[-2px] left-4 rounded-full bg-red-600 z-20"}>
+                    {cartItemsQuantity}
+                  </div>
+                </Link>
                 <div className={"relative cursor-pointer active:text-gray-500"} onClick={handleNotify}>
                   <Bell size={25} />
                   {notifications && notifications.length > 0 && notifications.find(message => !message.isRead) && (

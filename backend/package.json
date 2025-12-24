@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon --watch src/**/*.ts --exec ts-node -r tsconfig-paths/register src/server.ts",
     "migrate:all": "npx sequelize-cli db:migrate",
-    "migrate:generate": "npx sequelize-cli migration:generate --name change-product-price-type",
-    "migrate:generate:model": "npx sequelize-cli model:generate --name Product --attributes userId:Integer,name:String,description:String,price:Integer",
+    "migrate:generate": "npx sequelize-cli migration:generate --name change-CartItem-table",
+    "migrate:generate:model": "npx sequelize-cli model:generate --name CartItem --attributes cartId:Integer",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo",
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all --to 20251202114808-add-user-table.js",
     "seed:generate": "npx sequelize-cli seed:generate --name demo-posts",

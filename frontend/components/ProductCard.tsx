@@ -1,12 +1,34 @@
-import React, {Activity, memo} from 'react';
+"use client";
+
+import React, {Activity, memo, useState, useEffect} from 'react';
+import { useRouter } from "next/navigation";
 import {ProductType} from "@/shared/types";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { useUser } from "@/hooks/useUser";
+import { useCart } from "@/hooks/useCart";
+import { apiFetch } from "@/lib/apiFetch";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const { user } = useUser();
+  const { cartItems } = useCart();
+  const router = useRouter();
+  const [isInCart, setIsInCart] = useState(cartItems.some(item => item.product.id === product.id));
+
+  useEffect(() => {
+    setIsInCart(cartItems.some(item => item.product.id === product.id));
+  }, [cartItems, product])
+
   const fullImageUrl = `http://localhost:8000${product.image}`;
+
+  const handleAddToCart = async (id: number) => {
+    if (isInCart) return;
+
+    console.log(product.userId)
+    await apiFetch("POST", "products/cart/add", undefined, { productId: id, userId: product.userId });
+
+    router.refresh();
+  };
 
   return (
     <article className="rounded-xl p-6 shadow-xl hover:shadow-2xl flex flex-col justify-between gap-7 transition-shadow duration-200 md:max-w-90">
@@ -17,10 +39,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 
         <p className="text-gray-600">{product.description}</p>
 
-        <div className={"flex justify-between items-center"}>
+        <div className={"flex justify-between items-center mt-4"}>
           <span className={"text-4xl font-bold"}>$ {product.price}</span>
           <Activity mode={product.userId !== user?.id ? "visible" : "hidden"}>
-            <Button type={"primary"} icon={"BadgeDollarSign"}>Buy</Button>
+            <Button type={isInCart ? "link" : "primary"} icon={isInCart ? "CheckCheck" : "ShoppingCart"} onClick={() => handleAddToCart(product.id)}>
+              {isInCart ? "Added to cart" : "Add to cart"}
+            </Button>
           </Activity>
         </div>
       </div>

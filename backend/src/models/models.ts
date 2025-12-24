@@ -9,3 +9,6 @@ export const Group: any = db.Group;
 export const GroupUser: any = db.GroupUser;
 export const GroupMessage: any = db.GroupMessage;
 export const Product: any = db.Product;
+export const CartItem: any = db.CartItem;
+export const Order: any = db.Order;
+export const OrderItem: any = db.OrderItem;

@@ -7,6 +7,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import apiFetchAuth from "@/lib/apiFetchAuth";
 import {SocketProvider} from "@/providers/SocketProvider";
+import { CartProvider } from "@/providers/CartProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +29,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [user, friends, pendingToAccept, pendingToBeAccepted, notifications] = await Promise.all([
+  const [user, friends, pendingToAccept, pendingToBeAccepted, notifications, cartItems] = await Promise.all([
     apiFetchAuth("GET", "users/me"),
     apiFetchAuth("GET", "users/friends"),
     apiFetchAuth("GET", "users/pending-to-accept"),
     apiFetchAuth("GET", "users/pending-to-be-accepted"),
-    apiFetchAuth("GET", "users/notifications")
+    apiFetchAuth("GET", "users/notifications"),
+    apiFetchAuth("GET", "products/cart/get")
   ]);
 
   return (
@@ -42,10 +44,12 @@ export default async function RootLayout({
         <UserProvider user={user} pendingToAccept={pendingToAccept} pendingToBeAccepted={pendingToBeAccepted} friends={friends}>
           <NotificationProvider>
             <SocketProvider user={user}>
-              <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} />
-              <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
-                {children}
-              </div>
+              <CartProvider cartItems={cartItems}>
+                <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} cartItemsQuantity={cartItems.length} />
+                <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
+                  {children}
+                </div>
+              </CartProvider>
             </SocketProvider>
           </NotificationProvider>
         </UserProvider>

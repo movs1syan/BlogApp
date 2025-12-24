@@ -52,6 +52,16 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         as: "products"
       });
 
+      this.hasMany(models.Order, {
+        foreignKey: 'userId',
+        as: 'orders'
+      });
+
+      this.hasMany(models.CartItem, {
+        foreignKey: 'userId',
+        as: 'cartItems'
+      });
+
       this.belongsToMany(models.Group, {
         through: "GroupUsers",
         foreignKey: "userId",
