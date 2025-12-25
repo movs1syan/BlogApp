@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useCart } from "@/hooks/useCart";
 import type { ICartItem } from "@/shared/types";
 import Button from "@/components/ui/Button";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import CartItemCard from "@/components/CartItemCard";
+import {apiFetch} from "@/lib/apiFetch";
 
 const CartPage = () => {
   const { cartItems: items } = useCart();
   const [cartItems, setCartItems] = useState<ICartItem[]>(items);
-  const [selectedProducts, setSelectedProducts] = useState<ICartItem[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setCartItems(items);
@@ -21,19 +23,59 @@ const CartPage = () => {
   useEffect(() => {
     let total = 0;
 
-    selectedProducts.forEach(item => {
+    selectedProducts.forEach(itemId => {
+      const item = cartItems.find(cartItem => cartItem.id === itemId);
       total += item.quantity * Number(item.product.price);
     });
 
     setTotalAmount(total);
-  }, [selectedProducts]);
+  }, [selectedProducts, cartItems]);
 
-  const handleSelect = (item: ICartItem, checked: boolean) => {
+  const handleSelect = (id: number, checked: boolean) => {
     if (checked) {
-      setSelectedProducts(prev => [...prev, item]);
+      setSelectedProducts(prev => [...prev, id]);
     } else {
-      setSelectedProducts(prev => prev.filter(product => product.id !== item.id));
+      setSelectedProducts(prev => prev.filter(productId => productId !== id));
     }
+  };
+
+  const handleIncreaseQty = async (id: number) => {
+    const currentItem = cartItems.find(item => item.id === id);
+    if (!currentItem) return;
+
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(async () => {
+      await apiFetch("PUT", "products/cart/change-quantity", undefined, { productId: currentItem.product.id, productQty: currentItem.quantity + 1 });
+    }, 1000);
+  };
+
+  const handleDecreaseQty = (id: number) => {
+    const currentItem = cartItems.find(item => item.id === id);
+
+    if (!currentItem || currentItem.quantity === 1) return;
+
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(async () => {
+      await apiFetch("PUT", "products/cart/change-quantity", undefined, { productId: currentItem.product.id, productQty: currentItem.quantity - 1 });
+    }, 1000);
   };
 
   return (
@@ -44,12 +86,14 @@ const CartPage = () => {
           <div className={"flex gap-10 mt-5"}>
             <div className={"flex-1"}>
               <div className={"flex flex-col gap-5"}>
-                {cartItems.map(item => (
-                  <label key={item.id} className={"flex items-center gap-6"}>
-                    <input type={"checkbox"} className={"w-6 h-6 cursor-pointer"} checked={selectedProducts.includes(item)} onChange={(e) => handleSelect(item, e.target.checked)} />
-                    <CartItemCard item={item} />
-                  </label>
-                ))}
+                {cartItems.map(item => {
+                  return (
+                    <label key={item.id} className={"flex items-center gap-6"}>
+                      <input type={"checkbox"} className={"w-6 h-6 cursor-pointer"} checked={selectedProducts.includes(item.id)} onChange={(e) => handleSelect(item.id, e.target.checked)} />
+                      <CartItemCard item={item} productQty={item.quantity} handleIncreaseQty={handleIncreaseQty} handleDecreaseQty={handleDecreaseQty} />
+                    </label>
+                  )}
+                )}
               </div>
             </div>
 
