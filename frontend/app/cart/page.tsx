@@ -2,19 +2,28 @@
 
 import React, {useState, useEffect, useRef} from 'react';
 import { useCart } from "@/hooks/useCart";
+import { useRouter } from "next/navigation";
 import type { ICartItem } from "@/shared/types";
 import Button from "@/components/ui/Button";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import CartItemCard from "@/components/CartItemCard";
 import {apiFetch} from "@/lib/apiFetch";
+import { Elements } from '@stripe/react-stripe-js';
+import {stripePromise} from "@/lib/stripe";
+import CheckoutForm from "@/components/CheckoutForm";
+import Modal from '@/components/ui/Modal';
 
 const CartPage = () => {
   const { cartItems: items } = useCart();
   const [cartItems, setCartItems] = useState<ICartItem[]>(items);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [isPayOpen, setIsPayOpen] = useState(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     setCartItems(items);
@@ -25,6 +34,8 @@ const CartPage = () => {
 
     selectedProducts.forEach(itemId => {
       const item = cartItems.find(cartItem => cartItem.id === itemId);
+      if (!item) return;
+
       total += item.quantity * Number(item.product.price);
     });
 
@@ -39,14 +50,11 @@ const CartPage = () => {
     }
   };
 
-  const handleIncreaseQty = async (id: number) => {
-    const currentItem = cartItems.find(item => item.id === id);
-    if (!currentItem) return;
-
+  const changeQuantity = (operation: "increase" | "decrease", currentItem: ICartItem, id: number) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
         item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
+          ? { ...item, quantity: operation === "increase" ? item.quantity + 1 : item.quantity - 1 }
           : item
       )
     );
@@ -54,8 +62,15 @@ const CartPage = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(async () => {
-      await apiFetch("PUT", "products/cart/change-quantity", undefined, { productId: currentItem.product.id, productQty: currentItem.quantity + 1 });
-    }, 1000);
+      await apiFetch("PUT", "products/cart/change-quantity", undefined, { productId: currentItem.product.id, productQty: operation === "increase" ? currentItem.quantity + 1 : currentItem.quantity - 1 });
+    }, 500);
+  };
+
+  const handleIncreaseQty = async (id: number) => {
+    const currentItem = cartItems.find(item => item.id === id);
+    if (!currentItem) return;
+
+    changeQuantity("increase", currentItem, id);
   };
 
   const handleDecreaseQty = (id: number) => {
@@ -63,19 +78,22 @@ const CartPage = () => {
 
     if (!currentItem || currentItem.quantity === 1) return;
 
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    changeQuantity("decrease", currentItem, id);
+  };
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  const handleOrder = async () => {
+    if (selectedProducts.length === 0) return;
 
-    timeoutRef.current = setTimeout(async () => {
-      await apiFetch("PUT", "products/cart/change-quantity", undefined, { productId: currentItem.product.id, productQty: currentItem.quantity - 1 });
-    }, 1000);
+    try {
+      const secret = await apiFetch("POST", "products/cart/order", undefined, { selectedItemsIds: selectedProducts });
+      setClientSecret(secret.clientSecret);
+
+      router.refresh();
+
+      setIsPayOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -110,7 +128,7 @@ const CartPage = () => {
               </div>
 
               <div className={"flex justify-end mt-4"}>
-                <Button type={"primary"} icon={"CreditCard"}>Order</Button>
+                <Button type={"primary"} icon={"CreditCard"} onClick={handleOrder}>Order</Button>
               </div>
             </div>
           </div>
@@ -129,6 +147,14 @@ const CartPage = () => {
             </Link>
           </div>
         </div>
+      )}
+
+      {clientSecret && isPayOpen && (
+        <Modal title={"Payment"} isOpen={isPayOpen} onClose={() => setIsPayOpen(false)}>
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <CheckoutForm />
+          </Elements>
+        </Modal>
       )}
     </>
   );

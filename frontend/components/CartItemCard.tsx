@@ -9,7 +9,6 @@ import { apiFetch } from "@/lib/apiFetch";
 
 const CartItemCard = ({ item, productQty, handleIncreaseQty, handleDecreaseQty }: { item: ICartItem, productQty: number, handleIncreaseQty: (id: number) => void, handleDecreaseQty: (id: number) => void; }) => {
   const [itemData, setItemData] = useState<ICartItem>(item);
-  // const [productQty, setProductQty] = useState(itemData.quantity);
   const router = useRouter();
 
   useEffect(() => {

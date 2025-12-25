@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { Product, CartItem } from "../models/models.ts";
 import stripe from "../config/stripe.ts";
+import {Op} from "sequelize";
 
 export const createProduct = async (req: Request, res: Response) => {
   const { id } = req.user;
@@ -137,14 +138,53 @@ export const changeQuantity = async (req: Request, res: Response) => {
   }
 };
 
-export const createPaymentIntent = async (req: Request, res: Response) => {
-  const { amount } = req.body;
+export const makeOrder = async (req: Request, res: Response) => {
+  const { id } = req.user;
+  const { selectedItemsIds } = req.body;
 
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amount * 100,
-    currency: "usd",
-    automatic_payment_methods: { enabled: true },
-  });
+  try {
+    if (selectedItemsIds.length === 0) {
+      return res.status(400).json({ message: "There is no product to order." });
+    }
 
-  return res.status(200).json({ clientSecret: paymentIntent.client_secret });
+    const products = await CartItem.findAll({
+      where: {
+        userId: id,
+        id: {
+          [Op.in] : selectedItemsIds
+        }
+      },
+      include: [
+        {
+          model: Product,
+          as: "product",
+          attributes: ['name', 'price']
+        }
+      ],
+      attributes: ['quantity']
+    });
+
+    if (!products) {
+      return res.status(400).json({ message: "Products does not found." });
+    }
+
+    let totalAmount = 0;
+    products.forEach((product: any) => {
+      totalAmount += product.quantity * Number(product.product.price);
+    });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmount * 100,
+      currency: "usd",
+      metadata: {
+        userId: String(req.user.id),
+      },
+      automatic_payment_methods: { enabled: true },
+    });
+
+    return res.status(200).json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
 };

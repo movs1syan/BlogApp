@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import apiFetchAuth from "@/lib/apiFetchAuth";
-import {SocketProvider} from "@/providers/SocketProvider";
+import { SocketProvider } from "@/providers/SocketProvider";
 import { CartProvider } from "@/providers/CartProvider";
 
 const geistSans = Geist({

@@ -8,12 +8,14 @@ import {connectDB} from "./db.ts";
 import postRoutes from "./routes/postRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
 import productRoutes from "./routes/productRoutes.ts";
+import stripeRoutes from "./routes/stripeRoutes.ts";
 import { initSocket } from "./socket/index.ts";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
 
 const app = express();
+app.use("/webhook", stripeRoutes);
 app.use(cors());
 
 app.use("/uploads/avatars", express.static(path.join(process.cwd(), "uploads", "avatars")));
