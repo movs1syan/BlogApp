@@ -1,9 +1,20 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
+import { useRouter } from "next/navigation";
 import {CheckCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Link from "next/link";
 
 const SuccessOrderPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (window.location.search.endsWith('redirect_status=succeeded')) {
+      router.refresh();
+    }
+  }, [router]);
+
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center mt-15">
       <CheckCircle size={85} className="text-green-600 mb-4 opacity-70" />

@@ -16,11 +16,13 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
   class OrderItem extends Model<OrderItemsAttributes> {
     static associate(models: any) {
       this.belongsTo(models.Order, {
-        foreignKey: 'orderId'
+        foreignKey: 'orderId',
+        as: 'order'
       });
 
       this.belongsTo(models.Product, {
-        foreignKey: 'productId'
+        foreignKey: 'productId',
+        as: 'product'
       });
     }
   }

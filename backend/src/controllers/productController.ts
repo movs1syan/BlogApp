@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Product, CartItem } from "../models/models.ts";
+import { Product, CartItem, OrderItem, Order, User } from "../models/models.ts";
 import stripe from "../config/stripe.ts";
 import {Op} from "sequelize";
 
@@ -28,7 +28,13 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      where: {
+        userId: { [Op.ne]: req.user.id },
+      },
+      order: [["createdAt", "DESC"]]
+    });
+
     if (!products) {
       return res.status(400).json({ message: "No product found." });
     }
@@ -150,15 +156,13 @@ export const makeOrder = async (req: Request, res: Response) => {
     const products = await CartItem.findAll({
       where: {
         userId: id,
-        id: {
-          [Op.in] : selectedItemsIds
-        }
+        id: { [Op.in] : selectedItemsIds }
       },
       include: [
         {
           model: Product,
           as: "product",
-          attributes: ['name', 'price']
+          attributes: ['id', 'name', 'price']
         }
       ],
       attributes: ['quantity']
@@ -169,20 +173,80 @@ export const makeOrder = async (req: Request, res: Response) => {
     }
 
     let totalAmount = 0;
+    let orderedProducts: Record<string, number>[] = [];
+
     products.forEach((product: any) => {
       totalAmount += product.quantity * Number(product.product.price);
+      orderedProducts.push({
+        productId: product.product.id,
+        quantity: product.quantity,
+        price: product.quantity * Number(product.product.price)
+      });
     });
+
+    let stripeCustomerId = req.user.stripeCustomerId;
+
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        name: req.user.name,
+        email: req.user.email,
+      });
+
+      stripeCustomerId = customer.id;
+
+      await User.update(
+        { stripeCustomerId },
+        { where: { id: req.user.id } }
+      );
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount * 100,
       currency: "usd",
+      customer: stripeCustomerId,
       metadata: {
         userId: String(req.user.id),
+        orderedProducts: JSON.stringify(orderedProducts),
       },
       automatic_payment_methods: { enabled: true },
     });
 
     return res.status(200).json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getOrders = async (req: Request, res: Response) => {
+  const { id } = req.user;
+
+  try {
+    const orders = await Order.findAll({
+      where: { userId: id },
+      attributes: ["id", "userId"],
+      include: [
+        {
+          model: OrderItem,
+          as: 'orderedItems',
+          attributes: ['id', 'quantity', 'price'],
+          include: [
+            {
+              model: Product,
+              as: 'product',
+              attributes: ['name', 'image']
+            }
+          ],
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+
+    if (!orders) {
+      return res.status(400).json({ message: 'No order found.' });
+    }
+
+    return res.status(200).json(orders);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: 'Server error' });

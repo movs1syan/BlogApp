@@ -7,7 +7,19 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
 import React, {FC, useState, useEffect} from "react";
-import {Bell, UserCog, BookUser, UserPlus, UserCheck, UserX, UserMinus, BellOff, Users, ShoppingCart} from "lucide-react";
+import {
+  Bell,
+  UserCog,
+  BookUser,
+  UserPlus,
+  UserCheck,
+  UserX,
+  UserMinus,
+  BellOff,
+  Users,
+  ShoppingCart,
+  Package
+} from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
 import { apiFetch } from "@/lib/apiFetch";
 import NotificationsPortal from "@/components/NotificationsPortal";
@@ -82,7 +94,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQu
         <div className="flex justify-between px-10 py-5 items-center xl:max-w-320 max-w-[1024px] mx-auto">
           <div className={"flex gap-10"}>
             <Link href="/" className={`${pathname === "/" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Home</Link>
-            <Link href={"/store"} className={`${pathname === "/store" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Store</Link>
+            {user && <Link href={"/store"} className={`${pathname === "/store" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Store</Link>}
             {user && <Link href={"/contacts"} className={`${pathname === "/contacts" ? "text-blue-700" : ""} font-bold hover:text-blue-700 transition-colors duration-300`}>Contacts</Link>}
           </div>
           <div className="flex gap-4">
@@ -90,9 +102,11 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQu
               <div className="relative flex gap-5 items-center">
                 <Link href={'/cart'}>
                   <ShoppingCart size={25} className={"cursor-pointer active:text-gray-500"} />
-                  <div className={"absolute w-4 h-4 flex items-center justify-center text-white text-[10px] top-[-2px] left-4 rounded-full bg-red-600 z-20"}>
-                    {cartItemsQuantity}
-                  </div>
+                  {cartItemsQuantity > 0 && (
+                    <div className={"absolute w-4 h-4 flex items-center justify-center text-white text-[10px] top-[-2px] left-4 rounded-full bg-red-600 z-20"}>
+                      {cartItemsQuantity}
+                    </div>
+                  )}
                 </Link>
                 <div className={"relative cursor-pointer active:text-gray-500"} onClick={handleNotify}>
                   <Bell size={25} />
@@ -214,6 +228,12 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQu
                   <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
                     <Users size={25} />
                     <span>Groups</span>
+                  </div>
+                </Link>
+                <Link href={"/orders"} onClick={() => setOpenDrawer(false)}>
+                  <div className={"flex items-center gap-3 text-blue-700 hover:bg-blue-100 active:bg-blue-200 duration-300 cursor-pointer px-3 py-2 rounded-lg"}>
+                    <Package size={25} />
+                    <span>Orders</span>
                   </div>
                 </Link>
               </div>

@@ -30,6 +30,8 @@ const CartPage = () => {
   }, [items]);
 
   useEffect(() => {
+    if (!cartItems) return;
+
     let total = 0;
 
     selectedProducts.forEach(itemId => {
@@ -98,7 +100,7 @@ const CartPage = () => {
 
   return (
     <>
-      {cartItems.length > 0 ? (
+      {cartItems && cartItems.length > 0 ? (
         <main>
           <h1 className={"font-bold text-3xl mt-10"}>My Cart</h1>
           <div className={"flex gap-10 mt-5"}>

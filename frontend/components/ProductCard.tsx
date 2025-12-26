@@ -13,19 +13,33 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const { user } = useUser();
   const { cartItems } = useCart();
   const router = useRouter();
-  const [isInCart, setIsInCart] = useState(cartItems.some(item => item.product.id === product.id));
+  const [isInCart, setIsInCart] = useState(() => {
+    if (cartItems) {
+      return cartItems.some(item => item.product.id === product.id);
+    } else {
+      return null;
+    }
+  });
 
   useEffect(() => {
+    if (!cartItems) return;
+
     setIsInCart(cartItems.some(item => item.product.id === product.id));
   }, [cartItems, product])
 
   const fullImageUrl = `http://localhost:8000${product.image}`;
 
   const handleAddToCart = async (id: number) => {
+    if (!user) {
+      router.push('/login');
+    }
     if (isInCart) return;
 
-    console.log(product.userId)
-    await apiFetch("POST", "products/cart/add", undefined, { productId: id, userId: product.userId });
+    try {
+      await apiFetch("POST", "products/cart/add", undefined, { productId: id, userId: product.userId });
+    } catch (error) {
+      console.log(error);
+    }
 
     router.refresh();
   };

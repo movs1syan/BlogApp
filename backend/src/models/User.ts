@@ -7,6 +7,7 @@ export interface UserAttributes {
   email: string;
   password: string;
   avatar: string | null;
+  stripeCustomerId: string | null;
   resetPasswordToken: string | null;
   resetPasswordExpires: Date | null;
 }
@@ -124,6 +125,10 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      stripeCustomerId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      }
     },
     {
       sequelize, // required

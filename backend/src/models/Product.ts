@@ -9,6 +9,8 @@ interface ProductAttributes {
   description: string;
   price: number;
   image: string;
+  stripeProductId: string;
+  stripePriceId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,7 +23,7 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         as: "owner"
       });
 
-      this.hasMany(models.Order, {
+      this.hasMany(models.OrderItem, {
         foreignKey: 'productId',
         as: 'orders'
       });
@@ -64,6 +66,14 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
     image: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    stripeProductId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripePriceId: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

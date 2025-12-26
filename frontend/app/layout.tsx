@@ -45,7 +45,7 @@ export default async function RootLayout({
           <NotificationProvider>
             <SocketProvider user={user}>
               <CartProvider cartItems={cartItems}>
-                <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} cartItemsQuantity={cartItems.length} />
+                <Navbar user={user} pendingToAccept={pendingToAccept} notifications={notifications} cartItemsQuantity={cartItems && cartItems.length} />
                 <div className="xl:max-w-320 max-w-[1024px] mx-auto px-10 relative">
                   {children}
                 </div>

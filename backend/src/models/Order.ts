@@ -1,68 +1,53 @@
 'use strict';
 
+import Sequelize, { Model } from 'sequelize';
+
 interface OrderAttributes {
   id: number;
   userId: number;
-  paymentIntentId: number;
-  totalAmount: number;
-  status: 'pending' | 'paid' | 'failed';
   createdAt: Date;
   updatedAt: Date;
 }
-
-import Sequelize, { Model } from 'sequelize';
 
 export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
   class Order extends Model<OrderAttributes> {
     static associate(models: any) {
       this.belongsTo(models.User, {
         foreignKey: 'userId',
-        as: 'client'
+        as: 'customer'
       });
 
-      this.belongsTo(models.Product, {
-        foreignKey: 'productId',
-        as: 'product'
+      this.hasMany(models.OrderItem, {
+        foreignKey: 'orderId',
+        as: 'orderedItems'
       });
     }
   }
 
   Order.init({
     id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
       allowNull: false,
-      autoIncrement: true
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       allowNull: false,
       references: {
         model: 'Users',
         key: 'id'
       },
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE"
-    },
-    paymentIntentId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    totalAmount: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'paid', 'failed'),
-      defaultValue: 'pending'
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      type: Sequelize.DATE
     },
     updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
+      type: Sequelize.DATE
     }
   }, {
     sequelize,

@@ -91,6 +91,22 @@ export interface ICartItem {
 	}
 }
 
+export interface IOrderProduct {
+	id: number;
+	quantity: number;
+	price: number;
+	product: {
+		name: string;
+		image: string;
+	}
+}
+
+export interface IOrderItem {
+	id: number;
+	userId: number;
+	orderedItems: IOrderProduct[],
+}
+
 export interface ProductType {
 	id: number;
 	userId: number;
