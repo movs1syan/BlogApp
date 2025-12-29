@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
@@ -42,4 +42,4 @@ const PostCard = ({ post }: { post: PostType }) => {
   );
 };
 
-export default PostCard;
+export default memo(PostCard);

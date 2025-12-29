@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, memo} from 'react';
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import type { IGroup } from "@/shared/types"
@@ -171,4 +171,4 @@ const GroupCard = ({ group }: { group: IGroup }) => {
   );
 };
 
-export default GroupCard;
+export default memo(GroupCard);

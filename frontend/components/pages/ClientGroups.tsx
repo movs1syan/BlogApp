@@ -13,7 +13,7 @@ import type { IGroup } from "@/shared/types";
 import {useNotification} from "@/hooks/useNotification";
 
 const ClientGroupsPage = ({ groups }: { groups: IGroup[] }) => {
-  const [groupsList, setGroupsList] = useState<IGroup[]>(groups)
+  const [groupsList, setGroupsList] = useState<IGroup[]>(groups);
   const [groupName, setGroupName] = useState<string>("");
   const [friendsList, setFriendsList] = useState<number[]>([]);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);

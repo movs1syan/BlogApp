@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import type { ICartItem } from "@/shared/types";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
@@ -67,4 +67,4 @@ const CartItemCard = ({ item, productQty, handleIncreaseQty, handleDecreaseQty }
   );
 };
 
-export default CartItemCard;
+export default memo(CartItemCard);

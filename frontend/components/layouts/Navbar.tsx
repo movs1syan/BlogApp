@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Drawer from "@/components/ui/Drawer";
 import React, {FC, useState, useEffect} from "react";
@@ -18,7 +17,8 @@ import {
   BellOff,
   Users,
   ShoppingCart,
-  Package
+  Package,
+  MessageCircleMore
 } from "lucide-react";
 import { handleLogoutFn } from "@/lib/actions";
 import { apiFetch } from "@/lib/apiFetch";
@@ -99,19 +99,26 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQu
           </div>
           <div className="flex gap-4">
             {user ? (
-              <div className="relative flex gap-5 items-center">
-                <Link href={'/cart'}>
-                  <ShoppingCart size={25} className={"cursor-pointer active:text-gray-500"} />
-                  {cartItemsQuantity > 0 && (
-                    <div className={"absolute w-4 h-4 flex items-center justify-center text-white text-[10px] top-[-2px] left-4 rounded-full bg-red-600 z-20"}>
-                      {cartItemsQuantity}
-                    </div>
-                  )}
-                </Link>
+              <div className="flex gap-5 items-center">
+                <div>
+                  <Link href={'/messages'}>
+                    <MessageCircleMore size={25} className={`${pathname.includes("messages") ? "text-blue-700" : ""} cursor-pointer active:text-gray-500`} />
+                  </Link>
+                </div>
+                <div className={"relative"}>
+                  <Link href={'/cart'}>
+                    <ShoppingCart size={25} className={`${pathname === "/cart" ? "text-blue-700" : ""} cursor-pointer active:text-gray-500`} />
+                    {cartItemsQuantity > 0 && (
+                      <div className={"absolute w-4 h-4 flex items-center justify-center text-white text-[10px] top-[-4px] left-4 rounded-full bg-red-600 z-20"}>
+                        {cartItemsQuantity}
+                      </div>
+                    )}
+                  </Link>
+                </div>
                 <div className={"relative cursor-pointer active:text-gray-500"} onClick={handleNotify}>
                   <Bell size={25} />
                   {notifications && notifications.length > 0 && notifications.find(message => !message.isRead) && (
-                    <div className={"w-4 h-4 flex items-center justify-center text-white text-[10px] rounded-full bg-red-600 absolute top-[-2px] left-4 z-20"}>
+                    <div className={"w-4 h-4 flex items-center justify-center text-white text-[10px] rounded-full bg-red-600 absolute top-[-4px] left-3 z-20"}>
                       {unreadMessages > 0 && unreadMessages}
                     </div>
                   )}

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {memo} from 'react';
 import type { IOrderItem } from "@/shared/types";
 import OrderItemCard from "@/components/OrderItemCard";
+import {getDate} from "@/helpers/getDate";
 
 const OrderCard = ({ order }: { order: IOrderItem }) => {
   let totalAmount = 0;
   order.orderedItems.forEach(item => {
-    totalAmount += (item.quantity * item.price);
+    totalAmount += item.price;
   });
 
   return (
@@ -18,9 +19,16 @@ const OrderCard = ({ order }: { order: IOrderItem }) => {
 
       <div className={"h-[1px] w-full border border-gray-200 mx-auto"}></div>
 
-      <span className={"flex justify-end font-semibold text-3xl text-gray-400 gap-5"}>Total:<span className={"text-black"}>$ {totalAmount}</span></span>
+      <div className={"flex justify-between items-center"}>
+        <span className={"flex justify-end font-semibold text-xl text-gray-400 gap-5"}>
+          Ordered:<span className={"text-black"}>{getDate(String(order.createdAt))}</span>
+        </span>
+        <span className={"flex justify-end font-semibold text-3xl text-gray-400 gap-5"}>
+          Total:<span className={"text-black"}>${totalAmount}</span>
+        </span>
+      </div>
     </div>
   );
 };
 
-export default OrderCard;
+export default memo(OrderCard);

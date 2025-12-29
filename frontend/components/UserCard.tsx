@@ -1,6 +1,6 @@
 "use client";
 
-import React, {Activity, useEffect, useState, useRef} from 'react';
+import React, {Activity, useEffect, useState, useRef, memo} from 'react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { User } from "@/components/pages/ClientUsers";
@@ -238,4 +238,4 @@ const UserCard = ({ singleUser }: { singleUser: User }) => {
   );
 };
 
-export default UserCard;
+export default memo(UserCard);

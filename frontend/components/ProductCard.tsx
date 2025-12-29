@@ -54,7 +54,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         <p className="text-gray-600">{product.description}</p>
 
         <div className={"flex justify-between items-center mt-4"}>
-          <span className={"text-4xl font-bold"}>$ {product.price}</span>
+          <span className={"text-4xl font-bold"}>${product.price}</span>
           <Activity mode={product.userId !== user?.id ? "visible" : "hidden"}>
             <Button type={isInCart ? "link" : "primary"} icon={isInCart ? "CheckCheck" : "ShoppingCart"} onClick={() => handleAddToCart(product.id)}>
               {isInCart ? "Added to cart" : "Add to cart"}

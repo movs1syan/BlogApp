@@ -200,6 +200,29 @@ export const makeOrder = async (req: Request, res: Response) => {
       );
     }
 
+    for (const cartItem of products) {
+      const product = cartItem.product;
+
+      if (!product.stripeProductId || !product.stripePriceId) {
+        const stripeProduct = await stripe.products.create({
+          name: product.name,
+          metadata: {
+            productId: String(product.id)
+          }
+        });
+
+        const stripePrice = await stripe.prices.create({
+          product: stripeProduct.id,
+          unit_amount: Math.round(product.price * 100),
+          currency: "usd",
+        });
+
+        product.stripeProductId = stripeProduct.id;
+        product.stripePriceId = stripePrice.id;
+        await product.save();
+      }
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount * 100,
       currency: "usd",
@@ -224,7 +247,7 @@ export const getOrders = async (req: Request, res: Response) => {
   try {
     const orders = await Order.findAll({
       where: { userId: id },
-      attributes: ["id", "userId"],
+      attributes: ["id", "createdAt"],
       include: [
         {
           model: OrderItem,

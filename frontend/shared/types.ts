@@ -103,7 +103,7 @@ export interface IOrderProduct {
 
 export interface IOrderItem {
 	id: number;
-	userId: number;
+	createdAt: number;
 	orderedItems: IOrderProduct[],
 }
 
