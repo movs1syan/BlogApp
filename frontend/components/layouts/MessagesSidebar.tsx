@@ -4,8 +4,9 @@ import React from 'react';
 import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
 import Image from "next/image";
+import {IGroup} from "@/shared/types";
 
-const MessagesSidebar = () => {
+const MessagesSidebar = ({ groups }: { groups: IGroup[] }) => {
   const router = useRouter();
   const { id } = useParams();
   const { friends } = useUser();
@@ -16,17 +17,33 @@ const MessagesSidebar = () => {
         const fullAvatarUrl = `http://localhost:8000${friend.avatar}`;
 
         return (
-        <div
-          key={friend.id}
-          className={`${Number(id) === friend.id ? "bg-blue-300" : "bg-blue-100"} cursor-pointer p-4 rounded-xl hover:bg-blue-300 transition-colors duration-200`}
-          onClick={() => router.push(`/messages/${friend.id}`)}
-        >
-          <div className={"flex items-center gap-4"}>
-            <Image src={friend.avatar ? fullAvatarUrl : '/profile-picture.png'} alt={"avatar"} unoptimized height={40} width={40} className={"size-10 object-cover rounded-full"} />
-            <span className={`${Number(id) === friend.id ? "text-white" : ""} text-blue-700 font-semibold`}>{friend.name} {friend.surname}</span>
+          <div
+            key={friend.id}
+            className={`${Number(id) === friend.id ? "bg-blue-300" : "bg-blue-100"} cursor-pointer p-4 rounded-xl hover:bg-blue-300 transition-colors duration-200`}
+            onClick={() => router.push(`/messages/friends/${friend.id}`)}
+          >
+            <div className={"flex items-center gap-4"}>
+              <Image src={friend.avatar ? fullAvatarUrl : '/profile-picture.png'} alt={"avatar"} unoptimized height={40} width={40} className={"size-10 object-cover rounded-full"} />
+              <span className={`${Number(id) === friend.id ? "text-white" : ""} text-blue-700 font-semibold`}>{friend.name} {friend.surname}</span>
+            </div>
           </div>
+        )}
+      )}
+
+      {groups.map(group => (
+        <div
+          key={group.id}
+          className={`${Number(id) === group.id ? "bg-blue-300" : "bg-blue-100"} cursor-pointer p-4 rounded-xl hover:bg-blue-300 transition-colors duration-200`}
+          onClick={() => router.push(`/messages/groups/${group.id}`)}
+        >
+          <div className={"flex gap-3"}>
+            {group.users.map(user => (
+              <Image key={user.id} src={user.avatar ? `http://localhost:8000${user.avatar}` : '/profile-picture.png'} alt={"avatar"} unoptimized height={40} width={40} className={"size-10 object-cover rounded-full"} />
+            ))}
+          </div>
+          <span className={`${Number(id) === group.id ? "text-white" : ""} text-blue-700 font-semibold`}>{group.name}</span>
         </div>
-      )})}
+      ))}
     </aside>
   );
 };
