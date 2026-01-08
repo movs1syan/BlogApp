@@ -19,7 +19,8 @@ import {
   createGroupAndInclude,
   getGroupsList,
   deleteGroup,
-  getGroupFriends
+  getGroupFriends,
+  getChats
 } from "../controllers/userController.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 import { validate } from "../middlewares/validator.ts";
@@ -45,8 +46,9 @@ router.get("/friends", authMiddleware, getFriendsList);
 router.get("/notifications", authMiddleware, getNotificationsList);
 router.get("/reset-password", checkResetToken);
 router.get("/group/get", authMiddleware, getGroupsList);
-router.post('/group/get-friends', authMiddleware, getGroupFriends);
+router.get("/conversations", authMiddleware, getChats);
 
+router.post('/group/get-friends', authMiddleware, getGroupFriends);
 router.post("/register", uploadAvatarMiddleware.single("avatar"), validate(createUserSchema), registerUser);
 router.post("/login", validate(authUserSchema), authUser);
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);

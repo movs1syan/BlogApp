@@ -63,6 +63,11 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         as: 'cartItems'
       });
 
+      this.belongsToMany(models.Conversation, {
+        through: "UserConversations",
+        foreignKey: 'userId'
+      });
+
       this.belongsToMany(models.Group, {
         through: "GroupUsers",
         foreignKey: "userId",

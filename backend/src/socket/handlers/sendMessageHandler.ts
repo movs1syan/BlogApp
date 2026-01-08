@@ -1,37 +1,65 @@
 import { Socket, Server } from "socket.io";
-import { Message, Friend, GroupMessage } from "../../models/models.ts";
+import { Message, Friend, GroupMessage, Conversation, UserConversation, GroupConversation } from "../../models/models.ts";
 
 export const sendMessageHandler = (io: Server, socket: Socket) => {
-  socket.on("sendMessage", async ({ receiverId, message }) => {
-    const senderId = socket.user!.id;
-    const roomId = [senderId, receiverId].sort().join(":");
+  // socket.on("sendMessage", async ({ receiverId, message }) => {
+  //   const senderId = socket.user!.id;
+  //   const roomId = [senderId, receiverId].sort().join(":");
+  //
+  //   const areFriends = await Friend.findOne({
+  //     where: {
+  //       reqSenderId: senderId, reqTakerId: receiverId
+  //     },
+  //   });
+  //
+  //   if (areFriends) {
+  //     const savedMessage = await Message.create({
+  //       senderId,
+  //       receiverId,
+  //       message,
+  //       isRead: false,
+  //     });
+  //
+  //     const messageWithSender = {
+  //       ...savedMessage.toJSON(),
+  //       sender: {
+  //         id: socket.user!.id,
+  //         name: socket.user!.name,
+  //         surname: socket.user!.surname,
+  //         avatar: socket.user!.avatar,
+  //       },
+  //     };
+  //
+  //     io.to(roomId).emit("receiveMessage", messageWithSender);
+  //   }
+  // });
 
-    const areFriends = await Friend.findOne({
+  socket.on("sendMessage", async ({ conversationId, message }) => {
+    const senderId = socket.user!.id;
+
+    const isParticipant = await UserConversation.findOne({
       where: {
-        reqSenderId: senderId, reqTakerId: receiverId
-      },
+        conversationId,
+        userId: senderId
+      }
     });
 
-    if (areFriends) {
-      const savedMessage = await Message.create({
-        senderId,
-        receiverId,
-        message,
-        isRead: false,
-      });
+    if (!isParticipant) return;
 
-      const messageWithSender = {
-        ...savedMessage.toJSON(),
-        sender: {
-          id: socket.user!.id,
-          name: socket.user!.name,
-          surname: socket.user!.surname,
-          avatar: socket.user!.avatar,
-        },
-      };
+    const savedMessage = await Message.create({
+      senderId,
+      conversationId,
+      message,
+      isRead: false,
+    });
 
-      io.to(roomId).emit("receiveMessage", messageWithSender);
-    }
+    await Conversation.update(
+      {
+        lastMessageAt: new Date(),
+      },
+      { where: { id: conversationId } }
+    );
+
   });
 
   socket.on("sendGroupMessage", async ({ friendsIds, groupId, message }) => {

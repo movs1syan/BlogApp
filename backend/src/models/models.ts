@@ -12,3 +12,6 @@ export const Product: any = db.Product;
 export const CartItem: any = db.CartItem;
 export const Order: any = db.Order;
 export const OrderItem: any = db.OrderItem;
+export const Conversation: any = db.Conversation;
+export const UserConversation: any = db.UserConversation;
+export const GroupConversation: any = db.GroupConversation;

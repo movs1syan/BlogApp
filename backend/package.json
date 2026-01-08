@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon --watch src/**/*.ts --exec ts-node -r tsconfig-paths/register src/server.ts",
     "migrate:all": "npx sequelize-cli db:migrate",
-    "migrate:generate": "npx sequelize-cli migration:generate --name add_stripe_ids_to_products",
-    "migrate:generate:model": "npx sequelize-cli model:generate --name Order --attributes userId:Integer",
+    "migrate:generate": "npx sequelize-cli migration:generate --name change-conversations-table",
+    "migrate:generate:model": "npx sequelize-cli model:generate --name GtoupConversation --attributes conversationId:Integer,groupId:Integer",
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all --to 20251202114808-add-user-table.js",
     "seed:generate": "npx sequelize-cli seed:generate --name demo-posts",

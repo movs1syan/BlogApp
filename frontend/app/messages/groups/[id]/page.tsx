@@ -22,7 +22,7 @@ const ChatPage = () => {
     (async () => {
       const groupFriends = await apiFetch("POST", "users/group/get-friends", undefined, { groupId: id });
 
-      const ids = groupFriends.map(friend => {
+      const ids = groupFriends.map((friend: { userId: number }) => {
         return friend.userId
       });
 

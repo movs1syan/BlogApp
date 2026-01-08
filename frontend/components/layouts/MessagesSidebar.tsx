@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@/hooks/useUser";
 import Image from "next/image";
-import {IGroup} from "@/shared/types";
+import { IGroup } from "@/shared/types";
 
 const MessagesSidebar = ({ groups }: { groups: IGroup[] }) => {
   const router = useRouter();

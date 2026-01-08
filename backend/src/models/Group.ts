@@ -27,6 +27,10 @@ export default (sequelize: any, DataTypes: typeof Sequelize.DataTypes) => {
         foreignKey: "groupId",
         as: "messagesOfGroup"
       });
+
+      this.hasOne(models.GroupConversation, {
+        foreignKey: "groupId"
+      });
     }
   }
 

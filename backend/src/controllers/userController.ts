@@ -10,7 +10,7 @@ import {
 } from "../services/userService.ts";
 import { transporter } from "../utils/nodemailer.ts";
 import * as crypto from "node:crypto";
-import {User, Friend, Notification, Message, Group, GroupUser} from "../models/models.ts";
+import {User, Friend, Notification, Message, Group, GroupUser, Conversation, UserConversation, GroupConversation} from "../models/models.ts";
 import {Op} from "sequelize";
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -549,6 +549,10 @@ export const getGroupFriends = async (req: Request, res: Response) => {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
+};
+
+export const getChats = async (req: Request, res: Response) => {
+
 };
 
 export const deleteGroup = async (req: Request, res: Response) => {

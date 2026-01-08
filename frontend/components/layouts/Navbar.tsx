@@ -102,7 +102,7 @@ const Navbar: FC<INavbar> = ({ user, pendingToAccept, notifications, cartItemsQu
               <div className="flex gap-5 items-center">
                 <div>
                   <Link href={'/messages'}>
-                    <MessageCircleMore size={25} className={`${pathname.includes("messages") ? "text-blue-700" : ""} cursor-pointer active:text-gray-500`} />
+                    <MessageCircleMore size={25} className={`${pathname.startsWith("/messages") ? "text-blue-700" : ""} cursor-pointer active:text-gray-500`} />
                   </Link>
                 </div>
                 <div className={"relative"}>
